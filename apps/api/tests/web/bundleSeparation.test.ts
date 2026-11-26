@@ -78,7 +78,7 @@ const ADMIN_MARKERS: readonly string[] = [
  * ###########################################################################
  */
 const PLATFORM_MARKERS: readonly string[] = [
-  'Katkitchen control plane',
+  'UniversalPOS control plane',
   // Button labels, not prose: an action a Super Admin clicks does not get
   // reworded with the page around it.
   'Add sales person',

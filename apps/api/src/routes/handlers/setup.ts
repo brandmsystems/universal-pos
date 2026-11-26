@@ -9,7 +9,7 @@ import { importSetup } from '../../modules/restaurants/setupImport.js';
 import { hasFeature } from '../../modules/platform/entitlements.js';
 import { taxClassSplits } from '../../modules/tax/taxSplits.js';
 import { setBranchTaxSettings } from '../../modules/tax/branchTaxSettings.js';
-import type { SetupSheets } from '@katkitchen/shared';
+import type { SetupSheets } from '@universalpos/shared';
 import {
   issuePrintAgent, listPrintAgents, pollPrintAgent, requestTestPrint, revokePrintAgent,
 } from '../../modules/kitchen/printAgent.js';

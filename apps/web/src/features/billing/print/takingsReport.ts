@@ -1,4 +1,4 @@
-import { describePlace } from '@katkitchen/shared';
+import { describePlace } from '@universalpos/shared';
 import { formatMinor, minorFrom, unitsFromMinor } from '../../../lib/money.js';
 import { METHOD_LABEL } from '../billing/PaymentPanel.js';
 import { rollContent } from './receipt.js';

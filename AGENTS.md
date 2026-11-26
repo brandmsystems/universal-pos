@@ -11,7 +11,7 @@ older CLAUDE.md until 2026-11-18).
 |---|---|
 | `CLAUDE.md` | the current rules and decisions (the spec) |
 | `FRONTEND.md` | client rules: truth model, money, idempotency keys, printing |
-| `katkitchen.md` | what exists now, local credentials, printers, the change log |
+| `universalpos.md` | what exists now, local credentials, printers, the change log |
 | `README.md` | setup, ports, day-to-day commands |
 | `docs/decision-history.md` | the reasoning behind past decisions (archive; do not extend) |
 | `docs/gst-review.md` | GST samples and open questions -- **pending qualified review** |
@@ -52,5 +52,5 @@ pnpm build:web
 
 Plan before code on anything non-trivial and wait for approval; ask one specific
 question rather than guess; stay in scope; no placeholder implementations. Record a
-new decision in `CLAUDE.md` (and its long form in `katkitchen.md`'s change log), not
+new decision in `CLAUDE.md` (and its long form in `universalpos.md`'s change log), not
 here.

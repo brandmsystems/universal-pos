@@ -165,7 +165,7 @@ describe('Sales Person', () => {
   });
 });
 
-describe('KatKitchen customer (restaurant)', () => {
+describe('UniversalPOS customer (restaurant)', () => {
   it('a platform sign-in opens nothing at a restaurant address: that restaurant asks for its own sign-in', async () => {
     platformSession('super_admin');
     await render('admin', '/spice-garden-blr/menu');

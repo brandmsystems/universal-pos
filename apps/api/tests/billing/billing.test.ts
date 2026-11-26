@@ -34,7 +34,7 @@ let planId: string, planVersionId: string, smallPlanId: string, smallPlanVersion
 const KA = '29', MH = '27';
 const SUPPLIER: SupplierRegistration = {
   gstin: '29AABCU9603R1ZM', stateCode: KA,
-  legalName: 'Katkitchen Technologies Private Limited', address: 'Bengaluru',
+  legalName: 'UniversalPOS Technologies Private Limited', address: 'Bengaluru',
 };
 
 function profile(over: Partial<TenantTaxProfile> = {}): TenantTaxProfile {

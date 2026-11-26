@@ -10,7 +10,7 @@
 - **No DPAPI** (decision 9): the token is in `agent.json`, protected by file permissions.
 - Kitchen tickets only; bills keep the print dialog (decision 6). A crash between sending and reporting can print a ticket twice (open question 1). The agent remembers what it sent, so a report that was merely lost does not reprint.
 
-Setup: `apps/print-agent/README.md`. Behaviour: `katkitchen.md` 5.5.
+Setup: `apps/print-agent/README.md`. Behaviour: `universalpos.md` 5.5.
 
 ## The problem
 

@@ -1,4 +1,4 @@
-# Project: Multi-tenant Restaurant POS SaaS (KatKitchen)
+# Project: Multi-tenant Restaurant POS SaaS (UniversalPOS)
 
 **This file is the single source of truth for project rules**, for Claude Code and
 for every other agent (`AGENTS.md` points here). It states what is true and binding
@@ -11,7 +11,7 @@ Code comments and migrations older than 2026-11-18 that say "see CLAUDE.md" mean
 passage now in `docs/decision-history.md` (migrations are checksummed and cannot be
 re-worded).
 
-Companion documents: `FRONTEND.md` (client rules), `katkitchen.md` (current status,
+Companion documents: `FRONTEND.md` (client rules), `universalpos.md` (current status,
 local credentials, printers, change log), `README.md` (setup and commands),
 `docs/` (deploy, billing terms, print agent, scheduler, GST review).
 
@@ -432,7 +432,7 @@ is bounded by the domain).
   Installing grants nothing: first launch, PIN sign-in, an ended session, a revoked
   till and the plan's till limit are the POS's existing flows, unchanged.
 - The icon is the restaurant's logo only when it is a PNG or WebP, square, and at
-  least 192 px. Chrome refuses a JPEG icon. Otherwise it is KatKitchen's own
+  least 192 px. Chrome refuses a JPEG icon. Otherwise it is UniversalPOS's own
   `public/app-icons/`.
 - `public/pos-sw.js` **caches nothing**. It answers only page loads, and only to say
   there is no connection. The API never passes through it.
@@ -638,5 +638,5 @@ it as GST-approved until that review is recorded there.
   has a failing test proving it is blocked.
 - Prefer clean, minimal code. Comment only the non-obvious *why*.
 - When a decision is made, state the current rule here, briefly. Long reasoning and
-  the change record go in `katkitchen.md`'s change log; `docs/decision-history.md` is
+  the change record go in `universalpos.md`'s change log; `docs/decision-history.md` is
   an archive and is not extended.

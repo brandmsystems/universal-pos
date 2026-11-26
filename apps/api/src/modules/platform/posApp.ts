@@ -39,8 +39,8 @@ export interface PosAppManifest {
   readonly prefer_related_applications: false;
 }
 
-/** KatKitchen's own icons, in apps/web/public/app-icons (shipped in the web image; public/brand is not): the app icon when the restaurant has no usable logo. */
-export const KATKITCHEN_APP_ICONS: readonly ManifestIcon[] = [
+/** UniversalPOS's own icons, in apps/web/public/app-icons (shipped in the web image; public/brand is not): the app icon when the restaurant has no usable logo. */
+export const UNIVERSALPOS_APP_ICONS: readonly ManifestIcon[] = [
   { src: '/app-icons/pos-icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
   { src: '/app-icons/pos-icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
   { src: '/app-icons/pos-icon-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
@@ -56,7 +56,7 @@ const LOGO_MIN_PX = 192;
 /**
  * The image types Chrome installs an app with. A JPEG logo is refused
  * (`manifest-missing-suitable-icon`, seen in Chrome against a square 1254 px
- * JPEG), so a JPEG keeps the KatKitchen icon; the iPhone, which takes a JPEG,
+ * JPEG), so a JPEG keeps the UniversalPOS icon; the iPhone, which takes a JPEG,
  * still shows it (services/posApp.ts).
  */
 const ICON_TYPES: ReadonlySet<string> = new Set(['image/png', 'image/webp']);
@@ -81,7 +81,7 @@ export function buildPosAppManifest(
     id: pos,
     name: `${restaurant.name} POS`,
     short_name: restaurant.name,
-    description: `${restaurant.name}'s till on KatKitchen: orders, bills and payments.`,
+    description: `${restaurant.name}'s till on UniversalPOS: orders, bills and payments.`,
     lang: 'en',
     start_url: pos,
     scope: pos,
@@ -91,7 +91,7 @@ export function buildPosAppManifest(
     background_color: POS_BACKGROUND,
     icons: usable
       ? [{ src: logo.url, sizes: `${logo.width}x${logo.height}`, type: logo.contentType, purpose: 'any' }]
-      : KATKITCHEN_APP_ICONS,
+      : UNIVERSALPOS_APP_ICONS,
     prefer_related_applications: false,
   };
 }
@@ -107,7 +107,7 @@ export async function posAppManifest(
       const size = imageSize(stored.contentType, stored.bytes);
       if (size !== null) logo = { url: restaurant.logoUrl, contentType: stored.contentType, ...size };
     } catch (error) {
-      // Removed between the two reads: the KatKitchen icon, not a failed manifest.
+      // Removed between the two reads: the UniversalPOS icon, not a failed manifest.
       if (!(error instanceof LogoNotFoundError)) throw error;
     }
   }

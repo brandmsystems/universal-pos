@@ -366,7 +366,7 @@ describe('printing through the agent', () => {
   });
 
   it('the agent program itself, against this server and a printer on a socket: the ticket arrives and is reported', async () => {
-    const script = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../print-agent/katkitchen-print-agent.mjs');
+    const script = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../print-agent/universalpos-print-agent.mjs');
     const { createAgent, sendBytes } = await import(pathToFileURL(script).href) as {
       createAgent: (o: Record<string, unknown>) => { pollOnce(): Promise<unknown> };
       sendBytes: (h: string, p: number, b: Buffer, o: { connect: typeof net.createConnection }) => Promise<void>;

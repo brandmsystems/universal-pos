@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import type { ReactElement } from 'react';
-import { SETUP_SHEETS, type SetupSheetKey, type SetupSheets } from '@katkitchen/shared';
+import { SETUP_SHEETS, type SetupSheetKey, type SetupSheets } from '@universalpos/shared';
 import type { Api } from '../../../../services/api.js';
 import { Button } from '@/components/ui/button.js';
 import { refusalOf, withBranch } from './common.js';

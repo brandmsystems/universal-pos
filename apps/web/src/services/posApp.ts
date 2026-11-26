@@ -29,7 +29,7 @@ export function linkPosManifest(slug: string, doc: Document = document): void {
  * What an iPhone puts on its Home Screen: it reads these from the page when
  * Add to Home Screen is tapped (Safari does not use the manifest's name or
  * icons). The restaurant's logo is the icon only when it is square and big
- * enough; otherwise the KatKitchen icon from index.html stays.
+ * enough; otherwise the UniversalPOS icon from index.html stays.
  */
 export function setPosAppIdentity(
   restaurant: { readonly name: string; readonly logoUrl: string | null }, doc: Document = document,

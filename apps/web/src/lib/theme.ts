@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { THEME_COLOR_PATTERN, readableOn } from '@katkitchen/shared';
+import { THEME_COLOR_PATTERN, readableOn } from '@universalpos/shared';
 
 /**
  * A restaurant's own colour on its own screens: admin, POS and KDS.

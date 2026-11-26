@@ -36,7 +36,7 @@ const EXAMPLES: Record<string, Example> = {
     capture: "pm.collectionVariables.set('platformToken', b.accessToken); pm.collectionVariables.set('platformRefreshToken', b.refreshToken);",
   },
   'POST /api/auth/platform/password': {
-    body: { email: '{{platformEmail}}', currentPassword: '{{platformPassword}}', newPassword: 'a-new-password-2026' },
+    body: { email: '{{platformEmail}}', currentPassword: '{{platformPassword}}', newPassword: '{{newPlatformPassword}}' },
   },
   'POST /api/auth/:tenantSlug/login': {
     body: { email: '{{restaurantEmail}}', password: '{{restaurantPassword}}' },
@@ -44,7 +44,7 @@ const EXAMPLES: Record<string, Example> = {
     note: 'Restaurant Manager / admin sign-in. Saves {{tenantToken}} for every Restaurant, POS and KDS request.',
   },
   'POST /api/auth/:tenantSlug/pin': {
-    body: { employeeCode: 'W1', pin: '4816', deviceFingerprint: '{{deviceFingerprint}}' },
+    body: { employeeCode: 'W1', pin: '{{staffPin}}', deviceFingerprint: '{{deviceFingerprint}}' },
     capture: "pm.collectionVariables.set('tenantToken', b.accessToken); pm.collectionVariables.set('tenantRefreshToken', b.refreshToken);",
     note: 'Staff PIN sign-in on an ENROLLED tablet: deviceFingerprint must be the one used at enrolment.',
   },
@@ -99,10 +99,10 @@ const EXAMPLES: Record<string, Example> = {
   },
   'POST /plans/:id/status': { body: { status: 'retired' } },
   'POST /users': {
-    body: { fullName: 'Ravi Kumar', email: 'ravi@katkitchen.com', phone: '+91 98450 00000', password: 'ravi-sales-2026!', roleKey: 'sales' },
+    body: { fullName: 'Ravi Kumar', email: 'ravi@example.com', phone: '+91 98450 00000', password: '{{newUserPassword}}', roleKey: 'sales' },
     note: 'Create a Sales Person (roleKey sales) or other platform staff.',
   },
-  'PATCH /users/:id': { body: { fullName: 'Ravi Kumar', email: 'ravi@katkitchen.com', phone: '+91 98450 00000' } },
+  'PATCH /users/:id': { body: { fullName: 'Ravi Kumar', email: 'ravi@example.com', phone: '+91 98450 00000' } },
   'POST /users/:id/status': { body: { status: 'suspended' } },
   'POST /users/:id/password': { note: 'Resets a platform user\'s password; the new one is returned once.' },
   'POST /subscriptions/:id/renew': { body: { periods: 1 } },
@@ -277,11 +277,11 @@ const folders = Object.entries(PLANE_FOLDERS).map(([plane, folder]) => {
 
 const collection = {
   info: {
-    name: 'KatKitchen API',
+    name: 'UniversalPOS API',
     description: [
       'Every route the API serves, generated from the route table (`corepack pnpm postman`).',
       '',
-      '1. Import this collection and the "KatKitchen local" environment; select the environment.',
+      '1. Import this collection and the "UniversalPOS local" environment; select the environment.',
       '2. Run "1. Sign-in & public > POST /api/auth/platform/login" -- it saves {{platformToken}}.',
       '3. Run "GET /plans" (saves {{planVersionId}}), then "POST /tenants" to create a restaurant (saves {{tenantId}}, {{tenantSlug}}, {{subscriptionId}}, {{inviteToken}}). Change the slug and email in its body first -- each must be unique.',
       '4. Run "POST /api/auth/invite/accept" to set the manager password, then "POST /api/auth/:tenantSlug/login" -- it saves {{tenantToken}}.',
@@ -299,20 +299,23 @@ const collection = {
 };
 
 const environment = {
-  name: 'KatKitchen local',
+  name: 'UniversalPOS local',
   values: [
     { key: 'baseUrl', value: 'http://127.0.0.1:8080', enabled: true },
-    { key: 'platformEmail', value: 'superadmin@katkitchen.com', enabled: true },
-    { key: 'platformPassword', value: 'katkitchen@1', type: 'secret', enabled: true },
-    { key: 'restaurantEmail', value: 'owner@spicegarden.test', enabled: true },
-    { key: 'restaurantPassword', value: 'spice-garden-demo-2026', type: 'secret', enabled: true },
+    { key: 'platformEmail', value: '', enabled: true },
+    { key: 'platformPassword', value: '', type: 'secret', enabled: true },
+    { key: 'restaurantEmail', value: '', enabled: true },
+    { key: 'restaurantPassword', value: '', type: 'secret', enabled: true },
+    { key: 'newPlatformPassword', value: '', type: 'secret', enabled: true },
+    { key: 'newUserPassword', value: '', type: 'secret', enabled: true },
+    { key: 'staffPin', value: '', type: 'secret', enabled: true },
     { key: 'deviceFingerprint', value: 'postman-test-device', enabled: true },
   ],
 };
 
 await mkdir(OUT, { recursive: true });
-await writeFile(path.join(OUT, 'KatKitchen.postman_collection.json'), `${JSON.stringify(collection, null, 2)}\n`);
-await writeFile(path.join(OUT, 'KatKitchen-local.postman_environment.json'), `${JSON.stringify(environment, null, 2)}\n`);
+await writeFile(path.join(OUT, 'UniversalPOS.postman_collection.json'), `${JSON.stringify(collection, null, 2)}\n`);
+await writeFile(path.join(OUT, 'UniversalPOS-local.postman_environment.json'), `${JSON.stringify(environment, null, 2)}\n`);
 
 const counted = folders.reduce((n, f) => n + JSON.stringify(f).split('"request":').length - 1, 0);
 if (counted !== routes.length) {

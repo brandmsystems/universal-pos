@@ -162,7 +162,7 @@ export function Staff(props: { api: PlatformApi }): ReactElement {
                     Email
                   </Label>
                   <Input value={email} onChange={(e) => setEmail(e.target.value)}
-                    placeholder="name@katkitchen.local" className="h-10" />
+                    placeholder="name@universalpos.local" className="h-10" />
                 </div>
                 <div className="flex flex-1 flex-col gap-1.5" style={{ flexBasis: 220 }}>
                   <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">

@@ -1,4 +1,4 @@
-import { ENTITLEMENTS, planTermsFor, type PlanKey } from '@katkitchen/shared';
+import { ENTITLEMENTS, planTermsFor, type PlanKey } from '@universalpos/shared';
 import type {
   EntitlementCache, EntitlementDocument,
 } from '../../src/modules/platform/entitlements.js';

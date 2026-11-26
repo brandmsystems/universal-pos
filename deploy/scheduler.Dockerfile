@@ -16,8 +16,8 @@ COPY apps/api/package.json ./apps/api/
 COPY packages ./packages
 # The root's tsx runs the jobs (see deploy/crontab); the api's own dependencies
 # are what the jobs import.
-RUN pnpm install --frozen-lockfile --ignore-scripts --filter katkitchen --filter @katkitchen/api...
-RUN pnpm --filter @katkitchen/shared build
+RUN pnpm install --frozen-lockfile --ignore-scripts --filter universalpos --filter @universalpos/api...
+RUN pnpm --filter @universalpos/shared build
 
 COPY apps/api/tsconfig.json ./apps/api/
 COPY apps/api/src ./apps/api/src

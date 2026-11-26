@@ -51,7 +51,7 @@ async function settle(): Promise<void> {
 
 describe('the install link and the address an icon opens', () => {
   it('the link is the restaurant POS with the install query; the manifest is the restaurant own', () => {
-    expect(posInstallUrl('https://katkitchen.example', 'kfc')).toBe('https://katkitchen.example/kfc/pos?install=1');
+    expect(posInstallUrl('https://universalpos.example', 'kfc')).toBe('https://universalpos.example/kfc/pos?install=1');
     expect(posManifestPath('kfc')).toBe('/api/public/restaurants/kfc/manifest');
     expect(posManifestPath('green-bowl')).toBe('/api/public/restaurants/green-bowl/manifest');
   });

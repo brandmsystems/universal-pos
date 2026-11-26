@@ -1,4 +1,4 @@
-# Katkitchen
+# UniversalPOS
 
 A multi-tenant restaurant POS SaaS. What is sold today is the **Basic** plan
 (0077): one POS per restaurant -- new order → kitchen ticket → bill → payment,
@@ -9,7 +9,7 @@ on-premises print agent (`apps/print-agent`). The kitchen screen, the separate
 KOT and Billing apps, tablet setup codes and the stock screens were removed;
 their tables stay, because rows are records.
 
-Current status, recent work and the change log are in **`katkitchen.md`**.
+Current status, recent work and the change log are in **`universalpos.md`**.
 
 This file is the handover: how to get it running, what exists, and what does
 not. The reasoning behind the design lives in `CLAUDE.md` — read it before
@@ -54,8 +54,8 @@ verified and the one that gets installed drift apart silently.
 ## 2. First-time setup
 
 ```bash
-git clone https://github.com/brandmsystems/katkitchen.git
-cd katkitchen
+git clone https://github.com/brandmsystems/universal-pos.git
+cd universal-pos
 
 pnpm install
 
@@ -280,7 +280,7 @@ there are no database mocks in this project. Run them with `pnpm test`.
 |---|---|
 | **`CLAUDE.md`** | The current rules and decisions, for every agent. **This is the spec.** |
 | `docs/decision-history.md` | The reasoning behind them: CLAUDE.md as it stood to 2026-11-18, word for word, including superseded decisions. An archive; not extended |
-| **`katkitchen.md`** | What exists now: who uses what, local credentials, implementation status, printers and Windows printer setup, pending work, the change log |
+| **`universalpos.md`** | What exists now: who uses what, local credentials, implementation status, printers and Windows printer setup, pending work, the change log |
 | **`AGENTS.md`** | The entry point for Codex and other agents: points to CLAUDE.md and repeats only the rules an agent must not miss |
 | **`FRONTEND.md`** | The client rules: the `known`/`stale`/`unknown` truth model, provenance, money, optimistic rendering, idempotency keys, degradation vocabulary |
 | `docs/deploy-render.md` | Deploying to Render, including the one-time role bootstrap |
@@ -297,9 +297,9 @@ The build order in `CLAUDE.md` (phases 0 → 5) is built, plus the API surface,
 the three web apps and everything recorded since. The product has since been
 narrowed to the Basic plan (0077); what was removed and what stayed is recorded
 in CLAUDE.md ("What the product is today"), with the reasoning in
-`docs/decision-history.md` ("Basic only"), and in `katkitchen.md` §5.2c.
+`docs/decision-history.md` ("Basic only"), and in `universalpos.md` §5.2c.
 
-**`katkitchen.md` is the status document**: §5 for what is implemented, §6 for
+**`universalpos.md` is the status document**: §5 for what is implemented, §6 for
 pending tasks and known gaps, §8 for the change log. It is kept current; this
 file is not a second copy of it.
 

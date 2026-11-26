@@ -1,3 +1,3 @@
-import config from '@katkitchen/eslint-config/react';
+import config from '@universalpos/eslint-config/react';
 
 export default config;

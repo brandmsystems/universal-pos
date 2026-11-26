@@ -13,7 +13,7 @@
  *   pnpm seed:demo
  * ###########################################################################
  */
-import { randomUUID } from 'node:crypto';
+import { randomBytes, randomInt, randomUUID } from 'node:crypto';
 import pg from 'pg';
 import { provisionTenant } from '../apps/api/src/modules/platform/provisioning.js';
 import { seedPlatformAuthz } from '../apps/api/src/modules/authz/seed.js';
@@ -25,37 +25,52 @@ import { hashPlatformPassword } from '../apps/api/src/modules/auth/platformAuth.
 
 const SLUG = process.env['DEMO_SLUG'] ?? 'spicegarden';
 const EMAIL = process.env['DEMO_EMAIL'] ?? 'owner@spicegarden.test';
-const PASSWORD = process.env['DEMO_PASSWORD'] ?? 'spice-garden-demo-2026';
-const PIN = process.env['DEMO_PIN'] ?? '4816';
+
+// No secret has a default in this repository. A value not supplied through the
+// environment is generated here and shown once, at the end of the run; it is
+// stored only as a hash. Re-running against a tenant that already has the
+// credential does not change it, and then prints nothing for it.
+const generatedPassword = (): string => randomBytes(15).toString('base64url');
+function generatedPin(): string {
+  for (;;) {
+    const pin = String(randomInt(0, 10_000)).padStart(4, '0');
+    if (!checkPinPolicy(pin, {})) return pin;
+  }
+}
+const PASSWORD = process.env['DEMO_PASSWORD'] ?? generatedPassword();
+const PIN = process.env['DEMO_PIN'] ?? generatedPin();
+const created: { password: boolean; pin: boolean } = { password: false, pin: false };
 
 // ###########################################################################
-// THE LOCAL SUPER ADMIN, WITH A PASSWORD EVERY DEVELOPER KNOWS.
+// THE LOCAL SUPER ADMIN. Its password comes from DEV_SUPER_ADMIN_PASSWORD, or is
+// generated and printed once; nothing is written into this repository.
 //
-// That is exactly why it lives in this script and nowhere else: a default
-// credential in a migration would be in every production database, signed in
-// to by anyone who has read this repository. This script is the local demo;
-// it refuses outright when NODE_ENV says production, and in production the
-// first Super Admin is `seed-platform-user.mts` with a password someone chose.
+// A default credential in a migration would be in every production database,
+// so it lives in this script only, which refuses outright when NODE_ENV says
+// production. In production the first Super Admin is `seed-platform-user.mts`
+// with a password someone chose.
 // ###########################################################################
-const DEV_SUPER_ADMIN = { email: 'superadmin@katkitchen.com', password: 'katkitchen@1' };
+const DEV_SUPER_ADMIN_EMAIL = process.env['DEV_SUPER_ADMIN_EMAIL'] ?? 'superadmin@universalpos.example';
 
 async function ensureDevSuperAdmin(owner: pg.Client): Promise<void> {
   await seedPlatformAuthz(owner);
-  const existing = await owner.query(
-    `SELECT 1 FROM platform.platform_user WHERE email = $1`, [DEV_SUPER_ADMIN.email]);
-  if (existing.rowCount !== 0) return;
   const roleId = (await owner.query<{ id: string }>(
     `SELECT id FROM platform.platform_role WHERE key = 'super_admin'`)).rows[0]!.id;
+  const existing = await owner.query(
+    `SELECT 1 FROM platform.platform_user WHERE platform_role_id = $1 AND status = 'active'`, [roleId]);
+  if (existing.rowCount !== 0) return;
+  const password = process.env['DEV_SUPER_ADMIN_PASSWORD'] ?? generatedPassword();
   await owner.query(
     `INSERT INTO platform.platform_user (id, email, password_hash, full_name, platform_role_id)
      VALUES ($1, $2, $3, 'Super Admin', $4)`,
-    [randomUUID(), DEV_SUPER_ADMIN.email, await hashPlatformPassword(DEV_SUPER_ADMIN.password), roleId]);
-  console.log(`created local super admin ${DEV_SUPER_ADMIN.email}`);
+    [randomUUID(), DEV_SUPER_ADMIN_EMAIL, await hashPlatformPassword(password), roleId]);
+  console.log(`created local super admin ${DEV_SUPER_ADMIN_EMAIL}`);
+  if (!process.env['DEV_SUPER_ADMIN_PASSWORD']) console.log(`  super admin password (shown once) ${password}`);
 }
 
 async function main(): Promise<void> {
   if (process.env['NODE_ENV'] === 'production') {
-    throw new Error('seed-demo creates a super admin with a published password and must never run in production');
+    throw new Error('seed-demo creates a development super admin and must never run in production');
   }
   const owner = new pg.Client({ connectionString: env.ownerDatabaseUrl() });
   await owner.connect();
@@ -166,6 +181,7 @@ async function main(): Promise<void> {
           `INSERT INTO app.credential (id, tenant_id, user_id, type, secret_hash)
            VALUES ($1, $2, $3, $4, $5)`,
           [randomUUID(), tenantId, userId, type, await hashSecret(secret)]);
+        created[type] = true;
       }
     }
 
@@ -319,10 +335,10 @@ async function main(): Promise<void> {
     console.log('  restaurant     ', SLUG);
     console.log('  sign in at     ', `POST /api/auth/${SLUG}/login`);
     console.log('  email          ', EMAIL);
-    console.log('  password       ', PASSWORD);
+    console.log('  password       ', created.password ? PASSWORD : '(already set; not shown again)');
     console.log('  staff code     ', process.env['DEMO_STAFF_CODE'] ?? 'W1',
       '(what the TILL asks for)');
-    console.log('  PIN            ', PIN, `(user ${userId})`);
+    console.log('  PIN            ', created.pin ? PIN : '(already set; not shown again)', `(user ${userId})`);
     console.log('  branch         ', branchId);
     // No setup code (Basic only, 0077): the manager signs in once on the
     // computer that will be the till, and it becomes one.

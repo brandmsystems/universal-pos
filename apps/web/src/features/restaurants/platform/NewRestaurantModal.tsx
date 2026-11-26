@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ADDRESS_MIN_LENGTH, normaliseThemeColor, slugProblem, slugify } from '@katkitchen/shared';
+import { ADDRESS_MIN_LENGTH, normaliseThemeColor, slugProblem, slugify } from '@universalpos/shared';
 import type { ReactElement } from 'react';
 import type { PlatformApi } from '../../../services/platformApi.js';
 import { Button } from '@/components/ui/button.js';

@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import {
   ADDRESS_MAX_LENGTH, ADDRESS_MIN_LENGTH, LOGO_MAX_BYTES, LOGO_TYPES, normaliseThemeColor,
   type LogoType,
-} from '@katkitchen/shared';
+} from '@universalpos/shared';
 
 /**
  * Validation for a restaurant's address, theme colour and logo. Pure: no SQL,

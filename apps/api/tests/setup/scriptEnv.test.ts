@@ -99,8 +99,8 @@ describe('the scripts a human runs can find their environment', () => {
       const parsed = JSON.parse(await readFile(manifest.file, 'utf8')) as { scripts: Record<string, string> };
       const base = path.dirname(manifest.file);
       for (const [name, command] of Object.entries(parsed.scripts)) {
-        // `pnpm --filter @katkitchen/<pkg> exec ...` runs inside that package.
-        const filtered = /--filter\s+@katkitchen\/(\w+)/.exec(command)?.[1];
+        // `pnpm --filter @universalpos/<pkg> exec ...` runs inside that package.
+        const filtered = /--filter\s+@universalpos\/(\w+)/.exec(command)?.[1];
         const cwd = filtered !== undefined ? path.join(ROOT, 'apps', filtered) : base;
         for (const match of command.matchAll(FILE_ARG)) {
           const file = match[1]!;

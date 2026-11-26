@@ -1,4 +1,4 @@
-import { PLAN_LIMITS, type PlanLimit } from '@katkitchen/shared';
+import { PLAN_LIMITS, type PlanLimit } from '@universalpos/shared';
 import type { TenantContext } from '../../core/database/tenantContext.js';
 
 /**

@@ -26,7 +26,7 @@ import { randomUUID } from 'node:crypto';
 import pg from 'pg';
 import argon2 from 'argon2';
 
-const EMAIL = process.env['PLATFORM_EMAIL'] ?? 'admin@katkitchen.local';
+const EMAIL = process.env['PLATFORM_EMAIL'] ?? 'admin@universalpos.local';
 const PASSWORD = process.env['PLATFORM_PASSWORD'];
 const NAME = process.env['PLATFORM_NAME'] ?? 'Platform Administrator';
 const ROLE = process.env['PLATFORM_ROLE'] ?? 'super_admin';

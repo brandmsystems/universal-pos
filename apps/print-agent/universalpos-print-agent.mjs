@@ -1,17 +1,17 @@
-// KatKitchen print agent.
+// UniversalPOS print agent.
 //
 // Runs on a computer in the restaurant and prints kitchen tickets to the Wi-Fi
 // and Ethernet printers on the restaurant's network, which the hosted
-// KatKitchen server cannot reach. It connects OUT to the server and opens no
+// UniversalPOS server cannot reach. It connects OUT to the server and opens no
 // port of its own.
 //
-//   node katkitchen-print-agent.mjs            run (poll, print, report)
-//   node katkitchen-print-agent.mjs --check    one poll: show the printers and whether each answers, then exit
-//   node katkitchen-print-agent.mjs --version
+//   node universalpos-print-agent.mjs            run (poll, print, report)
+//   node universalpos-print-agent.mjs --check    one poll: show the printers and whether each answers, then exit
+//   node universalpos-print-agent.mjs --version
 //
 // Configuration, from the environment or from agent.json beside this file:
-//   KATKITCHEN_SERVER       the restaurant's KatKitchen address, e.g. https://katkitchen.example.com
-//   KATKITCHEN_AGENT_TOKEN  the token shown once under Setup -> Printers -> Print agent
+//   UNIVERSALPOS_SERVER       the restaurant's UniversalPOS address, e.g. https://universalpos.example.com
+//   UNIVERSALPOS_AGENT_TOKEN  the token shown once under Setup -> Printers -> Print agent
 //
 // Node 22 or newer. No dependencies.
 
@@ -152,10 +152,10 @@ function config() {
   try {
     file = JSON.parse(readFileSync(join(dirname(fileURLToPath(import.meta.url)), 'agent.json'), 'utf8'));
   } catch { /* no file: the environment only */ }
-  const server = process.env.KATKITCHEN_SERVER ?? file.server;
-  const token = process.env.KATKITCHEN_AGENT_TOKEN ?? file.token;
+  const server = process.env.UNIVERSALPOS_SERVER ?? file.server;
+  const token = process.env.UNIVERSALPOS_AGENT_TOKEN ?? file.token;
   if (!server || !token) {
-    console.error('Set KATKITCHEN_SERVER and KATKITCHEN_AGENT_TOKEN, or put {"server": "...", "token": "..."} in agent.json beside this file.');
+    console.error('Set UNIVERSALPOS_SERVER and UNIVERSALPOS_AGENT_TOKEN, or put {"server": "...", "token": "..."} in agent.json beside this file.');
     process.exit(2);
   }
   return { server, token };
@@ -182,7 +182,7 @@ async function main(args) {
     return;
   }
 
-  console.log(`KatKitchen print agent ${VERSION}: polling ${server}`);
+  console.log(`UniversalPOS print agent ${VERSION}: polling ${server}`);
   const agent = createAgent({ server, token });
   let backoff = 1000;
   for (;;) {

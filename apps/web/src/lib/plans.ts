@@ -1,4 +1,4 @@
-import { PLAN_KEYS } from '@katkitchen/shared';
+import { PLAN_KEYS } from '@universalpos/shared';
 
 /**
  * The console sells exactly two plans: Basic and Pro, in that order.

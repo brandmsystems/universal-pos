@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 import type pg from 'pg';
 import {
   ENTITLEMENTS, PLAN_FEATURE_KEYS, PLAN_LIMITS, planTermsFor, type PlanKey,
-} from '@katkitchen/shared';
+} from '@universalpos/shared';
 
 /**
  * The plan catalogue that is SOLD: Basic, Standard and Pro.

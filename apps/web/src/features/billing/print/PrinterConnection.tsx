@@ -89,7 +89,7 @@ export function PrinterConnection(props: { printer?: ReceiptPrinter; compact?: b
 
       {state.kind !== 'unsupported' && (connection === 'network' || connection === 'cloud') && (
         <p className="m-0 text-pretty text-muted-foreground">
-          Nothing to connect on this till. Kitchen tickets go to that printer from the KatKitchen server, which reaches it
+          Nothing to connect on this till. Kitchen tickets go to that printer from the UniversalPOS server, which reaches it
           only when the server is on the restaurant&apos;s own network: the hosted site cannot reach a printer at a
           192.168… address yet. Bills print through this computer&apos;s print dialog.
         </p>

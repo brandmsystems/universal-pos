@@ -67,7 +67,7 @@ export function SignIn(props: {
       >
         <div className="flex flex-col gap-1.5">
           <span className="text-xl font-bold tracking-tight text-foreground">
-            Katkitchen control plane
+            UniversalPOS control plane
           </span>
           <span className="text-sm leading-relaxed text-muted-foreground">
             Staff sign-in. This is not a restaurant&rsquo;s admin — everything

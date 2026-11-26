@@ -1,5 +1,5 @@
 import type pg from 'pg';
-import { localeForCurrency } from '@katkitchen/shared';
+import { localeForCurrency } from '@universalpos/shared';
 import { logoUrl } from './branding.js';
 import type { BillRounding } from '../tax/jurisdictions.js';
 import { jurisdiction } from '../tax/registry.js';

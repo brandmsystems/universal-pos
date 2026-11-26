@@ -22,7 +22,7 @@ import { authenticatePassword } from '../../src/modules/auth/passwordAuth.js';
 import { authenticatePlatformUser, changePlatformPassword } from '../../src/modules/auth/platformAuth.js';
 import { EXPIRING_WITHIN_DAYS } from '../../src/modules/platform/staff.js';
 import { adoptTenantContext } from '../../src/core/database/unitOfWork.js';
-import { ENTITLEMENTS, planTermsFor } from '@katkitchen/shared';
+import { ENTITLEMENTS, planTermsFor } from '@universalpos/shared';
 
 /**
  * Restaurant management on the control plane: the Super Admin's hand on a
@@ -871,8 +871,8 @@ describe('the Sales Person is named from their account, everywhere', () => {
   it('has ONE "expiring soon" rule: the console imports it rather than declaring a copy', async () => {
     const { readFileSync } = await import('node:fs');
     const client = readFileSync('../web/src/features/restaurants/platform/subscription.ts', 'utf8');
-    expect(client, 'the console must take the rule from @katkitchen/shared')
-      .toMatch(/import \{ EXPIRING_WITHIN_DAYS \} from '@katkitchen\/shared';/);
+    expect(client, 'the console must take the rule from @universalpos/shared')
+      .toMatch(/import \{ EXPIRING_WITHIN_DAYS \} from '@universalpos\/shared';/);
     expect(client, 'a second copy of the rule has appeared in the console')
       .not.toMatch(/const EXPIRING_WITHIN_DAYS\s*=/);
     expect(EXPIRING_WITHIN_DAYS).toBe(7);

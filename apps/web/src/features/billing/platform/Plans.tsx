@@ -3,7 +3,7 @@ import type { ReactElement } from 'react';
 import {
   PLAN_FEATURES, REPORT_TIERS, entitlementsFromTerms, planTermsFor,
   type PlanEntitlements, type PlanFeature, type ReportTier,
-} from '@katkitchen/shared';
+} from '@universalpos/shared';
 import { PlatformApiError, type PlatformApi } from '../../../services/platformApi.js';
 import { known, stale, unknown, type Remote } from '../../../lib/remote.js';
 import { cn } from 'cn';

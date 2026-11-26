@@ -1,4 +1,4 @@
-import { SETUP_SHEETS, type SetupRow, type SetupSheets } from '@katkitchen/shared';
+import { SETUP_SHEETS, type SetupRow, type SetupSheets } from '@universalpos/shared';
 
 /**
  * The setup workbook, both ways, from the ONE sheet definition the server also

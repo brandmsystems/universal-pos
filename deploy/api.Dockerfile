@@ -17,11 +17,11 @@ COPY apps/api/package.json ./apps/api/
 COPY packages ./packages
 # Scripts are skipped: the root postinstall compiles packages/shared with the
 # root's tsc, which a filtered install does not provide. It is built below.
-RUN pnpm install --frozen-lockfile --ignore-scripts --filter @katkitchen/api...
-RUN pnpm --filter @katkitchen/shared build
+RUN pnpm install --frozen-lockfile --ignore-scripts --filter @universalpos/api...
+RUN pnpm --filter @universalpos/shared build
 COPY apps/api/tsconfig.json apps/api/tsconfig.build.json ./apps/api/
 COPY apps/api/src ./apps/api/src
-RUN pnpm --filter @katkitchen/api build
+RUN pnpm --filter @universalpos/api build
 
 FROM node:22-alpine AS runtime
 WORKDIR /app
@@ -31,7 +31,7 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/api/package.json ./apps/api/
 COPY packages/shared/package.json ./packages/shared/
 COPY packages/tsconfig/package.json ./packages/tsconfig/
-RUN pnpm install --frozen-lockfile --prod --ignore-scripts --filter @katkitchen/api...
+RUN pnpm install --frozen-lockfile --prod --ignore-scripts --filter @universalpos/api...
 COPY --from=build /app/packages/shared/dist ./packages/shared/dist
 COPY --from=build /app/apps/api/dist ./apps/api/dist
 # Migrations are NOT run here by default. They are a deliberate act against a

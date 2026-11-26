@@ -29,7 +29,7 @@ importers:
 
   apps/api:
     dependencies:
-      '@katkitchen/shared':
+      '@universalpos/shared':
         specifier: workspace:*
         version: link:../../packages/shared
       argon2:
@@ -45,18 +45,18 @@ importers:
         specifier: ^8.13.1
         version: 8.23.0
     devDependencies:
-      '@katkitchen/eslint-config':
-        specifier: workspace:*
-        version: link:../../packages/eslint-config
-      '@katkitchen/tsconfig':
-        specifier: workspace:*
-        version: link:../../packages/tsconfig
       '@types/node':
         specifier: ^22.10.5
         version: 22.20.1
       '@types/pg':
         specifier: ^8.11.10
         version: 8.23.1
+      '@universalpos/eslint-config':
+        specifier: workspace:*
+        version: link:../../packages/eslint-config
+      '@universalpos/tsconfig':
+        specifier: workspace:*
+        version: link:../../packages/tsconfig
       eslint:
         specifier: ^9.20.0
         version: 9.39.5(jiti@2.7.0)
@@ -72,12 +72,12 @@ importers:
 
   apps/web:
     dependencies:
-      '@katkitchen/shared':
-        specifier: workspace:*
-        version: link:../../packages/shared
       '@tailwindcss/vite':
         specifier: ^4.3.3
         version: 4.3.3(vite@6.4.3(@types/node@22.20.1)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.12))
+      '@universalpos/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -109,12 +109,6 @@ importers:
         specifier: https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz
         version: https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz
     devDependencies:
-      '@katkitchen/eslint-config':
-        specifier: workspace:*
-        version: link:../../packages/eslint-config
-      '@katkitchen/tsconfig':
-        specifier: workspace:*
-        version: link:../../packages/tsconfig
       '@types/qrcode':
         specifier: 1.5.5
         version: 1.5.5
@@ -124,6 +118,12 @@ importers:
       '@types/react-dom':
         specifier: ^19.0.0
         version: 19.2.5(@types/react@19.2.18)
+      '@universalpos/eslint-config':
+        specifier: workspace:*
+        version: link:../../packages/eslint-config
+      '@universalpos/tsconfig':
+        specifier: workspace:*
+        version: link:../../packages/tsconfig
       '@vitejs/plugin-react':
         specifier: ^4.3.4
         version: 4.7.0(vite@6.4.3(@types/node@22.20.1)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.12))
@@ -166,7 +166,7 @@ importers:
 
   packages/shared:
     devDependencies:
-      '@katkitchen/tsconfig':
+      '@universalpos/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
       typescript:

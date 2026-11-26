@@ -722,7 +722,7 @@ offering what would be refused.
 - **iPhone.** It ignores the manifest's name and icons, so `setPosAppIdentity` sets
   `apple-mobile-web-app-title` ("{name} POS"). It sets `apple-touch-icon` to the logo
   only when the logo is square and at least 180 px; otherwise it uses `index.html`'s
-  KatKitchen icon.
+  UniversalPOS icon.
 - **Install help.** The POS shows its install help (`InstallHelp`, with one-tap
   install where the browser offers it) only when opened with `?install=1` and not
   already running as the installed app. Closing it removes the query.

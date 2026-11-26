@@ -60,14 +60,14 @@ the repository root:
 
 ```powershell
 $env:ADMIN_DATABASE_URL = '<External Database URL>?sslmode=require'
-$env:KATKITCHEN_OWNER_PASSWORD = '<OWNER>'
-$env:KATKITCHEN_APP_PASSWORD = '<APP>'
-$env:KATKITCHEN_READONLY_PASSWORD = '<READONLY>'
+$env:UNIVERSALPOS_OWNER_PASSWORD = '<OWNER>'
+$env:UNIVERSALPOS_APP_PASSWORD = '<APP>'
+$env:UNIVERSALPOS_READONLY_PASSWORD = '<READONLY>'
 pnpm db:bootstrap:managed
 ```
 
 Render may add a suffix to the database name (`katkitchen_fc08`); the name is at
-the end of the URL. If it did, also set `$env:KATKITCHEN_DATABASE_NAME =
+the end of the URL. If it did, also set `$env:UNIVERSALPOS_DATABASE_NAME =
 'katkitchen_fc08'` before running this. The script refuses any database other than
 the one named, so a URL pointing at the wrong database still stops here.
 

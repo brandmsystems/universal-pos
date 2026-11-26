@@ -1,5 +1,5 @@
 {
-  "extends": "@katkitchen/tsconfig/react.json",
+  "extends": "@universalpos/tsconfig/react.json",
   "compilerOptions": {
     "types": ["vite/client"],
     "baseUrl": ".",

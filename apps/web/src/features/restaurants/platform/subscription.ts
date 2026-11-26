@@ -1,4 +1,4 @@
-import { EXPIRING_WITHIN_DAYS } from '@katkitchen/shared';
+import { EXPIRING_WITHIN_DAYS } from '@universalpos/shared';
 import type { Plan, PlanOption, TenantSummary } from '../../../types/restaurant.js';
 import { formatMoney } from '../../../components/platform/kit.js';
 

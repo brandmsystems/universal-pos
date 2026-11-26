@@ -10,12 +10,12 @@ COPY scripts/check-lockfiles.mjs ./scripts/
 RUN node scripts/check-lockfiles.mjs
 COPY apps/web/package.json ./apps/web/
 COPY packages ./packages
-RUN pnpm install --frozen-lockfile --ignore-scripts --filter @katkitchen/web...
-RUN pnpm --filter @katkitchen/shared build
+RUN pnpm install --frozen-lockfile --ignore-scripts --filter @universalpos/web...
+RUN pnpm --filter @universalpos/shared build
 COPY apps/web ./apps/web
 # The admin's Printers page offers the print agent program as a download.
-COPY apps/print-agent/katkitchen-print-agent.mjs ./apps/print-agent/
-RUN pnpm --filter @katkitchen/web build
+COPY apps/print-agent/universalpos-print-agent.mjs ./apps/print-agent/
+RUN pnpm --filter @universalpos/web build
 
 FROM nginx:1.27-alpine AS runtime
 # A template: the entrypoint substitutes the environment variables it names

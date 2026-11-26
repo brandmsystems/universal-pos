@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { ReactElement } from 'react';
-import { RESERVED_SLUGS, SLUG_PATTERN } from '@katkitchen/shared';
+import { RESERVED_SLUGS, SLUG_PATTERN } from '@universalpos/shared';
 import {
   RestaurantLoading, RestaurantNotFound, RestaurantUnavailable, RestaurantUnreachable,
   useRestaurantBySlug, type PublicRestaurant,
@@ -32,7 +32,7 @@ export function RestaurantGate(props: {
   return props.children(lookup.restaurant);
 }
 
-/** The restaurant's logo and name, or the KatKitchen mark when it has no logo. */
+/** The restaurant's logo and name, or the UniversalPOS mark when it has no logo. */
 export function RestaurantMark(props: { restaurant: PublicRestaurant; size?: 'md' | 'lg' }): ReactElement {
   const box = props.size === 'lg' ? 'size-16' : 'size-10';
   return props.restaurant.logoUrl !== null

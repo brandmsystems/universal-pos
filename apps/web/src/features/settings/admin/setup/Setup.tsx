@@ -9,7 +9,7 @@ import { ItemsStep } from './ItemsStep.js';
 import { ExcelImport } from './ExcelImport.js';
 import { keyFrom, selectClass, useList, withBranch } from './common.js';
 import { Loading, Skeleton } from '@/components/ui/skeleton.js';
-import { PRINTER_DEFAULT_PORT, printerAddress, printerAddressProblem, printerPortProblem } from '@katkitchen/shared';
+import { PRINTER_DEFAULT_PORT, printerAddress, printerAddressProblem, printerPortProblem } from '@universalpos/shared';
 import { PAPER } from '../../../billing/print/receipt.js';
 
 /**

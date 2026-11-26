@@ -14,7 +14,7 @@
  * Idempotent per restaurant: a slug that already exists is skipped whole.
  * Development only; refuses to run with NODE_ENV=production.
  */
-import { randomUUID } from 'node:crypto';
+import { randomBytes, randomInt, randomUUID } from 'node:crypto';
 import pg from 'pg';
 import { provisionTenant } from '../apps/api/src/modules/platform/provisioning.js';
 import { ensureStandardPlans } from '../apps/api/src/modules/platform/planCatalogue.js';
@@ -25,16 +25,27 @@ import { env } from '../apps/api/src/config/env.js';
 
 type PlanKey = 'basic' | 'pro';
 
-const STAFF_PASSWORD = 'katkitchen-demo-2026';
-const SALES_PASSWORD = 'sales-demo-2026';
-const OWNER_PIN = '3718';
+// No secret has a default in this repository: each is generated per run, stored
+// only as a hash, and printed once at the end. A restaurant skipped because it
+// already exists keeps the secrets it was given when it was created.
+const generated = (): string => randomBytes(15).toString('base64url');
+const usedPins = new Set<string>();
+function generatedPin(): string {
+  for (;;) {
+    const pin = String(randomInt(0, 10_000)).padStart(4, '0');
+    if (!usedPins.has(pin) && !checkPinPolicy(pin, {})) { usedPins.add(pin); return pin; }
+  }
+}
+const STAFF_PASSWORD = generated();
+const SALES_PASSWORD = generated();
+const OWNER_PIN = generatedPin();
 
 const SALES_PERSONS = [
-  { email: 'ravi@katkitchen.com', fullName: 'Ravi Kumar', phone: '+91 98450 00001' },
-  { email: 'anita@katkitchen.com', fullName: 'Anita Sharma', phone: '+91 98450 00002' },
-  { email: 'vikram@katkitchen.com', fullName: 'Vikram Singh', phone: '+91 98450 00003' },
-  { email: 'deepa@katkitchen.com', fullName: 'Deepa Reddy', phone: '+91 98450 00004' },
-  { email: 'farhan@katkitchen.com', fullName: 'Farhan Ali', phone: '+91 98450 00005' },
+  { email: 'ravi@universalpos.example', fullName: 'Ravi Kumar', phone: '+91 98450 00001' },
+  { email: 'anita@universalpos.example', fullName: 'Anita Sharma', phone: '+91 98450 00002' },
+  { email: 'vikram@universalpos.example', fullName: 'Vikram Singh', phone: '+91 98450 00003' },
+  { email: 'deepa@universalpos.example', fullName: 'Deepa Reddy', phone: '+91 98450 00004' },
+  { email: 'farhan@universalpos.example', fullName: 'Farhan Ali', phone: '+91 98450 00005' },
 ] as const;
 
 const RESTAURANTS: ReadonlyArray<{
@@ -80,12 +91,12 @@ const STAFF: ReadonlyArray<readonly [name: string, role: string, code: string, l
   ['Meera Iyer', 'owner', 'OWN1', 'password', '', false],
   ['Arjun Rao', 'branch_admin', 'ADM1', 'password', '', false],
   ['Kavya Nair', 'manager', 'MGR1', 'password', '', false],
-  ['Rahul Verma', 'cashier', 'C1', 'pin', '4816', false],
-  ['Sneha Patil', 'cashier', 'C2', 'pin', '5927', true],
-  ['Imran Khan', 'waiter', 'W1', 'pin', '6038', true],
-  ['Priya Das', 'waiter', 'W2', 'pin', '7149', true],
-  ['Suresh Kumar', 'kds', 'K1', 'pin', '8250', true],
-  ['Lakshmi Menon', 'kds', 'K2', 'pin', '9361', true],
+  ['Rahul Verma', 'cashier', 'C1', 'pin', generatedPin(), false],
+  ['Sneha Patil', 'cashier', 'C2', 'pin', generatedPin(), true],
+  ['Imran Khan', 'waiter', 'W1', 'pin', generatedPin(), true],
+  ['Priya Das', 'waiter', 'W2', 'pin', generatedPin(), true],
+  ['Suresh Kumar', 'kds', 'K1', 'pin', generatedPin(), true],
+  ['Lakshmi Menon', 'kds', 'K2', 'pin', generatedPin(), true],
 ];
 
 const phone = (prefix: string, seq: number, i: number): string =>
@@ -269,8 +280,8 @@ async function main(): Promise<void> {
     console.log('  Restaurant URL   http://127.0.0.1:9180/<slug>  (admin)');
     console.log('                   /<slug>/kot  /<slug>/kds  /<slug>/billing  (tablets)');
     console.log(`  Password logins  manager@ | adm1@ | mgr1@ <slug>.example / ${STAFF_PASSWORD}`);
-    console.log(`  PIN logins       owner OWN1 ${OWNER_PIN}; Billing C1 4816 (Pro also C2 5927);`);
-    console.log('                   Pro: KOT W1 6038, W2 7149; kitchen K1 8250, K2 9361');
+    console.log(`  PIN logins       owner OWN1 ${OWNER_PIN}`);
+    console.log('                   staff PINs are generated per person and are not printed; reset one from the console');
     console.log('-'.repeat(70));
   } finally {
     await pool.end().catch(() => undefined);

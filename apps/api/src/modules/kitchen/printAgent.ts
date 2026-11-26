@@ -1,6 +1,6 @@
 import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import type pg from 'pg';
-import { parsePrinterAddress } from '@katkitchen/shared';
+import { parsePrinterAddress } from '@universalpos/shared';
 import type { TenantContext } from '../../core/database/tenantContext.js';
 import { AUTHENTICABLE_TENANT_STATUSES } from '../auth/preAuthTenant.js';
 import { escPos } from './printTransport.js';
@@ -169,7 +169,7 @@ function slip(printerName: string, agentName: string, at: Date): string {
     printerName.slice(0, 32),
     at.toISOString().slice(0, 16).replace('T', ' ') + ' UTC',
     '-'.repeat(32),
-    'KatKitchen print agent:',
+    'UniversalPOS print agent:',
     agentName.slice(0, 32),
     'No order was made.',
   ].join('\n');

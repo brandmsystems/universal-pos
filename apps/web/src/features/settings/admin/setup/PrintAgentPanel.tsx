@@ -4,7 +4,7 @@ import type { Api } from '../../../../services/api.js';
 import { Input } from '@/components/ui/input.js';
 import { RefusalBanner } from '../../../../components/admin/banner.js';
 import { refusalOf, withBranch } from './common.js';
-import agentFileUrl from '../../../../../../print-agent/katkitchen-print-agent.mjs?url';
+import agentFileUrl from '../../../../../../print-agent/universalpos-print-agent.mjs?url';
 
 /**
  * The print agent: what prints kitchen tickets on Wi-Fi and Ethernet printers,
@@ -110,7 +110,7 @@ export function PrintAgentPanel(props: { api: Api; branchId: string | null }): R
         <h3 id="print-agent" className="m-0 text-base font-semibold">Print agent for Wi-Fi and Ethernet printers</h3>
         <p className="m-0 mt-1 text-sm text-muted-foreground text-pretty">
           Kitchen tickets for a Wi-Fi or Ethernet printer are printed by a small program on a computer in the restaurant,
-          on the same network as the printers. It connects out to KatKitchen; nothing is opened to the internet. USB and
+          on the same network as the printers. It connects out to UniversalPOS; nothing is opened to the internet. USB and
           Bluetooth printers do not need it: they connect on the till.
         </p>
       </div>
@@ -142,7 +142,7 @@ export function PrintAgentPanel(props: { api: Api; branchId: string | null }): R
           <p className="m-0 font-semibold">“{issued.name}” is set up. Copy this now: it is shown only once.</p>
           <ol className="m-0 flex flex-col gap-1 pl-5">
             <li>On the restaurant computer, install Node.js 22 or newer (nodejs.org).</li>
-            <li>Make a folder, for example <code>C:\KatKitchen</code>, and save the <a href={agentFileUrl} download="katkitchen-print-agent.mjs" className="font-semibold text-primary underline">print agent file</a> in it.</li>
+            <li>Make a folder, for example <code>C:\UniversalPOS</code>, and save the <a href={agentFileUrl} download="universalpos-print-agent.mjs" className="font-semibold text-primary underline">print agent file</a> in it.</li>
             <li>In the same folder, save this as <code>agent.json</code>:</li>
           </ol>
           <pre className="m-0 overflow-x-auto rounded-md bg-card p-2 text-xs">{config}</pre>
@@ -151,8 +151,8 @@ export function PrintAgentPanel(props: { api: Api; branchId: string | null }): R
             <button type="button" className={BUTTON} onClick={() => setIssued(null)}>Done</button>
           </div>
           <p className="m-0 text-muted-foreground">
-            Then run <code>node katkitchen-print-agent.mjs --check</code> in that folder: it lists the printers and whether each
-            answers. To start it with Windows, see the setup guide (katkitchen.md, section 5.5).
+            Then run <code>node universalpos-print-agent.mjs --check</code> in that folder: it lists the printers and whether each
+            answers. To start it with Windows, see the setup guide (universalpos.md, section 5.5).
           </p>
         </div>
       ) : (

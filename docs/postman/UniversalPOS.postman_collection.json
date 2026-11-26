@@ -1,7 +1,7 @@
 {
   "info": {
-    "name": "KatKitchen API",
-    "description": "Every route the API serves, generated from the route table (`corepack pnpm postman`).\n\n1. Import this collection and the \"KatKitchen local\" environment; select the environment.\n2. Run \"1. Sign-in & public > POST /api/auth/platform/login\" -- it saves {{platformToken}}.\n3. Run \"GET /plans\" (saves {{planVersionId}}), then \"POST /tenants\" to create a restaurant (saves {{tenantId}}, {{tenantSlug}}, {{subscriptionId}}, {{inviteToken}}). Change the slug and email in its body first -- each must be unique.\n4. Run \"POST /api/auth/invite/accept\" to set the manager password, then \"POST /api/auth/:tenantSlug/login\" -- it saves {{tenantToken}}.\n5. Everything under \"3. Restaurant\" now runs as that restaurant.\n\nAccess tokens last 15 minutes; run the matching refresh request when you get 401.",
+    "name": "UniversalPOS API",
+    "description": "Every route the API serves, generated from the route table (`corepack pnpm postman`).\n\n1. Import this collection and the \"UniversalPOS local\" environment; select the environment.\n2. Run \"1. Sign-in & public > POST /api/auth/platform/login\" -- it saves {{platformToken}}.\n3. Run \"GET /plans\" (saves {{planVersionId}}), then \"POST /tenants\" to create a restaurant (saves {{tenantId}}, {{tenantSlug}}, {{subscriptionId}}, {{inviteToken}}). Change the slug and email in its body first -- each must be unique.\n4. Run \"POST /api/auth/invite/accept\" to set the manager password, then \"POST /api/auth/:tenantSlug/login\" -- it saves {{tenantToken}}.\n5. Everything under \"3. Restaurant\" now runs as that restaurant.\n\nAccess tokens last 15 minutes; run the matching refresh request when you get 401.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -108,7 +108,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"employeeCode\": \"W1\",\n  \"pin\": \"4816\",\n  \"deviceFingerprint\": \"{{deviceFingerprint}}\"\n}",
+              "raw": "{\n  \"employeeCode\": \"W1\",\n  \"pin\": \"{{staffPin}}\",\n  \"deviceFingerprint\": \"{{deviceFingerprint}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -426,7 +426,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"{{platformEmail}}\",\n  \"currentPassword\": \"{{platformPassword}}\",\n  \"newPassword\": \"a-new-password-2026\"\n}",
+              "raw": "{\n  \"email\": \"{{platformEmail}}\",\n  \"currentPassword\": \"{{platformPassword}}\",\n  \"newPassword\": \"{{newPlatformPassword}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -505,6 +505,36 @@
                 "restaurants",
                 ":tenantSlug",
                 "logo"
+              ],
+              "variable": [
+                {
+                  "key": "tenantSlug",
+                  "value": "{{tenantSlug}}"
+                }
+              ]
+            },
+            "description": "No sign-in needed."
+          }
+        },
+        {
+          "name": "GET /api/public/restaurants/:tenantSlug/manifest",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/public/restaurants/:tenantSlug/manifest",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "public",
+                "restaurants",
+                ":tenantSlug",
+                "manifest"
               ],
               "variable": [
                 {
@@ -672,6 +702,79 @@
               }
             },
             "description": "Permission: `platform.tenant.rename`"
+          }
+        },
+        {
+          "name": "GET /tenants/:id/country-change",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/platform/tenants/:id/country-change",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "platform",
+                "tenants",
+                ":id",
+                "country-change"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{tenantId}}"
+                }
+              ]
+            },
+            "description": "Permission: `platform.tenant.country`"
+          }
+        },
+        {
+          "name": "POST /tenants/:id/country",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Idempotency-Key",
+                "value": "{{$guid}}",
+                "description": "Required on POS writes and on Create restaurant; harmless elsewhere."
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/platform/tenants/:id/country",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "platform",
+                "tenants",
+                ":id",
+                "country"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{tenantId}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Permission: `platform.tenant.country`"
           }
         },
         {
@@ -1365,7 +1468,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"fullName\": \"Ravi Kumar\",\n  \"email\": \"ravi@katkitchen.com\",\n  \"phone\": \"+91 98450 00000\"\n}",
+              "raw": "{\n  \"fullName\": \"Ravi Kumar\",\n  \"email\": \"ravi@example.com\",\n  \"phone\": \"+91 98450 00000\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1496,7 +1599,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"fullName\": \"Ravi Kumar\",\n  \"email\": \"ravi@katkitchen.com\",\n  \"phone\": \"+91 98450 00000\",\n  \"password\": \"ravi-sales-2026!\",\n  \"roleKey\": \"sales\"\n}",
+              "raw": "{\n  \"fullName\": \"Ravi Kumar\",\n  \"email\": \"ravi@example.com\",\n  \"phone\": \"+91 98450 00000\",\n  \"password\": \"{{newUserPassword}}\",\n  \"roleKey\": \"sales\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2011,6 +2114,66 @@
               }
             },
             "description": "Permission: `platform.tenant.edit`"
+          }
+        },
+        {
+          "name": "GET /countries",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/platform/countries",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "platform",
+                "countries"
+              ],
+              "variable": []
+            },
+            "description": "Permission: `platform.tenant.view`"
+          }
+        },
+        {
+          "name": "PATCH /settings/countries",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Idempotency-Key",
+                "value": "{{$guid}}",
+                "description": "Required on POS writes and on Create restaurant; harmless elsewhere."
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/platform/settings/countries",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "platform",
+                "settings",
+                "countries"
+              ],
+              "variable": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Permission: `platform.settings.edit`"
           }
         },
         {
@@ -3474,6 +3637,211 @@
               }
             },
             {
+              "name": "GET /pos/bills",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/t/pos/bills",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "t",
+                    "pos",
+                    "bills"
+                  ],
+                  "variable": []
+                },
+                "description": "Permission: `bill.view`"
+              }
+            },
+            {
+              "name": "GET /pos/bills/:id",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/t/pos/bills/:id",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "t",
+                    "pos",
+                    "bills",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": ""
+                    }
+                  ]
+                },
+                "description": "Permission: `bill.view`"
+              }
+            },
+            {
+              "name": "POST /pos/bills/:id/revise/preview",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Idempotency-Key",
+                    "value": "{{$guid}}",
+                    "description": "Required on POS writes and on Create restaurant; harmless elsewhere."
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/t/pos/bills/:id/revise/preview",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "t",
+                    "pos",
+                    "bills",
+                    ":id",
+                    "revise",
+                    "preview"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": ""
+                    }
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Permission: `bill.edit`"
+              }
+            },
+            {
+              "name": "POST /pos/bills/:id/revise",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Idempotency-Key",
+                    "value": "{{$guid}}",
+                    "description": "Required on POS writes and on Create restaurant; harmless elsewhere."
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/t/pos/bills/:id/revise",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "t",
+                    "pos",
+                    "bills",
+                    ":id",
+                    "revise"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": ""
+                    }
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Permission: `bill.edit`"
+              }
+            },
+            {
+              "name": "GET /pos/day",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/t/pos/day",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "t",
+                    "pos",
+                    "day"
+                  ],
+                  "variable": []
+                },
+                "description": "Permission: `bill.view`"
+              }
+            },
+            {
+              "name": "POST /pos/day/submit",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Idempotency-Key",
+                    "value": "{{$guid}}",
+                    "description": "Required on POS writes and on Create restaurant; harmless elsewhere."
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/t/pos/day/submit",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "t",
+                    "pos",
+                    "day",
+                    "submit"
+                  ],
+                  "variable": []
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Permission: `payment.settlement.close`"
+              }
+            },
+            {
               "name": "POST /pos/bill/:id/tender",
               "request": {
                 "method": "POST",
@@ -4194,6 +4562,53 @@
                   }
                 },
                 "description": "Permission: `branch.archive`"
+              }
+            },
+            {
+              "name": "POST /admin/branches/:id/tax",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Idempotency-Key",
+                    "value": "{{$guid}}",
+                    "description": "Required on POS writes and on Create restaurant; harmless elsewhere."
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/t/admin/branches/:id/tax",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "t",
+                    "admin",
+                    "branches",
+                    ":id",
+                    "tax"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": ""
+                    }
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Permission: `tax.setting.edit`"
               }
             }
           ]
@@ -5162,6 +5577,113 @@
               }
             },
             {
+              "name": "GET /admin/print-agents",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/t/admin/print-agents",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "t",
+                    "admin",
+                    "print-agents"
+                  ],
+                  "variable": []
+                },
+                "description": "Permission: `printer.view`"
+              }
+            },
+            {
+              "name": "POST /admin/print-agents",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Idempotency-Key",
+                    "value": "{{$guid}}",
+                    "description": "Required on POS writes and on Create restaurant; harmless elsewhere."
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/t/admin/print-agents",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "t",
+                    "admin",
+                    "print-agents"
+                  ],
+                  "variable": []
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Permission: `device.register`"
+              }
+            },
+            {
+              "name": "DELETE /admin/print-agents/:id",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Idempotency-Key",
+                    "value": "{{$guid}}",
+                    "description": "Required on POS writes and on Create restaurant; harmless elsewhere."
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/t/admin/print-agents/:id",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "t",
+                    "admin",
+                    "print-agents",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": ""
+                    }
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Permission: `device.revoke`"
+              }
+            },
+            {
               "name": "POST /admin/setup/import/preview",
               "request": {
                 "method": "POST",
@@ -5745,6 +6267,386 @@
               }
             },
             {
+              "name": "GET /admin/bills",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/t/admin/bills",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "t",
+                    "admin",
+                    "bills"
+                  ],
+                  "variable": []
+                },
+                "description": "Permission: `bill.view`"
+              }
+            },
+            {
+              "name": "GET /admin/bills/:id",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/t/admin/bills/:id",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "t",
+                    "admin",
+                    "bills",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": ""
+                    }
+                  ]
+                },
+                "description": "Permission: `bill.view`"
+              }
+            },
+            {
+              "name": "POST /admin/bills/:id/print",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Idempotency-Key",
+                    "value": "{{$guid}}",
+                    "description": "Required on POS writes and on Create restaurant; harmless elsewhere."
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/t/admin/bills/:id/print",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "t",
+                    "admin",
+                    "bills",
+                    ":id",
+                    "print"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": ""
+                    }
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Permission: `bill.reprint`"
+              }
+            },
+            {
+              "name": "POST /admin/bills/:id/revise/preview",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Idempotency-Key",
+                    "value": "{{$guid}}",
+                    "description": "Required on POS writes and on Create restaurant; harmless elsewhere."
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/t/admin/bills/:id/revise/preview",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "t",
+                    "admin",
+                    "bills",
+                    ":id",
+                    "revise",
+                    "preview"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": ""
+                    }
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Permission: `bill.edit.any`"
+              }
+            },
+            {
+              "name": "POST /admin/bills/:id/revise",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Idempotency-Key",
+                    "value": "{{$guid}}",
+                    "description": "Required on POS writes and on Create restaurant; harmless elsewhere."
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/t/admin/bills/:id/revise",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "t",
+                    "admin",
+                    "bills",
+                    ":id",
+                    "revise"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": ""
+                    }
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Permission: `bill.edit.any`"
+              }
+            },
+            {
+              "name": "POST /admin/days/:date/submit",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Idempotency-Key",
+                    "value": "{{$guid}}",
+                    "description": "Required on POS writes and on Create restaurant; harmless elsewhere."
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/t/admin/days/:date/submit",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "t",
+                    "admin",
+                    "days",
+                    ":date",
+                    "submit"
+                  ],
+                  "variable": [
+                    {
+                      "key": "date",
+                      "value": ""
+                    }
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Permission: `payment.settlement.close`"
+              }
+            },
+            {
+              "name": "POST /admin/days/:date/reopen",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Idempotency-Key",
+                    "value": "{{$guid}}",
+                    "description": "Required on POS writes and on Create restaurant; harmless elsewhere."
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/t/admin/days/:date/reopen",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "t",
+                    "admin",
+                    "days",
+                    ":date",
+                    "reopen"
+                  ],
+                  "variable": [
+                    {
+                      "key": "date",
+                      "value": ""
+                    }
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Permission: `payment.settlement.reopen`"
+              }
+            },
+            {
+              "name": "POST /admin/days/:date/pos-editing/enable",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Idempotency-Key",
+                    "value": "{{$guid}}",
+                    "description": "Required on POS writes and on Create restaurant; harmless elsewhere."
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/t/admin/days/:date/pos-editing/enable",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "t",
+                    "admin",
+                    "days",
+                    ":date",
+                    "pos-editing",
+                    "enable"
+                  ],
+                  "variable": [
+                    {
+                      "key": "date",
+                      "value": ""
+                    }
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Permission: `payment.settlement.reopen`"
+              }
+            },
+            {
+              "name": "POST /admin/days/:date/pos-editing/disable",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Idempotency-Key",
+                    "value": "{{$guid}}",
+                    "description": "Required on POS writes and on Create restaurant; harmless elsewhere."
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/t/admin/days/:date/pos-editing/disable",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "t",
+                    "admin",
+                    "days",
+                    ":date",
+                    "pos-editing",
+                    "disable"
+                  ],
+                  "variable": [
+                    {
+                      "key": "date",
+                      "value": ""
+                    }
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Permission: `payment.settlement.reopen`"
+              }
+            },
+            {
               "name": "GET /admin/tax-splits",
               "request": {
                 "method": "GET",
@@ -5970,6 +6872,53 @@
                     "admin",
                     "printers",
                     ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": ""
+                    }
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Permission: `printer.edit`"
+              }
+            },
+            {
+              "name": "POST /admin/printers/:id/test-print",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Idempotency-Key",
+                    "value": "{{$guid}}",
+                    "description": "Required on POS writes and on Create restaurant; harmless elsewhere."
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/t/admin/printers/:id/test-print",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "t",
+                    "admin",
+                    "printers",
+                    ":id",
+                    "test-print"
                   ],
                   "variable": [
                     {

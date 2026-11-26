@@ -4,7 +4,7 @@ import type { FastifyInstance } from 'fastify';
 import pg from 'pg';
 import { ownerClient } from '../helpers/db.js';
 import { planDocument } from '../helpers/plans.js';
-import type { PlanKey } from '@katkitchen/shared';
+import type { PlanKey } from '@universalpos/shared';
 import { buildServer } from '../../src/app.js';
 import { resetRegistry } from '../../src/core/middleware/routeRegistry.js';
 import { hashSecret } from '../../src/modules/auth/deviceAuth.js';

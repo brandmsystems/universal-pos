@@ -262,7 +262,7 @@ export function App(): ReactElement {
             <LayoutDashboard className="size-4.5" />
           </span>
           <span className="text-[15px] font-bold tracking-tight text-foreground">
-            Katkitchen<br />
+            UniversalPOS<br />
             <span className="font-normal text-muted-foreground">
               {shape.home === 'sales' ? 'sales console' : 'control plane'}
             </span>

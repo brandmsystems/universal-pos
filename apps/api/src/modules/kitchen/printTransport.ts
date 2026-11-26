@@ -1,5 +1,5 @@
 import net from 'node:net';
-import { parsePrinterAddress } from '@katkitchen/shared';
+import { parsePrinterAddress } from '@universalpos/shared';
 import type { PrintTransport } from './printWorker.js';
 
 /**

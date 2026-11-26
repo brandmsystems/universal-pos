@@ -3,7 +3,7 @@ import { randomUUID } from 'node:crypto';
 import type { FastifyInstance } from 'fastify';
 import Fastify from 'fastify';
 import pg from 'pg';
-import { ENTITLEMENTS, getAdminMenu, type PlanKey } from '@katkitchen/shared';
+import { ENTITLEMENTS, getAdminMenu, type PlanKey } from '@universalpos/shared';
 import { applyDueChanges } from '../../src/modules/billing/scheduledChange.js';
 import { ownerClient } from '../helpers/db.js';
 import { buildServer } from '../../src/app.js';

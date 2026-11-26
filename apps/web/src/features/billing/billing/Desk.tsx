@@ -20,7 +20,7 @@ import { isHandheld, printsDirect, receiptPrinter, sendCopies, type CopiesOutcom
 import { METHOD_LABEL, PaymentPanel, type PaymentPart, type PaymentResult } from './PaymentPanel.js';
 import { cn } from 'cn';
 import { Loading, Skeleton } from '@/components/ui/skeleton.js';
-import { describePlace } from '@katkitchen/shared';
+import { describePlace } from '@universalpos/shared';
 
 /**
  * The POS (Basic): New order, the orders waiting for payment, the order itself,

@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import net from 'node:net';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { parsePrinterAddress } from '@katkitchen/shared';
+import { parsePrinterAddress } from '@universalpos/shared';
 
 /**
  * The print agent program (apps/print-agent), which runs alone on a till
@@ -24,7 +24,7 @@ interface AgentModule {
   }): { pollOnce(opts?: { claim?: boolean }): Promise<unknown>; pending: Record<string, unknown[]> };
 }
 
-const SCRIPT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../print-agent/katkitchen-print-agent.mjs');
+const SCRIPT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../print-agent/universalpos-print-agent.mjs');
 const load = async (): Promise<AgentModule> => (await import(pathToFileURL(SCRIPT).href)) as AgentModule;
 
 const servers: net.Server[] = [];

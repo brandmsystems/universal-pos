@@ -1,6 +1,6 @@
 import type pg from 'pg';
 import { TenantUnknownError } from './tenantAdmin.js';
-import { RESERVED_SLUGS, SLUG_TAKEN_MESSAGE, slugProblem, slugify } from '@katkitchen/shared';
+import { RESERVED_SLUGS, SLUG_TAKEN_MESSAGE, slugProblem, slugify } from '@universalpos/shared';
 
 /**
  * A restaurant's slug: its address (`/abc-restaurant`), its sign-in path
@@ -16,7 +16,7 @@ import { RESERVED_SLUGS, SLUG_TAKEN_MESSAGE, slugProblem, slugify } from '@katki
  */
 
 // The rules themselves -- pattern, reserved words, slugify, the messages --
-// live in @katkitchen/shared so the console's live check and this enforcement
+// live in @universalpos/shared so the console's live check and this enforcement
 // are one definition.
 export { RESERVED_SLUGS, SLUG_TAKEN_MESSAGE, slugProblem, slugify };
 

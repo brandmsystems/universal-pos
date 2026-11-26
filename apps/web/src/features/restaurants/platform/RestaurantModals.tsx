@@ -14,7 +14,7 @@ import {
 import type { CountrySettings, PlanOption, PlanVersion, TenantSummary } from '../../../types/restaurant.js';
 import { restaurantLinks } from '../../../lib/restaurantPath.js';
 import { TenantStaff } from './TenantStaff.js';
-import { ADDRESS_MIN_LENGTH, entitlementsFromTerms, normaliseThemeColor, slugProblem } from '@katkitchen/shared';
+import { ADDRESS_MIN_LENGTH, entitlementsFromTerms, normaliseThemeColor, slugProblem } from '@universalpos/shared';
 import {
   BrandPreview, LogoField, ThemeColorField, readLogo, type LogoChoice,
 } from '../../../components/platform/branding.js';

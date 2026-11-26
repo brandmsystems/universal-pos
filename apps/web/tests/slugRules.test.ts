@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { RESERVED_SLUGS, slugProblem, slugify } from '@katkitchen/shared';
+import { RESERVED_SLUGS, slugProblem, slugify } from '@universalpos/shared';
 import { adminLocationFromPath, tabletSlugFromPath } from '../src/lib/restaurantPath.js';
 
 /**

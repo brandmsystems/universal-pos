@@ -1,3 +1,3 @@
-import config from '@katkitchen/eslint-config/node';
+import config from '@universalpos/eslint-config/node';
 
 export default config;

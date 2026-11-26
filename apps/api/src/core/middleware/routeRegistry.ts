@@ -20,7 +20,7 @@ import {
 } from '../../modules/offline/leaseGuard.js';
 import {
   PLAN_NAMES, entitlementsFromTerms, lowestPlanIncluding, planIncludes, type PlanGate, type PlanFeature, type PlanLimit,
-} from '@katkitchen/shared';
+} from '@universalpos/shared';
 import {
   PlanExcludesError, assertWithinLimit, resolveEntitlement,
   type EntitlementCache, type EntitlementDocument,

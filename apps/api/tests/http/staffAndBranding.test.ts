@@ -239,7 +239,7 @@ function pngOf(width: number, height: number): string {
 
 describe('the installable POS app: one manifest per restaurant, opening its own POS', () => {
   const manifestOf = (slug: string) => http('GET', `/api/public/restaurants/${slug}/manifest`, null);
-  const KATKITCHEN_ICONS = ['/app-icons/pos-icon-192.png', '/app-icons/pos-icon-512.png', '/app-icons/pos-icon-maskable-512.png'];
+  const UNIVERSALPOS_ICONS = ['/app-icons/pos-icon-192.png', '/app-icons/pos-icon-512.png', '/app-icons/pos-icon-maskable-512.png'];
 
   it('is a web app manifest whose start_url, scope and id are /{slug}/pos, re-checked on every launch', async () => {
     const got = await manifestOf(restaurant.slug);
@@ -250,7 +250,7 @@ describe('the installable POS app: one manifest per restaurant, opening its own 
       id: `/${restaurant.slug}/pos`, start_url: `/${restaurant.slug}/pos`, scope: `/${restaurant.slug}/pos`,
       name: 'Brand Kitchen POS', short_name: 'Brand Kitchen', display: 'standalone', theme_color: '#1d4ed8',
     });
-    expect((got.body['icons'] as { src: string }[]).map((i) => i.src)).toEqual(KATKITCHEN_ICONS);
+    expect((got.body['icons'] as { src: string }[]).map((i) => i.src)).toEqual(UNIVERSALPOS_ICONS);
   });
 
   it('says nothing the public lookup does not: names, colour and icons only', async () => {
@@ -279,7 +279,7 @@ describe('the installable POS app: one manifest per restaurant, opening its own 
     expect([missing.status, missing.body['error']]).toEqual([404, 'restaurant_not_found']);
   });
 
-  it('a square logo of 192 px or more is the app icon; any other logo keeps the KatKitchen icon', async () => {
+  it('a square logo of 192 px or more is the app icon; any other logo keeps the UniversalPOS icon', async () => {
     const square = await http('POST', `/api/platform/tenants/${restaurant.tenantId}/logo`,
       platformToken(rep), { contentType: 'image/png', dataBase64: pngOf(512, 512) });
     expect(square.status, JSON.stringify(square.body)).toBe(200);
@@ -292,10 +292,10 @@ describe('the installable POS app: one manifest per restaurant, opening its own 
     const wide = await http('POST', `/api/platform/tenants/${restaurant.tenantId}/logo`,
       platformToken(rep), { contentType: 'image/png', dataBase64: pngOf(400, 200) });
     expect(wide.status, JSON.stringify(wide.body)).toBe(200);
-    expect(((await manifestOf(restaurant.slug)).body['icons'] as { src: string }[]).map((i) => i.src)).toEqual(KATKITCHEN_ICONS);
+    expect(((await manifestOf(restaurant.slug)).body['icons'] as { src: string }[]).map((i) => i.src)).toEqual(UNIVERSALPOS_ICONS);
 
     expect((await http('DELETE', `/api/platform/tenants/${restaurant.tenantId}/logo`, platformToken(rep))).status).toBe(200);
-    expect(((await manifestOf(restaurant.slug)).body['icons'] as { src: string }[]).map((i) => i.src)).toEqual(KATKITCHEN_ICONS);
+    expect(((await manifestOf(restaurant.slug)).body['icons'] as { src: string }[]).map((i) => i.src)).toEqual(UNIVERSALPOS_ICONS);
   });
 });
 

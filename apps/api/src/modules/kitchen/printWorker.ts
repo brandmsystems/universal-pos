@@ -2,7 +2,7 @@ import { pathToFileURL } from 'node:url';
 import { randomUUID } from 'node:crypto';
 import pg from 'pg';
 import { networkTransport } from './printTransport.js';
-import { counterNumber } from '@katkitchen/shared';
+import { counterNumber } from '@universalpos/shared';
 
 /**
  * The print worker.

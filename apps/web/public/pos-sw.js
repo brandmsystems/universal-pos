@@ -1,6 +1,6 @@
 /* global self, caches -- a service worker's own globals */
 /*
- * KatKitchen POS service worker: what makes /{slug}/pos an installable app.
+ * UniversalPOS POS service worker: what makes /{slug}/pos an installable app.
  *
  * It caches NOTHING. The POS's pages are re-checked on every load (nginx sends
  * no-cache) and its bundle files are content-hashed, so a deploy reaches an
@@ -14,7 +14,7 @@
 const OFFLINE_PAGE = `<!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>No connection · KatKitchen POS</title>
+<title>No connection · UniversalPOS POS</title>
 <style>
   body { margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
          background: #F7F7F7; color: #111111; font-family: system-ui, -apple-system, sans-serif; }

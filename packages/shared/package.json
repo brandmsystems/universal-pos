@@ -1,5 +1,5 @@
 {
-  "name": "@katkitchen/shared",
+  "name": "@universalpos/shared",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -14,7 +14,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "devDependencies": {
-    "@katkitchen/tsconfig": "workspace:*",
+    "@universalpos/tsconfig": "workspace:*",
     "typescript": "^5.7.3"
   }
 }

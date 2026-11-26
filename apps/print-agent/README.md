@@ -1,14 +1,14 @@
-# KatKitchen print agent
+# UniversalPOS print agent
 
 Prints kitchen tickets on Wi-Fi and Ethernet receipt printers that the hosted
-KatKitchen server cannot reach. It runs on one computer in the restaurant (the
+UniversalPOS server cannot reach. It runs on one computer in the restaurant (the
 till PC is fine), on the same network as the printers.
 
-- It connects **out** to KatKitchen over HTTPS every 2 seconds. It opens no port,
+- It connects **out** to UniversalPOS over HTTPS every 2 seconds. It opens no port,
   and nothing on the internet can connect to it.
 - It prints only to the Wi-Fi and Ethernet printers set up for **its branch**, at
   a private address (`192.168.x`, `10.x`, `172.16–31.x`) on port 9100–9109.
-- A single file, `katkitchen-print-agent.mjs`, needing Node.js 22 or newer and
+- A single file, `universalpos-print-agent.mjs`, needing Node.js 22 or newer and
   nothing else.
 
 ## Set up
@@ -16,12 +16,12 @@ till PC is fine), on the same network as the printers.
 1. Manager screens → **Setup → Printers** → **Set up print agent**. Name it after
    the computer, then copy the `agent.json` it shows. **It is shown once.**
 2. On the restaurant computer, install Node.js 22 LTS from nodejs.org.
-3. Make a folder, e.g. `C:\KatKitchen`. Put `katkitchen-print-agent.mjs` (the
+3. Make a folder, e.g. `C:\UniversalPOS`. Put `universalpos-print-agent.mjs` (the
    download link on the same page) and `agent.json` in it.
 4. Open PowerShell in that folder and run:
 
    ```powershell
-   node katkitchen-print-agent.mjs --check
+   node universalpos-print-agent.mjs --check
    ```
 
    It lists this branch's Wi-Fi and Ethernet printers and whether each answers.
@@ -30,11 +30,11 @@ till PC is fine), on the same network as the printers.
 
    ```powershell
    $node = (Get-Command node).Source
-   $action = New-ScheduledTaskAction -Execute $node -Argument 'katkitchen-print-agent.mjs' -WorkingDirectory 'C:\KatKitchen'
+   $action = New-ScheduledTaskAction -Execute $node -Argument 'universalpos-print-agent.mjs' -WorkingDirectory 'C:\UniversalPOS'
    $trigger = New-ScheduledTaskTrigger -AtLogOn -User $env:USERNAME
    $settings = New-ScheduledTaskSettingsSet -RestartCount 999 -RestartInterval (New-TimeSpan -Minutes 1) -ExecutionTimeLimit 0
-   Register-ScheduledTask -TaskName 'KatKitchen print agent' -Action $action -Trigger $trigger -Settings $settings
-   Start-ScheduledTask -TaskName 'KatKitchen print agent'
+   Register-ScheduledTask -TaskName 'UniversalPOS print agent' -Action $action -Trigger $trigger -Settings $settings
+   Start-ScheduledTask -TaskName 'UniversalPOS print agent'
    ```
 
    Within a few seconds the Printers page shows the agent as **Online**.
@@ -56,4 +56,4 @@ current user: `icacls agent.json /inheritance:r /grant:r "$($env:USERNAME):R"`.
 
 On the Printers page, **Stop this agent**. It is refused at its next check, and
 any tickets it was holding go back to the queue. Then remove the scheduled task:
-`Unregister-ScheduledTask -TaskName 'KatKitchen print agent'`.
+`Unregister-ScheduledTask -TaskName 'UniversalPOS print agent'`.

@@ -4,7 +4,7 @@ import { CircleCheck, Clock, Inbox, ReceiptText, Search, ShoppingBag, UtensilsCr
 import type { Api } from '../../../services/api.js';
 import { formatMinor, minorFrom } from '../../../lib/money.js';
 import { lineMoney, orderedLines, type Board } from '../../orders/pos/board.js';
-import { counterNumber } from '@katkitchen/shared';
+import { counterNumber } from '@universalpos/shared';
 import { cn } from 'cn';
 import { Skeleton } from '@/components/ui/skeleton.js';
 import { describeOrder, type QueueRow } from './Desk.js';

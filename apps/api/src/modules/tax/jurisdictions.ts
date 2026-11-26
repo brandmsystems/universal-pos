@@ -1,4 +1,4 @@
-import { countryOf, type CountryDefinition } from '@katkitchen/shared';
+import { countryOf, type CountryDefinition } from '@universalpos/shared';
 
 /**
  * The tax regimes this product knows about, as DATA.

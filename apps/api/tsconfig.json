@@ -1,5 +1,5 @@
 {
-  "extends": "@katkitchen/tsconfig/node.json",
+  "extends": "@universalpos/tsconfig/node.json",
   // Typecheck only: src, the tests, and whatever the tests import from the
   // root scripts and the web client. The emitting build is tsconfig.build.json.
   "compilerOptions": {

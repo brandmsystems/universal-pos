@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 import {
   SETUP_MAX_ROWS_PER_SHEET, SETUP_SHEETS,
   type SetupRow, type SetupSheetKey, type SetupSheets,
-} from '@katkitchen/shared';
+} from '@universalpos/shared';
 import type { TenantContext } from '../../core/database/tenantContext.js';
 import type { Value } from '../../core/database/baseRepository.js';
 import type { PermissionKey } from '../authz/permissions.js';

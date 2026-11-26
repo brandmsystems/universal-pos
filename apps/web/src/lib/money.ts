@@ -15,7 +15,7 @@
  * ###########################################################################
  */
 
-import { localeForCurrency, minorExponent } from '@katkitchen/shared';
+import { localeForCurrency, minorExponent } from '@universalpos/shared';
 
 declare const brand: unique symbol;
 

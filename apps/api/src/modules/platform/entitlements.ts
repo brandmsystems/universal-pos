@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 import type pg from 'pg';
 import {
   entitlementsFromTerms, getAdminMenu, type AdminMenu, type PlanEntitlements,
-} from '@katkitchen/shared';
+} from '@universalpos/shared';
 
 /**
  * Entitlements are the one thing that flows down across the plane boundary.

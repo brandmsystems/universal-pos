@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import * as X from 'xlsx';
-import { SETUP_SHEETS } from '@katkitchen/shared';
+import { SETUP_SHEETS } from '@universalpos/shared';
 import { buildTemplate, readWorkbook } from '../src/features/settings/admin/setup/excel.js';
 
 /** The template and the reader agree because both come from SETUP_SHEETS; this proves it on a real file. */

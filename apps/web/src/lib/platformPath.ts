@@ -1,4 +1,4 @@
-import { SUPERADMIN_SEGMENT } from '@katkitchen/shared';
+import { SUPERADMIN_SEGMENT } from '@universalpos/shared';
 
 /**
  * The control-plane console's two addresses, served by ONE document

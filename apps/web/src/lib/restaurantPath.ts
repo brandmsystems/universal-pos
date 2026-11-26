@@ -1,4 +1,4 @@
-import { RESERVED_SLUGS, SLUG_PATTERN, type PlanEntitlements } from '@katkitchen/shared';
+import { RESERVED_SLUGS, SLUG_PATTERN, type PlanEntitlements } from '@universalpos/shared';
 
 /**
  * The one restaurant app a person opens from an address: the POS (Dine-in,

@@ -2,7 +2,7 @@ import { useId, useRef } from 'react';
 import type { ReactElement } from 'react';
 import {
   LOGO_MAX_BYTES, LOGO_TYPES, normaliseThemeColor, readableOn,
-} from '@katkitchen/shared';
+} from '@universalpos/shared';
 import { Button } from '@/components/ui/button.js';
 import { Input } from '@/components/ui/input.js';
 import { Label } from '@/components/ui/label.js';

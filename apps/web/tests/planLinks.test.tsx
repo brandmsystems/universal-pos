@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { act } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
-import { ENTITLEMENTS, entitlementsFromTerms, planTermsFor } from '@katkitchen/shared';
+import { ENTITLEMENTS, entitlementsFromTerms, planTermsFor } from '@universalpos/shared';
 import { restaurantLinks } from '../src/lib/restaurantPath.js';
 import { createStore } from '../src/services/storage.js';
 import { chooseRestaurantAddress } from '../src/features/restaurants/pos/RestaurantGate.js';

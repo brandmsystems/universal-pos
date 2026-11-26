@@ -3,7 +3,7 @@
  * db/bootstrap/00_roles.sql says creates the roles "in every other environment".
  *
  *   ADMIN_DATABASE_URL='postgres://<render user>:<pw>@<external host>/katkitchen?sslmode=require' \
- *   KATKITCHEN_OWNER_PASSWORD=... KATKITCHEN_APP_PASSWORD=... KATKITCHEN_READONLY_PASSWORD=... \
+ *   UNIVERSALPOS_OWNER_PASSWORD=... UNIVERSALPOS_APP_PASSWORD=... UNIVERSALPOS_READONLY_PASSWORD=... \
  *   pnpm db:bootstrap:managed
  *
  * A managed host gives no superuser. Its admin user has CREATEROLE and owns the
@@ -29,11 +29,11 @@ function required(name: string): string {
 }
 
 const adminUrl = required('ADMIN_DATABASE_URL');
-const databaseName = process.env['KATKITCHEN_DATABASE_NAME'] ?? 'katkitchen';
+const databaseName = process.env['UNIVERSALPOS_DATABASE_NAME'] ?? 'katkitchen';
 const passwords = {
-  katkitchen_owner: required('KATKITCHEN_OWNER_PASSWORD'),
-  katkitchen_app: required('KATKITCHEN_APP_PASSWORD'),
-  katkitchen_platform_readonly: required('KATKITCHEN_READONLY_PASSWORD'),
+  katkitchen_owner: required('UNIVERSALPOS_OWNER_PASSWORD'),
+  katkitchen_app: required('UNIVERSALPOS_APP_PASSWORD'),
+  katkitchen_platform_readonly: required('UNIVERSALPOS_READONLY_PASSWORD'),
 };
 for (const [role, password] of Object.entries(passwords)) {
   if (password.length < 24) throw new Error(`the password for ${role} must be at least 24 characters`);
@@ -48,7 +48,7 @@ try {
   // Render may suffix the name (katkitchen_fc08). It is stated rather than taken
   // from the url, so a url pointing at the wrong database is still refused.
   if (where!.db !== databaseName) {
-    throw new Error(`connected to database "${where!.db}"; expected "${databaseName}" (KATKITCHEN_DATABASE_NAME)`);
+    throw new Error(`connected to database "${where!.db}"; expected "${databaseName}" (UNIVERSALPOS_DATABASE_NAME)`);
   }
   const admin = client.escapeIdentifier(where!.admin);
   const database = client.escapeIdentifier(databaseName);

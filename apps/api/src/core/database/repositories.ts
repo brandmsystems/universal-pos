@@ -1,4 +1,4 @@
-import { printerAddressProblem } from '@katkitchen/shared';
+import { printerAddressProblem } from '@universalpos/shared';
 import { BaseRepository, type Predicate, type Value } from './baseRepository.js';
 
 /**

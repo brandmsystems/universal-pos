@@ -1,6 +1,6 @@
 import { randomBytes, randomUUID } from 'node:crypto';
 import type pg from 'pg';
-import { EXPIRING_WITHIN_DAYS } from '@katkitchen/shared';
+import { EXPIRING_WITHIN_DAYS } from '@universalpos/shared';
 import { hashPlatformPassword } from '../auth/platformAuth.js';
 import {
   PLATFORM_ROLES, checkPlatformSubsetGrant, platformRole, type PlatformRoleKey,
@@ -286,7 +286,7 @@ export async function setPlatformUserStatus(
 /* ------------------------------------------------------- sales persons --- */
 
 // "Expiring soon" is one shared rule: the console's status badge and these
-// counts import the same constant from @katkitchen/shared.
+// counts import the same constant from @universalpos/shared.
 export { EXPIRING_WITHIN_DAYS };
 
 export interface SalesPersonSummary extends PlatformStaffSummary {

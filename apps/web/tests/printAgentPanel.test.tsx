@@ -72,7 +72,7 @@ describe('the print agent panel', () => {
     const config = JSON.parse(host.querySelector('pre')!.textContent!);
     expect(config).toEqual({ server: window.location.origin, token: 'spice-hub.SECRET-TOKEN-VALUE' });
     expect(host.textContent).toContain('shown only once');
-    expect(host.querySelector('a[download="katkitchen-print-agent.mjs"]')).not.toBeNull();
+    expect(host.querySelector('a[download="universalpos-print-agent.mjs"]')).not.toBeNull();
     await act(async () => { button('Done').click(); });
     expect(host.textContent).not.toContain('SECRET-TOKEN-VALUE');
   });

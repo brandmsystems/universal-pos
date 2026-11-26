@@ -1,4 +1,4 @@
-import { describePlace } from '@katkitchen/shared';
+import { describePlace } from '@universalpos/shared';
 import { useCallback, useEffect, useState } from 'react';
 import type { ReactElement } from 'react';
 import { ApiError, type Api } from '../../../services/api.js';

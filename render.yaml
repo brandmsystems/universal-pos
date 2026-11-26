@@ -3,7 +3,7 @@
 
 databases:
   - name: katkitchen-db
-    # Render may suffix this (katkitchen_fc08). If so, set KATKITCHEN_DATABASE_NAME
+    # Render may suffix this (katkitchen_fc08). If so, set UNIVERSALPOS_DATABASE_NAME
     # for the bootstrap and use the suffixed name in every DATABASE_URL_*.
     databaseName: katkitchen
     # Render's admin user. Used ONCE, by scripts/bootstrap-managed.mts, to create

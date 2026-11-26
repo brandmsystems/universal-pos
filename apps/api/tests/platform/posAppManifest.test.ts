@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { imageSize } from '../../src/modules/platform/branding.js';
-import { KATKITCHEN_APP_ICONS, buildPosAppManifest } from '../../src/modules/platform/posApp.js';
+import { UNIVERSALPOS_APP_ICONS, buildPosAppManifest } from '../../src/modules/platform/posApp.js';
 
 /**
  * The installable POS app's manifest (pure parts). The HTTP route, per slug and
@@ -60,7 +60,7 @@ describe('buildPosAppManifest', () => {
       id: '/kfc/pos', start_url: '/kfc/pos', scope: '/kfc/pos', display: 'standalone',
       name: 'KFC POS', short_name: 'KFC', theme_color: '#FA5C00', background_color: '#F7F7F7',
     });
-    expect(manifest.icons).toEqual(KATKITCHEN_APP_ICONS);
+    expect(manifest.icons).toEqual(UNIVERSALPOS_APP_ICONS);
   });
 
   it('two restaurants are two apps: no shared id, start_url or scope', () => {
@@ -82,17 +82,17 @@ describe('buildPosAppManifest', () => {
     ['too small', 'image/png', 128, 128],
     // Chrome refuses to install with a JPEG icon, however big and square.
     ['a JPEG', 'image/jpeg', 1254, 1254],
-  ])('keeps the KatKitchen icons when the logo is %s', (_why, type, width, height) => {
+  ])('keeps the UniversalPOS icons when the logo is %s', (_why, type, width, height) => {
     const logo = { url: '/api/public/restaurants/kfc/logo?v=abc', contentType: type, width, height };
-    expect(buildPosAppManifest(kfc, logo).icons).toEqual(KATKITCHEN_APP_ICONS);
+    expect(buildPosAppManifest(kfc, logo).icons).toEqual(UNIVERSALPOS_APP_ICONS);
   });
 
-  it('KatKitchen icons cover what Android and Chrome need: 192 and 512, and a maskable one', () => {
-    expect(KATKITCHEN_APP_ICONS.map((i) => `${i.sizes}/${i.purpose}`)).toEqual(['192x192/any', '512x512/any', '512x512/maskable']);
+  it('UniversalPOS icons cover what Android and Chrome need: 192 and 512, and a maskable one', () => {
+    expect(UNIVERSALPOS_APP_ICONS.map((i) => `${i.sizes}/${i.purpose}`)).toEqual(['192x192/any', '512x512/any', '512x512/maskable']);
   });
 
-  it('every KatKitchen icon the manifest names is a file the web build serves, at the size it declares', () => {
-    for (const icon of KATKITCHEN_APP_ICONS) {
+  it('every UniversalPOS icon the manifest names is a file the web build serves, at the size it declares', () => {
+    for (const icon of UNIVERSALPOS_APP_ICONS) {
       const bytes = readFileSync(resolve(import.meta.dirname, '../../../web/public', `.${icon.src}`));
       const size = imageSize('image/png', bytes);
       expect(size === null ? null : `${size.width}x${size.height}`, icon.src).toBe(icon.sizes);

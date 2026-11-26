@@ -6,7 +6,7 @@ import {
 import {
   PLAN_NAMES, lowestPlanIncluding, type AdminMenu, type AdminMenuKey, type PlanEntitlements,
   type PlanKey,
-} from '@katkitchen/shared';
+} from '@universalpos/shared';
 import type { ReactElement } from 'react';
 import { createStore } from '../../services/storage.js';
 import { createApi } from '../../services/api.js';

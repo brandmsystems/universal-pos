@@ -1,4 +1,4 @@
-import { counterNumber, describePlace, localeForCurrency, minorExponent } from '@katkitchen/shared';
+import { counterNumber, describePlace, localeForCurrency, minorExponent } from '@universalpos/shared';
 /**
  * The printed bill and its copies, laid out for the branch's printer.
  *
