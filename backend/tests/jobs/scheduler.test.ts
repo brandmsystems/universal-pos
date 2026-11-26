@@ -241,8 +241,8 @@ describe('E. the scheduler cannot watch itself', () => {
   });
 
   it('names the hole in writing rather than leaving it implied', () => {
-    expect(existsSync('../docs/scheduler-monitoring.md')).toBe(true);
-    const doc = readFileSync('../docs/scheduler-monitoring.md', 'utf8');
+    expect(existsSync('../docs/deployment/scheduler-monitoring.md')).toBe(true);
+    const doc = readFileSync('../docs/deployment/scheduler-monitoring.md', 'utf8');
     // A scheduler that has stopped cannot report that it has stopped, and no
     // in-repo checker closes that -- it only moves it.
     expect(doc).toMatch(/cannot be the scheduler/);

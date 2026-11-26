@@ -114,7 +114,7 @@ reproduced exactly.
 6. An unregistered branch and a composition dealer charge no tax (rates resolve to 0;
    the database refuses a taxed line in those positions).
 7. A GSTIN supplied after B2C invoicing does not trigger re-issue
-   (`docs/billing-terms.md`).
+   (`docs/backend/billing-terms.md`).
 
 ## 4. Edge cases already handled
 
@@ -144,7 +144,7 @@ refused by the return); a branch changing its tax settings while an order is ope
 6. **E-invoicing (IRN)** is not built, for either document.
 7. **Our invoice to a UAE restaurant** is treated as an export of services (P5) and
    needs the evidence-backed zero-rating grant; confirm.
-8. The **checklist** at the foot of `docs/billing-terms.md` (numbering per series,
+8. The **checklist** at the foot of `docs/backend/billing-terms.md` (numbering per series,
    SAC 997331, B2C presentation) is still unanswered.
 
 ---

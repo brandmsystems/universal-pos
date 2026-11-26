@@ -9,7 +9,7 @@ on-premises print agent (`print-agent`). The kitchen screen, the separate
 KOT and Billing apps, tablet setup codes and the stock screens were removed;
 their tables stay, because rows are records.
 
-Current status, recent work and the change log are in **`universalpos.md`**.
+Current status, recent work and the change log are in **`docs/development/universalpos.md`**.
 
 This file is the handover: how to get it running, what exists, and what does
 not. The reasoning behind the design lives in `CLAUDE.md` — read it before
@@ -45,7 +45,7 @@ git diff --stat --ignore-cr-at-eol      # empty output = nothing real changed
 | psql | 16 (client) | only if you want to inspect the database by hand |
 
 There is **one lockfile for the whole repo** (`pnpm-workspace.yaml` covers `.`
-and `web`). A `preinstall` hook (`scripts/check-lockfiles.mjs`) fails the install
+and `web`). A `preinstall` hook (`scripts/deployment/check-lockfiles.mjs`) fails the install
 if a second one appears — a second lockfile lets the dependency set that was
 verified and the one that gets installed drift apart silently.
 
@@ -238,7 +238,7 @@ Everything -- web, API, scheduler, Postgres and Redis -- is one Render Blueprint
 (`render.yaml`). The web service is the same nginx image as the local stack and
 forwards `/api/*` to the API over Render's private network. The steps, including
 the one-time role bootstrap a managed Postgres needs, are in
-[docs/deploy-render.md](docs/deploy-render.md).
+[docs/deployment/deploy-render.md](docs/deployment/deploy-render.md).
 
 ---
 
@@ -279,15 +279,15 @@ there are no database mocks in this project. Run them with `pnpm test`.
 | File | What it is |
 |---|---|
 | **`CLAUDE.md`** | The current rules and decisions, for every agent. **This is the spec.** |
-| `docs/decision-history.md` | The reasoning behind them: CLAUDE.md as it stood to 2026-11-18, word for word, including superseded decisions. An archive; not extended |
-| **`universalpos.md`** | What exists now: who uses what, local credentials, implementation status, printers and Windows printer setup, pending work, the change log |
+| `docs/architecture/decision-history.md` | The reasoning behind them: CLAUDE.md as it stood to 2026-11-18, word for word, including superseded decisions. An archive; not extended |
+| **`docs/development/universalpos.md`** | What exists now: who uses what, local credentials, implementation status, printers and Windows printer setup, pending work, the change log |
 | **`AGENTS.md`** | The entry point for Codex and other agents: points to CLAUDE.md and repeats only the rules an agent must not miss |
-| **`FRONTEND.md`** | The client rules: the `known`/`stale`/`unknown` truth model, provenance, money, optimistic rendering, idempotency keys, degradation vocabulary |
-| `docs/deploy-render.md` | Deploying to Render, including the one-time role bootstrap |
-| `docs/print-agent-design.md`, `print-agent/README.md` | Why the print agent exists, and installing it on a restaurant PC |
-| `docs/gst-review.md` | GST flows, sample invoices produced by the code, assumptions and open questions -- **Pending qualified GST review** |
-| `docs/billing-terms.md` | Billing vocabulary — and the GST reviewer checklist at its foot |
-| `docs/scheduler-monitoring.md` | What the cron jobs do and how to tell they stopped |
+| **`docs/frontend/FRONTEND.md`** | The client rules: the `known`/`stale`/`unknown` truth model, provenance, money, optimistic rendering, idempotency keys, degradation vocabulary |
+| `docs/deployment/deploy-render.md` | Deploying to Render, including the one-time role bootstrap |
+| `docs/backend/print-agent-design.md`, `print-agent/README.md` | Why the print agent exists, and installing it on a restaurant PC |
+| `docs/backend/gst-review.md` | GST flows, sample invoices produced by the code, assumptions and open questions -- **Pending qualified GST review** |
+| `docs/backend/billing-terms.md` | Billing vocabulary — and the GST reviewer checklist at its foot |
+| `docs/deployment/scheduler-monitoring.md` | What the cron jobs do and how to tell they stopped |
 
 ---
 
@@ -297,17 +297,17 @@ The build order in `CLAUDE.md` (phases 0 → 5) is built, plus the API surface,
 the three web apps and everything recorded since. The product has since been
 narrowed to the Basic plan (0077); what was removed and what stayed is recorded
 in CLAUDE.md ("What the product is today"), with the reasoning in
-`docs/decision-history.md` ("Basic only"), and in `universalpos.md` §5.2c.
+`docs/architecture/decision-history.md` ("Basic only"), and in `docs/development/universalpos.md` §5.2c.
 
-**`universalpos.md` is the status document**: §5 for what is implemented, §6 for
+**`docs/development/universalpos.md` is the status document**: §5 for what is implemented, §6 for
 pending tasks and known gaps, §8 for the change log. It is kept current; this
 file is not a second copy of it.
 
 One item belongs here as well, because it has a legal rather than a technical
 consequence: **before the first real invoice, the place-of-supply logic and one
 sample invoice of each treatment must be reviewed by someone who files GST
-returns** (the checklist is at the foot of `docs/billing-terms.md`, and the samples and open questions in
-`docs/gst-review.md` -- **Pending qualified GST review**). The same
+returns** (the checklist is at the foot of `docs/backend/billing-terms.md`, and the samples and open questions in
+`docs/backend/gst-review.md` -- **Pending qualified GST review**). The same
 goes for one sample bill with a Round off line, and for a UAE VAT invoice before
 a Dubai restaurant goes live.
 

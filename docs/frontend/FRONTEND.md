@@ -1,4 +1,4 @@
-# FRONTEND.md
+# docs/frontend/FRONTEND.md
 
 Guardrails for the client surfaces: POS (Phase 8), branch admin (10), superadmin (11).
 The kitchen display (Phase 9) was removed with Basic-only (0077); its sections are
@@ -195,7 +195,7 @@ Before Confirm the New order screen shows a dashed **ESTIMATE** -- Items, Parcel
 charge (on a parcel), Subtotal, each tax head with its rate, **Payable** -- and
 re-asks it 250 ms after the cart, a quantity, the Parcel switch or the charge stops
 changing. Every figure in it is `POST /pos/quote`'s, priced by the functions the
-order and the bill are written with (`docs/decision-history.md`, "A parcel charge is a line"); the
+order and the bill are written with (`docs/architecture/decision-history.md`, "A parcel charge is a line"); the
 screen formats them and adds nothing. Only the newest answer is drawn (a sequence
 ref), so a late reply cannot put a total on screen for a cart that has changed; a
 refusal (a charge over the branch's maximum) is said beside it and the box goes.
@@ -1156,7 +1156,7 @@ once**, and is then persisted. Verified by reading, not by validating the shape:
 a well-formed uuid for a station in a sister branch is exactly the mistake a chain
 makes when it copies a screen's configuration, and only the server can catch it.
 (It could not, until this screen tried — see the `station_unknown` note in
-`docs/decision-history.md`.)
+`docs/architecture/decision-history.md`.)
 
 Leaving the board clears the **station**, not the session: re-pointing a screen is
 a manager's act and must not also sign the kitchen out.

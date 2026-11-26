@@ -6,8 +6,8 @@ FROM node:22-alpine AS build
 WORKDIR /app
 RUN corepack enable
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY scripts/check-lockfiles.mjs ./scripts/
-RUN node scripts/check-lockfiles.mjs
+COPY scripts/deployment/check-lockfiles.mjs ./scripts/deployment/
+RUN node scripts/deployment/check-lockfiles.mjs
 COPY frontend/package.json ./frontend/
 COPY packages ./packages
 COPY shared ./shared

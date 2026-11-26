@@ -3,15 +3,15 @@
 **This file is the single source of truth for project rules**, for Claude Code and
 for every other agent (`AGENTS.md` points here). It states what is true and binding
 NOW. The reasoning behind each rule -- the defect that forced it, the alternatives
-rejected, the sections since superseded -- is in **`docs/decision-history.md`**
+rejected, the sections since superseded -- is in **`docs/architecture/decision-history.md`**
 (the archive of this file to 2026-11-18). Search it by the heading named in
 *(history: ...)* when you need the why. Where the two disagree, this file wins.
 
 Code comments and migrations older than 2026-11-18 that say "see CLAUDE.md" mean the
-passage now in `docs/decision-history.md` (migrations are checksummed and cannot be
+passage now in `docs/architecture/decision-history.md` (migrations are checksummed and cannot be
 re-worded).
 
-Companion documents: `FRONTEND.md` (client rules), `universalpos.md` (current status,
+Companion documents: `docs/frontend/FRONTEND.md` (client rules), `docs/development/universalpos.md` (current status,
 local credentials, printers, change log), `README.md` (setup and commands),
 `docs/` (deploy, billing terms, print agent, scheduler, GST review).
 
@@ -317,7 +317,7 @@ active memberships in scope.
   partition is mandatory and must stay empty (asserted after every test file). The
   partition job runs as the owner and enables RLS, creates the policy and revokes the
   app role **in the same transaction** as each new partition. Recovery is
-  `scripts/recover-default-audit-partition.mts` (`--dry-run` first).
+  `scripts/maintenance/recover-default-audit-partition.mts` (`--dry-run` first).
 - Fixtures **upsert; they never delete a tenant or a membership**. A membership that
   has acted is pinned by `ON DELETE RESTRICT`; revocation is `status = 'revoked'`.
 - **Staff erasure is anonymisation in place** at day 135; audit-row actor snapshots
@@ -673,8 +673,8 @@ anything, asserted by `frontend/tests/reactSingleInstance.test.ts`.
 **Pending qualified GST review.** The place-of-supply logic and one sample invoice of
 each treatment must be reviewed by someone who files GST returns, as must one sample
 bill with a Round off line and, before a Dubai restaurant goes live, a UAE VAT
-invoice. The samples, assumptions and open questions are in `docs/gst-review.md`; the
-reviewer checklist is at the foot of `docs/billing-terms.md`. Do not describe any of
+invoice. The samples, assumptions and open questions are in `docs/backend/gst-review.md`; the
+reviewer checklist is at the foot of `docs/backend/billing-terms.md`. Do not describe any of
 it as GST-approved until that review is recorded there.
 
 ## Working agreement
@@ -687,5 +687,5 @@ it as GST-approved until that review is recorded there.
   has a failing test proving it is blocked.
 - Prefer clean, minimal code. Comment only the non-obvious *why*.
 - When a decision is made, state the current rule here, briefly. Long reasoning and
-  the change record go in `universalpos.md`'s change log; `docs/decision-history.md` is
+  the change record go in `docs/development/universalpos.md`'s change log; `docs/architecture/decision-history.md` is
   an archive and is not extended.

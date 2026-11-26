@@ -28,7 +28,7 @@ import { PLATFORM_ENTRY, superadminPath, superadminSectionFromPath } from '../..
  * ###########################################################################
  * A FOURTH DOCUMENT, NOT A ROUTE TREE INSIDE ADMIN.
  *
- * FRONTEND.md section 12 records the decision as "branch admin and superadmin
+ * docs/frontend/FRONTEND.md section 12 records the decision as "branch admin and superadmin
  * share one shell, two route trees", with a gate on the import graph to stop a
  * superadmin screen importing a tenant-scoped component. This ships the same
  * intent one step further: a separate Vite entry, so the separation is enforced
@@ -40,7 +40,7 @@ import { PLATFORM_ENTRY, superadminPath, superadminSectionFromPath } from '../..
  * impersonation sessions puts the control plane's surface area in a document
  * handed to every customer -- and a dynamic import or a hoisted shared chunk
  * would defeat an import-graph rule while shipping it anyway. What IS shared is
- * what FRONTEND.md actually cares about: one design system, one truth model
+ * what docs/frontend/FRONTEND.md actually cares about: one design system, one truth model
  * (`lib/remote.ts`), one storage adapter.
  *
  * The redesign (see globals.css) goes further on the visual side than the

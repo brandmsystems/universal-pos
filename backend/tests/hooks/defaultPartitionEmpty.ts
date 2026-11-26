@@ -63,7 +63,7 @@ afterAll(async () => {
           '`ensureAuditPartitionFor(owner, when)` before inserting a backdated row ' +
           '-- it uses the same DDL the partition job does. To relocate rows that ' +
           'are already stranded: node node_modules/tsx/dist/cli.mjs ' +
-          'scripts/recover-default-audit-partition.mts',
+          'scripts/maintenance/recover-default-audit-partition.mts',
       );
     }
   } finally {

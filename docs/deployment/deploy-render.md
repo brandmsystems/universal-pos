@@ -49,7 +49,7 @@ Wait until `katkitchen-db` shows **Available**.
 
 ## 2. Create the three roles (once)
 
-Render gives no superuser. `scripts/bootstrap-managed.mts` uses the database's
+Render gives no superuser. `scripts/deployment/bootstrap-managed.mts` uses the database's
 admin user to do what `database/bootstrap/*.sql` does locally: it creates the
 `katkitchen_owner`, `katkitchen_app` and `katkitchen_platform_readonly` roles,
 hands the database to `katkitchen_owner`, and installs `citext` in the
@@ -105,7 +105,7 @@ deleted from the service's environment, or left: nothing reads it.)
 > once, against the live database (its External URL in `DATABASE_URL_OWNER`):
 >
 > 1. **Back it up first** (`pg_dump -Fc`).
-> 2. `corepack pnpm tsx scripts/move-to-basic.mts --dry-run`, read what it would
+> 2. `corepack pnpm tsx scripts/database/move-to-basic.mts --dry-run`, read what it would
 >    move, then run it without `--dry-run`. It moves every live subscription to
 >    Basic through the ordinary plan change and retires Standard and Pro. Nothing
 >    is deleted.

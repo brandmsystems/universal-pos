@@ -1,5 +1,5 @@
 # Render Blueprint: FREE TRIAL. For demos only -- see render.yaml for the real one.
-# Choose this file in Render's "Blueprint Path" field. Steps: docs/deploy-render.md.
+# Choose this file in Render's "Blueprint Path" field. Steps: docs/deployment/deploy-render.md.
 #
 # What free gives up, and why each is acceptable for a demo and no more:
 #   - Services sleep after 15 minutes idle; the first request waits ~1 minute.
@@ -37,7 +37,7 @@ services:
     envVars:
       # Entered when the Blueprint is created (Render prompts for sync: false values only then;
       # NOT inside an env group, where Render silently ignores them). Each url carries a
-      # role password from scripts/bootstrap-managed.mts, so it cannot live in this file.
+      # role password from scripts/deployment/bootstrap-managed.mts, so it cannot live in this file.
       # Internal hostname, all on 5432: free Postgres has no pooler.
       - key: DATABASE_URL_OWNER
         sync: false

@@ -8,7 +8,7 @@ import { headsForLine, lineTax } from '../../src/modules/tax/taxHeads.js';
 import { nearestRupeeRoundOff } from '../../src/modules/payments/billing.js';
 
 /**
- * The sample invoices in docs/gst-review.md, asserted figure for figure, so the
+ * The sample invoices in docs/backend/gst-review.md, asserted figure for figure, so the
  * document a GST reviewer reads cannot drift from what the code does. These pin
  * CURRENT behaviour; they do not claim it is correct in law. Every figure the
  * review may overturn is named in that document's open questions, and a reviewer's

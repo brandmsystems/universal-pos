@@ -76,7 +76,7 @@ try {
   await client.query(`ALTER DATABASE ${database} SET timezone = 'UTC'`);
 
   // Step 2: the database shape, from the one definition of it.
-  const sqlPath = fileURLToPath(new URL('../database/bootstrap/01_database.sql', import.meta.url));
+  const sqlPath = fileURLToPath(new URL('../../database/bootstrap/01_database.sql', import.meta.url));
   const sql = readFileSync(sqlPath, 'utf8')
     .split('\n')
     .filter((line) => !line.startsWith('\\'))

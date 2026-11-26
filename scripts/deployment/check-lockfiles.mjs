@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 // A second lockfile means the dependency set that was verified and the one that
 // gets installed can diverge without anyone noticing. Runs on preinstall and in CI.
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const FOREIGN = ['package-lock.json', 'yarn.lock', 'bun.lockb'];
 
 const found = FOREIGN.filter((name) => existsSync(path.join(root, name)));

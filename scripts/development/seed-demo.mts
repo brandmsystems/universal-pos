@@ -15,13 +15,13 @@
  */
 import { randomBytes, randomInt, randomUUID } from 'node:crypto';
 import pg from 'pg';
-import { provisionTenant } from '../backend/src/modules/platform/provisioning.js';
-import { seedPlatformAuthz } from '../backend/src/modules/authz/seed.js';
-import { hashSecret, checkPinPolicy } from '../backend/src/modules/auth/deviceAuth.js';
-import { publishEntitlement } from '../backend/src/modules/platform/entitlements.js';
-import { ensureStandardPlans } from '../backend/src/modules/platform/planCatalogue.js';
-import { env } from '../backend/src/config/env.js';
-import { hashPlatformPassword } from '../backend/src/modules/auth/platformAuth.js';
+import { provisionTenant } from '../../backend/src/modules/platform/provisioning.js';
+import { seedPlatformAuthz } from '../../backend/src/modules/authz/seed.js';
+import { hashSecret, checkPinPolicy } from '../../backend/src/modules/auth/deviceAuth.js';
+import { publishEntitlement } from '../../backend/src/modules/platform/entitlements.js';
+import { ensureStandardPlans } from '../../backend/src/modules/platform/planCatalogue.js';
+import { env } from '../../backend/src/config/env.js';
+import { hashPlatformPassword } from '../../backend/src/modules/auth/platformAuth.js';
 
 const SLUG = process.env['DEMO_SLUG'] ?? 'spicegarden';
 const EMAIL = process.env['DEMO_EMAIL'] ?? 'owner@spicegarden.test';

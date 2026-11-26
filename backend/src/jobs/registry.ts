@@ -244,7 +244,7 @@ async function unattributableActions(client: pg.ClientBase): Promise<JobOutcome>
  * minutes, so its absence is detectable in minutes.
  *
  * It does NOT solve the problem -- something outside still has to ask. See
- * `docs/scheduler-monitoring.md`.
+ * `docs/deployment/scheduler-monitoring.md`.
  */
 async function heartbeat(client: pg.ClientBase): Promise<JobOutcome> {
   const result = await client.query<{ now: string }>(`SELECT now()::text AS now`);

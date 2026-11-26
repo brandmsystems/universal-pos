@@ -10,11 +10,11 @@ older CLAUDE.md until 2026-11-18).
 | Read | For |
 |---|---|
 | `CLAUDE.md` | the current rules and decisions (the spec) |
-| `FRONTEND.md` | client rules: truth model, money, idempotency keys, printing |
-| `universalpos.md` | what exists now, local credentials, printers, the change log |
+| `docs/frontend/FRONTEND.md` | client rules: truth model, money, idempotency keys, printing |
+| `docs/development/universalpos.md` | what exists now, local credentials, printers, the change log |
 | `README.md` | setup, ports, day-to-day commands |
-| `docs/decision-history.md` | the reasoning behind past decisions (archive; do not extend) |
-| `docs/gst-review.md` | GST samples and open questions -- **pending qualified review** |
+| `docs/architecture/decision-history.md` | the reasoning behind past decisions (archive; do not extend) |
+| `docs/backend/gst-review.md` | GST samples and open questions -- **pending qualified review** |
 
 ## Rules an agent must not break (each is explained in CLAUDE.md)
 
@@ -52,5 +52,5 @@ pnpm build:web
 
 Plan before code on anything non-trivial and wait for approval; ask one specific
 question rather than guess; stay in scope; no placeholder implementations. Record a
-new decision in `CLAUDE.md` (and its long form in `universalpos.md`'s change log), not
+new decision in `CLAUDE.md` (and its long form in `docs/development/universalpos.md`'s change log), not
 here.

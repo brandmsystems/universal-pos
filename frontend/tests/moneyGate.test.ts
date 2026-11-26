@@ -3,7 +3,7 @@ import { readdirSync, readFileSync, statSync } from 'node:fs';
 import path from 'node:path';
 
 /**
- * FRONTEND.md §3: one money primitive, and "/ 100 appears in exactly one file".
+ * docs/frontend/FRONTEND.md §3: one money primitive, and "/ 100 appears in exactly one file".
  * This is the gate that rule always claimed and never had.
  *
  * Two lexical rules over every source file except `lib/money.ts`:

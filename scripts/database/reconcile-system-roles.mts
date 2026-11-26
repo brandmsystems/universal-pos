@@ -34,8 +34,8 @@
  * ###########################################################################
  */
 import pg from 'pg';
-import { seedPermissionCatalogue, reconcileAllTenantSystemRoles, catalogueDrift } from '../backend/src/modules/authz/seed.js';
-import { env } from '../backend/src/config/env.js';
+import { seedPermissionCatalogue, reconcileAllTenantSystemRoles, catalogueDrift } from '../../backend/src/modules/authz/seed.js';
+import { env } from '../../backend/src/config/env.js';
 
 async function main(): Promise<void> {
   const client = new pg.Client({ connectionString: env.ownerDatabaseUrl() });

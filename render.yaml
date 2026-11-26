@@ -1,12 +1,12 @@
 # Render Blueprint: everything -- the web clients, the API, the scheduler,
-# Postgres and Redis. Setup steps, in order: docs/deploy-render.md.
+# Postgres and Redis. Setup steps, in order: docs/deployment/deploy-render.md.
 
 databases:
   - name: katkitchen-db
     # Render may suffix this (katkitchen_fc08). If so, set UNIVERSALPOS_DATABASE_NAME
     # for the bootstrap and use the suffixed name in every DATABASE_URL_*.
     databaseName: katkitchen
-    # Render's admin user. Used ONCE, by scripts/bootstrap-managed.mts, to create
+    # Render's admin user. Used ONCE, by scripts/deployment/bootstrap-managed.mts, to create
     # the three roles; it is never given to the API or the scheduler.
     user: katkitchen_admin
     postgresMajorVersion: "16"
@@ -43,7 +43,7 @@ services:
     envVars:
       # Entered when the Blueprint is created (Render prompts for sync: false values only then;
       # NOT inside an env group, where Render silently ignores them). Each url carries a
-      # role password from scripts/bootstrap-managed.mts, so it cannot live in this file.
+      # role password from scripts/deployment/bootstrap-managed.mts, so it cannot live in this file.
       # Internal hostname; only DATABASE_URL_APP uses the pooler (port 6432).
       - key: DATABASE_URL_OWNER
         sync: false

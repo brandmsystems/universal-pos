@@ -152,7 +152,7 @@ export function PrintAgentPanel(props: { api: Api; branchId: string | null }): R
           </div>
           <p className="m-0 text-muted-foreground">
             Then run <code>node universalpos-print-agent.mjs --check</code> in that folder: it lists the printers and whether each
-            answers. To start it with Windows, see the setup guide (universalpos.md, section 5.5).
+            answers. To start it with Windows, see the setup guide (docs/development/universalpos.md, section 5.5).
           </p>
         </div>
       ) : (

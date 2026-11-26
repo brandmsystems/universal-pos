@@ -105,7 +105,7 @@
 
   /* a.inkOrange: the dark orange used as TEXT (active nav label, composition
      pill text) -- distinct from --color-primary, which is the bright fill
-     colour. Conflating the two was the exact collision FRONTEND.md 10a
+     colour. Conflating the two was the exact collision docs/frontend/FRONTEND.md 10a
      resolved once already; kept apart here on purpose. */
   --color-ink-orange: #B84300;
 }

@@ -90,7 +90,7 @@ export function boardFixture(lines: readonly BoardLine[]): Board {
     menu: MENU,
     menuVersion: '1',
     // The client parses this with parsePgTimestamp, which expects Postgres'
-    // `timestamptz::text` rather than ISO 8601 -- see FRONTEND.md 10b.
+    // `timestamptz::text` rather than ISO 8601 -- see docs/frontend/FRONTEND.md 10b.
     serverNow: now.toISOString().replace('T', ' ').replace('Z', '+00'),
     taxOptions: { b2bCaptureEnabled: false },
   };

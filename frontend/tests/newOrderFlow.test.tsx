@@ -602,7 +602,7 @@ describe('the order screen layout', () => {
     const list = host.querySelector('[aria-label="Order lines"]')!;
     expect(list.className).toContain('overflow-y-auto');
     expect(list.querySelectorAll('li')).toHaveLength(30);
-    // Each line says its price; nothing on the screen adds them up (FRONTEND.md section 2).
+    // Each line says its price; nothing on the screen adds them up (docs/frontend/FRONTEND.md section 2).
     expect(list.textContent).toContain('₹10.00 each');
     expect(list.textContent).toContain('₹39.00 each');
     // The only totals are the server's estimate, labelled as one.

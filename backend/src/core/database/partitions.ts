@@ -158,7 +158,7 @@ async function main(): Promise<void> {
     if (stranded.platform > 0 || stranded.app > 0) {
       console.error(
         `DEFAULT partition is not empty (platform=${stranded.platform} app=${stranded.app}). ` +
-          `The partition job has been failing. Recover with scripts/recover-default-audit-partition.mts (--dry-run first).`,
+          `The partition job has been failing. Recover with scripts/maintenance/recover-default-audit-partition.mts (--dry-run first).`,
       );
       process.exitCode = 1;
     }

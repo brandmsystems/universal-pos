@@ -1,4 +1,4 @@
-# One lockfile for the whole repo, which is what scripts/check-lockfiles.mjs is
+# One lockfile for the whole repo, which is what scripts/deployment/check-lockfiles.mjs is
 # guarding: a second lockfile lets the dependency set that was verified and the
 # one that gets installed diverge without anyone noticing.
 packages:

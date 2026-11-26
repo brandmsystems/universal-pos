@@ -22,8 +22,8 @@
  * ###########################################################################
  */
 import pg from 'pg';
-import { seedAdjustmentReasons } from '../backend/src/modules/orders/adjustmentReasonSeed.js';
-import { env } from '../backend/src/config/env.js';
+import { seedAdjustmentReasons } from '../../backend/src/modules/orders/adjustmentReasonSeed.js';
+import { env } from '../../backend/src/config/env.js';
 
 async function main(): Promise<void> {
   const client = new pg.Client({ connectionString: env.ownerDatabaseUrl() });

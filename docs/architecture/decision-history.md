@@ -42,7 +42,7 @@ db/ deploy/ docs/ scripts/   repo root
 `modules/platform`, `modules/notifications` (the outbox) and `modules/billing` are
 the control plane; everything else in `modules/` is the tenant plane.
 
-The frontend has its own guardrails file: `FRONTEND.md` -- the client truth model,
+The frontend has its own guardrails file: `docs/frontend/FRONTEND.md` -- the client truth model,
 provenance, money, optimistic-write locality, idempotency-key custody, the
 draft/queued/committed ladder and the degradation vocabulary. Rules there name
 their enforcement mechanism the same way rules here do.
@@ -1783,7 +1783,7 @@ recorded exclusion, not an oversight.
 were correct for the facts at the time — the same reasoning that rejects
 credit-and-rebill. Input tax credit for those periods is lost to the tenant, and
 that is a consequence of registering late rather than a defect in our document.
-**It is stated in the billing terms** (`docs/billing-terms.md`), because a tenant
+**It is stated in the billing terms** (`docs/backend/billing-terms.md`), because a tenant
 will ask and the answer has to have been given in advance.
 
 ### Numbering
@@ -2112,7 +2112,7 @@ reviewed by someone who actually files GST returns.** Not because the model look
 wrong, but because it is the one piece in this project where an error has a legal
 consequence rather than a technical one, and it is cheap to check now and
 expensive to unwind later. The reviewer checklist is at the foot of
-`docs/billing-terms.md`.
+`docs/backend/billing-terms.md`.
 
 ## Build order — do not skip ahead
 
@@ -3698,7 +3698,7 @@ to: `closeSession` requires only that nothing is owed. Void, comp and discount h
 their only screen in the deleted order pane, and the domain refuses them once the
 order is in billing anyway -- so on Basic they are not offered at all now.
 
-The till prints the labelled copies (customer, kitchen, counter -- FRONTEND.md) once
+The till prints the labelled copies (customer, kitchen, counter -- docs/frontend/FRONTEND.md) once
 the bill is PAID, never on Confirm (0078): the two bill copies are ONE counted
 `POST /pos/bill/:id/print`, and the kitchen copy is the ticket text READ from
 `GET /pos/order/:id/tickets`, so a reprint of it creates no print job and no ticket

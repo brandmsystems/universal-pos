@@ -24,7 +24,7 @@ import {
  * `platform.user.create` HAS BEEN IN THE CATALOGUE SINCE PHASE 1.
  *
  * Nothing ever served it. The only way to add a Salesperson, Support or
- * Billing account was `scripts/seed-platform-user.mts` -- shell and database
+ * Billing account was `scripts/development/seed-platform-user.mts` -- shell and database
  * access, reserved in its own docstring for bootstrapping the first Super
  * Admin. So a Super Admin could see this console's other screens and still
  * could not onboard the next person who needed one. Same shape as `POST

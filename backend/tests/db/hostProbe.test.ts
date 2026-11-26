@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import pg from 'pg';
 import { assertCheckedSet } from '../helpers/db.js';
-import { REQUIREMENTS, probeHost, type ProbeResult } from '../../../scripts/probe-host.mjs';
+import { REQUIREMENTS, probeHost, type ProbeResult } from '../../../scripts/deployment/probe-host.mjs';
 
 /**
  * ###########################################################################

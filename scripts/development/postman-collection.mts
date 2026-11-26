@@ -1,6 +1,6 @@
 /**
  * Writes a Postman collection (v2.1) of every API route, plus a local
- * environment, into docs/postman/.
+ * environment, into docs/api/postman/.
  *
  * Generated FROM the route table, not written beside it: a hand-kept
  * collection is a list sitting next to something that expands, and the first
@@ -15,11 +15,11 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { allRoutes } from '../backend/src/routes/index.js';
-import type { RouteDefinition } from '../backend/src/core/middleware/routeRegistry.js';
+import { allRoutes } from '../../backend/src/routes/index.js';
+import type { RouteDefinition } from '../../backend/src/core/middleware/routeRegistry.js';
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const OUT = path.join(ROOT, 'docs', 'postman');
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
+const OUT = path.join(ROOT, 'docs', 'api', 'postman');
 
 type Example = { body?: unknown; query?: Record<string, string>; capture?: string; note?: string };
 
@@ -323,4 +323,4 @@ if (counted !== routes.length) {
 }
 const unused = Object.keys(EXAMPLES).filter((k) => !routes.some((r) => `${r.method} ${r.url}` === k));
 if (unused.length > 0) throw new Error(`examples for routes that do not exist: ${unused.join(', ')}`);
-console.log(`wrote ${counted} requests to docs/postman/`);
+console.log(`wrote ${counted} requests to docs/api/postman/`);

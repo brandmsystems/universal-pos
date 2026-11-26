@@ -11,7 +11,7 @@ WORKDIR /app
 RUN corepack enable
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY scripts/check-lockfiles.mjs ./scripts/
+COPY scripts/deployment/check-lockfiles.mjs ./scripts/deployment/
 COPY backend/package.json ./backend/
 COPY packages ./packages
 COPY shared ./shared

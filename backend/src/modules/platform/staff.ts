@@ -12,7 +12,7 @@ import {
  * ###########################################################################
  * THE ONLY CALLER THIS EVER HAD WAS A SCRIPT.
  *
- * `scripts/seed-platform-user.mts` bootstraps the FIRST superadmin -- an
+ * `scripts/development/seed-platform-user.mts` bootstraps the FIRST superadmin -- an
  * account created by nobody, run with shell and database access. Every
  * platform user after that one has a creator, and `platform.user.create` has
  * been in the permission catalogue since it was written, but nothing served
