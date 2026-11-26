@@ -1,0 +1,12 @@
+/*
+ * A loading skeleton takes its space at once, so nothing jumps when the data
+ * lands, but is only SEEN once the wait is noticeable: a read that answers
+ * inside 150ms never flashes grey bars. Nothing is delayed but the paint.
+ */
+@keyframes skeleton-appear {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.skeleton-appear {
+  animation: skeleton-appear 0s linear 150ms both;
+}

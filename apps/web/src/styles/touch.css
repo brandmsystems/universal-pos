@@ -1,0 +1,12 @@
+/*
+ * Touch, once, for every app (admin, POS, console). On a finger-driven screen
+ * a form control is at least 40px tall, the size a fingertip lands on without
+ * hitting its neighbour. A mouse keeps the compact sizes, so desktop layouts do
+ * not move.
+ */
+@media (pointer: coarse) {
+  select,
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]) {
+    min-height: 40px;
+  }
+}

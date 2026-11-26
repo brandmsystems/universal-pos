@@ -1,0 +1,16 @@
+{
+  // The strictness every package in the repo shares. A package may add to it
+  // (lib, types, jsx) but never loosen it: `exactOptionalPropertyTypes` and
+  // `noUncheckedIndexedAccess` have each caught real defects here.
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noFallthroughCasesInSwitch": true,
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "skipLibCheck": true
+  }
+}

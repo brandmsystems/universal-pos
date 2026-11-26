@@ -1,0 +1,14 @@
+# Sourced by the nginx image's entrypoint before the config template is filled.
+#
+# API_UPSTREAM is host[:port]; the template adds the scheme. Pasting the API's
+# address as Render shows it -- https://katkitchen-api.onrender.com/ -- produced
+# https://https://... and a 500 on every /api call. Strip both ends rather than
+# document the trap.
+#
+# Unset is still a refusal to start -- a web that cannot reach the API must not
+# pass a health check -- but one that says which setting is missing.
+: "${API_UPSTREAM:?is not set: the API host nginx forwards /api to, e.g. katkitchen-api.onrender.com or api:8080}"
+API_UPSTREAM="${API_UPSTREAM#http://}"
+API_UPSTREAM="${API_UPSTREAM#https://}"
+API_UPSTREAM="${API_UPSTREAM%%/*}"
+export API_UPSTREAM

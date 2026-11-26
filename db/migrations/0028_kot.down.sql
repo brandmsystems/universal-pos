@@ -1,0 +1,12 @@
+DROP INDEX IF EXISTS app.print_job_by_kot_idx;
+DROP INDEX IF EXISTS app.print_job_pending_idx;
+DROP TABLE IF EXISTS app.print_job;
+DROP INDEX IF EXISTS app.kot_line_by_order_line_idx;
+DROP INDEX IF EXISTS app.kot_line_by_kot_idx;
+DROP TABLE IF EXISTS app.kot_line;
+DROP INDEX IF EXISTS app.kot_by_station_state_idx;
+DROP INDEX IF EXISTS app.kot_sequence_no_unique;
+DROP TABLE IF EXISTS app.kot;
+DROP TABLE IF EXISTS app.kot_fire;
+DROP TABLE IF EXISTS app.kot_sequence;
+DROP TABLE IF EXISTS app.fire_sequence;

@@ -1,0 +1,16 @@
+/*
+ * Motion, once, for every app (admin, POS, console). Transitions and the
+ * small animations are decoration: when the device asks for reduced motion
+ * they are cut to an instant, never to a different state. Delays stay -- the
+ * skeleton's 150ms wait (skeleton.css) is timing, not movement.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

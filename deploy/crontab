@@ -1,0 +1,23 @@
+# Generated from src/jobs/registry.ts -- do not hand-edit.
+#
+# The schedule lives in the registry as DATA; this file is a projection of it
+# for one particular host. Swapping crontab for EventBridge means writing a
+# different projection, not touching a single job.
+#
+# Every line pipes to the same log so a job that stopped being scheduled is
+# visible as an absence in one place.
+
+SHELL=/bin/sh
+PATH=/usr/local/bin:/usr/bin:/bin
+
+15 1 * * *  cd /app && node_modules/.bin/tsx apps/api/src/jobs/runner.ts usage.rollup >> /var/log/jobs.log 2>&1
+* * * * *   cd /app && node_modules/.bin/tsx apps/api/src/jobs/runner.ts outbox.drain >> /var/log/jobs.log 2>&1
+* * * * *   cd /app && node_modules/.bin/tsx apps/api/src/jobs/runner.ts print.drain >> /var/log/jobs.log 2>&1
+30 2 * * *  cd /app && node_modules/.bin/tsx apps/api/src/jobs/runner.ts stock.reconciliation >> /var/log/jobs.log 2>&1
+0 3 * * *   cd /app && node_modules/.bin/tsx apps/api/src/jobs/runner.ts audit.partitions >> /var/log/jobs.log 2>&1
+0 4 * * *   cd /app && node_modules/.bin/tsx apps/api/src/jobs/runner.ts ladder.recompute >> /var/log/jobs.log 2>&1
+45 3 * * *  cd /app && node_modules/.bin/tsx apps/api/src/jobs/runner.ts claim.purge >> /var/log/jobs.log 2>&1
+50 3 * * *  cd /app && node_modules/.bin/tsx apps/api/src/jobs/runner.ts auth_attempt.purge >> /var/log/jobs.log 2>&1
+0 5 * * *   cd /app && node_modules/.bin/tsx apps/api/src/jobs/runner.ts user.credential_check >> /var/log/jobs.log 2>&1
+0 * * * *   cd /app && node_modules/.bin/tsx apps/api/src/jobs/runner.ts audit.unattributable >> /var/log/jobs.log 2>&1
+*/5 * * * * cd /app && node_modules/.bin/tsx apps/api/src/jobs/runner.ts scheduler.heartbeat >> /var/log/jobs.log 2>&1

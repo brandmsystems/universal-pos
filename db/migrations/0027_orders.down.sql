@@ -1,0 +1,10 @@
+DROP TRIGGER IF EXISTS order_line_invariants ON app.order_line;
+DROP FUNCTION IF EXISTS app.assert_order_line_invariants();
+DROP TRIGGER IF EXISTS order_line_fired_is_immutable ON app.order_line;
+DROP FUNCTION IF EXISTS app.deny_fired_line_mutation();
+DROP TABLE IF EXISTS app.order_line;
+DROP INDEX IF EXISTS app.sales_order_by_session_idx;
+DROP TABLE IF EXISTS app.sales_order;
+DROP TABLE IF EXISTS app.adjustment_reason_kind;
+DROP TRIGGER IF EXISTS adjustment_reason_set_updated_at ON app.adjustment_reason;
+DROP TABLE IF EXISTS app.adjustment_reason;

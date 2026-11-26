@@ -1,0 +1,13 @@
+;; Local development only. Every other environment injects this file from the
+;; secret store; nothing here is a real credential.
+;;
+;; Plaintext rather than a SCRAM verifier on purpose: with only a stored verifier
+;; PgBouncer can authenticate the CLIENT but has nothing to authenticate itself
+;; to Postgres with, so pass-through needs either this or an auth_query -- and an
+;; auth_query means giving the pooler a role that can read pg_authid.
+;;
+;; The pooler holds no superuser. These are the three application roles, and
+;; nothing else.
+"katkitchen_owner" "change_me"
+"katkitchen_app" "change_me"
+"katkitchen_platform_readonly" "change_me"

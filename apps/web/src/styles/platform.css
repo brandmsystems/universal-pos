@@ -1,0 +1,113 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "./motion.css";
+@import "./touch.css";
+
+/**
+ * ###########################################################################
+ * A NEW PALETTE, NOT A PORT -- AND THE ONE THING KEPT FROM THE OLD ONE IS WHY.
+ *
+ * The old tokens.ts said it plainly: "the most consequential mistake available
+ * here is forgetting which of those two [admin, platform] you are looking
+ * at." That is not decoration, it is the reason this file exists as a SECOND
+ * theme rather than admin's theme with different accents. This redesign
+ * leans into it harder than the original did: admin is light and warm
+ * (orange on white), platform is now dark end to end, not just a header bar.
+ * A glance at either window answers "which one is this" before a single
+ * word is read.
+ *
+ * The accent is green, not orange -- admin's colour is reserved for admin.
+ * Status semantics (good/warn/critical) keep the same MEANING as the old
+ * tokens.ts (`tenantStatusTone`, `subscriptionStatusTone`) but the values
+ * are re-picked for contrast against a dark surface rather than a white one;
+ * a light-mode warning amber reads muddy on near-black.
+ * ###########################################################################
+ *
+ * ###########################################################################
+ * EVERY COLOUR BELOW THAT DOES A CHART'S OR A STATUS'S JOB IS VALIDATED, NOT CHOSEN.
+ *
+ *   node scripts/validate_palette.js "#199e70" --mode dark --surface "#15151D"
+ *   -> lightness band PASS, chroma floor PASS, contrast vs surface PASS (>=3:1)
+ *
+ * `--color-primary` and the dashboard's single-series magnitude hue are the
+ * SAME green deliberately: one colour standing for both "this is the brand"
+ * and "this is the metric on the chart" is coherent rather than a
+ * coincidence, and there is only one series on that chart to collide with.
+ *
+ * The status triad (good/warning/critical) is the skill's own fixed,
+ * never-themed palette -- the same hexes admin's viz.ts uses on a light
+ * surface, confirmed here to clear 3:1 on this dark one too. They are
+ * reserved: never reused as a chart series, never the only signal (a word
+ * ships beside every one).
+ * ###########################################################################
+ */
+@theme {
+  --font-ui: Archivo, 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+  /* A genuine redesign, not admin's flat 4px: a control-plane console reads
+     as a dashboard, not a form, and a slightly larger radius is part of that
+     read. Still one flat scale rather than a graded one -- consistency
+     matters more here than a size-graded system nothing asked for. */
+  --radius: 10px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 14px;
+
+  --color-background: #0A0A0F;
+  /* Soft white, not #FFF: near-white on near-black at full strength reads as
+     glare over a long session. Still ~14:1 on the card surface. */
+  --color-foreground: #E4E4EA;
+  --color-card: #15151D;
+  --color-card-foreground: #E4E4EA;
+  --color-popover: #17171F;
+  --color-popover-foreground: #E4E4EA;
+  --color-border: #24242D;
+  --color-input: #34343F;
+
+  --color-primary: #199e70;
+  --color-primary-foreground: #FFFFFF;
+
+  --color-secondary: #1C1C25;
+  --color-secondary-foreground: #E4E4EA;
+
+  --color-muted: #1A1A22;
+  --color-muted-foreground: #9C9CAA;
+  /* Third step of the text ladder: column labels, codes, counts. Clears 4.5:1
+     on the card surface, so it is still body-text legible. */
+  --color-subtle-foreground: #82828F;
+
+  /* The active-nav-row tint and any subtle highlight surface. */
+  --color-accent: #14251F;
+  --color-accent-foreground: #6FE3B8;
+
+  --color-destructive: #d03b3b;
+  --color-destructive-foreground: #FFFFFF;
+
+  --color-ring: #199e70;
+
+  /* The skill's fixed status triad, validated on THIS surface -- see the
+     comment above. `tenantStatusTone` / `subscriptionStatusTone` in tokens.ts
+     return these class names directly. */
+  --color-status-good: #0ca30c;
+  --color-status-warn: #fab219;
+  --color-status-critical: #d03b3b;
+
+  /* The dashboard's one chart series: magnitude, one hue, same green as the
+     brand. Not reused for anything else -- a second series would need the
+     categorical order from the skill's palette, not a second pick here. */
+  --color-chart-1: #199e70;
+}
+
+/* Tailwind v4's bare `border` is currentColor. Without this every Card and
+   table row drew its outline in the text colour -- near-white on near-black. */
+@layer base {
+  *, ::before, ::after { border-color: var(--color-border); }
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-ui);
+}

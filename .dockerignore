@@ -1,0 +1,24 @@
+# The build context, kept to source.
+#
+# Without this, a Windows or macOS node_modules is copied into a Linux image --
+# native modules built for the wrong platform, and a context that takes minutes
+# to transfer. The Dockerfiles install their own dependencies from the lockfile,
+# which is the only copy that should ever be in an image.
+node_modules
+**/node_modules
+dist
+**/dist
+.git
+.env
+.env.*
+!.env.example
+*.log
+
+# Nothing in the image needs these, and every one of them is a cache invalidation
+# on a file that cannot affect the build.
+tests
+apps/*/tests
+docs
+apps/web/public/brand
+*.md
+!README.md

@@ -1,0 +1,20 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+
+# Transfer archives. Named one at a time until this pattern replaced the
+# whack-a-mole: phase9, then final, then three at once for the GST change.
+# A bundle is how code ARRIVES; it is not part of the code.
+*.tar.gz
+*.tgz
+*.zip
+*.tsbuildinfo
+
+Claude outputs/
+
+manifest.txt
+drift-list.txt

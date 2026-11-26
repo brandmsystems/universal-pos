@@ -1,0 +1,16 @@
+DROP TRIGGER IF EXISTS recipe_line_published_is_immutable ON app.recipe_line;
+DROP FUNCTION IF EXISTS app.deny_published_recipe_line_rewrite();
+DROP TRIGGER IF EXISTS recipe_version_published_is_immutable ON app.recipe_version;
+DROP FUNCTION IF EXISTS app.deny_published_recipe_rewrite();
+DROP TABLE IF EXISTS app.recipe_version_expansion;
+DROP INDEX IF EXISTS app.recipe_line_by_sub_idx;
+DROP INDEX IF EXISTS app.recipe_line_by_product_idx;
+DROP INDEX IF EXISTS app.recipe_line_by_version_idx;
+DROP TABLE IF EXISTS app.recipe_line;
+DROP INDEX IF EXISTS app.recipe_version_published_idx;
+DROP TABLE IF EXISTS app.recipe_version;
+DROP INDEX IF EXISTS app.recipe_one_per_modifier_option;
+DROP INDEX IF EXISTS app.recipe_one_per_menu_item;
+DROP TRIGGER IF EXISTS recipe_set_updated_at ON app.recipe;
+DROP TABLE IF EXISTS app.recipe;
+DROP TABLE IF EXISTS app.recipe_publication_sequence;

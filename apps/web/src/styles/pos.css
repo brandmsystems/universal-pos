@@ -1,0 +1,73 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "./motion.css";
+@import "./touch.css";
+
+/**
+ * ###########################################################################
+ * THE CONTRAST RATIOS IN tokens.ts ARE THE SPEC; THESE ARE ITS TRANSCRIPTION.
+ *
+ * Read tokens.ts first. Every colour below was picked against a measured
+ * ratio -- brand orange is never text because it fails AA at 2.09-3.18:1,
+ * `inkOrange` is the one exception at 5.47:1, text on a filled gradient
+ * button is black (6.60:1) never white (3.18:1). None of that changes here;
+ * this redesign moves the styling engine from inline `style` objects to
+ * Tailwind classes and leaves the numbers alone, the same discipline the KDS
+ * pass used for its own hardware constraints.
+ *
+ * Radius: 4px to 10px, matching the platform and KDS passes. Nothing ties
+ * this one to a contrast ratio or a tap floor, so it is free to move.
+ * ###########################################################################
+ */
+@theme {
+  --font-ui: Archivo, 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+  --radius: 10px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 14px;
+
+  --color-background: #F7F7F7;
+  --color-foreground: #111111;
+  --color-card: #FFFFFF;
+  --color-card-foreground: #111111;
+  --color-border: #E2E2E2;
+  --color-input: #C9C9C9;
+  --color-muted-foreground: #6B6B6B;
+
+  --color-primary: #FA5C00;
+  --color-primary-foreground: #000000;
+
+  /* The one orange a word may be -- 5.47:1 on white. Never the fill colour. */
+  --color-ink-orange: #B84300;
+
+  /* Reserved: quarantine, force-release, refused tender. Never decoration. */
+  --color-destructive: #C1121F;
+  --color-destructive-foreground: #FFFFFF;
+
+  --color-ring: #FA5C00;
+
+  /* Paid / signed in: a status, never a brand colour, so a restaurant's theme
+     does not replace it. White on it is 5.6:1. */
+  --color-paid: #1E7A46;
+
+  /* A refused PIN: the dots shake once. Cut to an instant under reduced motion (motion.css). */
+  --animate-pin-shake: pin-shake 360ms ease-in-out;
+  @keyframes pin-shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-6px); }
+    40%, 80% { transform: translateX(6px); }
+  }
+}
+
+@utility bg-brand-gradient {
+  background: linear-gradient(180deg, #F9A008, #FA5C00);
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-ui);
+}

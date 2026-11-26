@@ -1,0 +1,18 @@
+{
+  // The build, as opposed to the typecheck.
+  //
+  // The root config includes tests/ and scripts/ so `pnpm typecheck` covers
+  // them -- which also means its emit lands at dist/src/... and carries the test
+  // suite into a runtime image. This narrows the emit to src with src as the
+  // root, so the entry point is dist/server.js and nothing else ships.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    "noEmit": false,
+    "declaration": false,
+    "sourceMap": true
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["dist", "node_modules", "tests", "scripts", "web"]
+}

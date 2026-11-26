@@ -1,0 +1,10 @@
+{
+  "extends": "@katkitchen/tsconfig/node.json",
+  // Typecheck only: src, the tests, and whatever the tests import from the
+  // root scripts and the web client. The emitting build is tsconfig.build.json.
+  "compilerOptions": {
+    "noEmit": true
+  },
+  "include": ["src/**/*.ts", "tests/**/*.ts"],
+  "exclude": ["dist", "node_modules"]
+}

@@ -1,0 +1,90 @@
+# Render Blueprint: FREE TRIAL. For demos only -- see render.yaml for the real one.
+# Choose this file in Render's "Blueprint Path" field. Steps: docs/deploy-render.md.
+#
+# What free gives up, and why each is acceptable for a demo and no more:
+#   - Services sleep after 15 minutes idle; the first request waits ~1 minute.
+#   - No scheduler: Render has no free workers. Nothing prints, plan changes take
+#     up to the 5-minute cache TTL to show, nightly checks do not run.
+#   - The database is DELETED 30 days after creation, with everything in it.
+#   - No pre-deploy step: migrations and the seed are run from your PC.
+#   - No pooler: the app connects directly, which the startup probe accepts.
+
+databases:
+  - name: katkitchen-db
+    # Render may suffix this (katkitchen_fc08). If so, set KATKITCHEN_DATABASE_NAME
+    # for the bootstrap and use the suffixed name in every DATABASE_URL_*.
+    databaseName: katkitchen
+    user: katkitchen_admin
+    postgresMajorVersion: "16"
+    region: singapore
+    plan: free
+
+services:
+  - name: katkitchen-redis
+    type: keyvalue
+    region: singapore
+    plan: free
+    ipAllowList: []
+    maxmemoryPolicy: allkeys-lru
+
+  - name: katkitchen-api
+    type: web
+    runtime: docker
+    dockerfilePath: ./deploy/api.Dockerfile
+    region: singapore
+    plan: free
+    healthCheckPath: /healthz
+    envVars:
+      # Entered when the Blueprint is created (Render prompts for sync: false values only then;
+      # NOT inside an env group, where Render silently ignores them). Each url carries a
+      # role password from scripts/bootstrap-managed.mts, so it cannot live in this file.
+      # Internal hostname, all on 5432: free Postgres has no pooler.
+      - key: DATABASE_URL_OWNER
+        sync: false
+      # Free services have no pre-deploy step, so nothing migrated this database
+      # and new code met an old schema ("relation ... does not exist"). With this
+      # the container migrates and seeds, as the owner role, before the API starts
+      # (deploy/api-start.sh). Safe because a free service runs ONE instance; both
+      # steps are idempotent, and a failure stops the API rather than serving a
+      # broken schema.
+      - key: MIGRATE_ON_START
+        value: "1"
+      - key: DATABASE_URL_APP
+        sync: false
+      - key: DATABASE_URL_PLATFORM_READONLY
+        sync: false
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: katkitchen-redis
+          property: connectionString
+      - key: JWT_SIGNING_KEY
+        generateValue: true
+      - key: AUDIT_PARTITION_MONTHS_AHEAD
+        value: "3"
+      - key: TZ
+        value: UTC
+
+  - name: katkitchen-web
+    type: web
+    runtime: docker
+    dockerfilePath: ./deploy/web.Dockerfile
+    region: singapore
+    plan: free
+    healthCheckPath: /
+    envVars:
+      - key: PORT
+        value: "80"
+      # A free instance cannot RECEIVE private-network traffic, so the API is
+      # reached at its public address. Stated here rather than typed into the
+      # dashboard: a missing value stops nginx from starting. If Render gave
+      # the API a suffixed name (katkitchen-api-xxxx), change this line.
+      - key: API_SCHEME
+        value: https
+      - key: API_UPSTREAM
+        value: katkitchen-api.onrender.com
+      # Free instances sleep separately; while the web is up it keeps the API
+      # up, or the first sign-in after a quiet spell meets a sleeping API (502).
+      - key: WAKE_API
+        value: "1"
+

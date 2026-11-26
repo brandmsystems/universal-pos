@@ -1,0 +1,126 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "./motion.css";
+@import "./touch.css";
+
+/**
+ * ###########################################################################
+ * THESE VALUES ARE A COPY, AND THE COPY IS DELIBERATE -- READ tokens.ts FIRST.
+ *
+ * `tokens.ts` stays the source of truth for anything the SERVER-authored
+ * vocabulary is checked against: `FIELD_CHOICES` and `CHOICE_HELP` are read
+ * directly by `tests/http/adminSurface.test.ts`, which asserts them against a
+ * live CHECK constraint. Nothing here may become a second copy of THAT data --
+ * it never was, and stays out of this file entirely.
+ *
+ * The HEX VALUES below are different: they were never gated, and shadcn's
+ * components need them as CSS custom properties rather than as a JS object, so
+ * one honest copy is unavoidable. Every value under `@theme` is transcribed
+ * from `tokens.ts`'s `a` object and `viz.ts`'s `status` object, verbatim, not
+ * re-chosen. If a brand colour ever changes, change it in BOTH files -- there
+ * is no build step that could keep a CSS custom property and a TS const in
+ * sync automatically, so this is named rather than pretended away.
+ *
+ * `viz.ts`'s SERIES palette (the six colourblind-validated chart hues) is NOT
+ * copied here. The charts that use it stayed hand-rolled deliberately, reading
+ * `viz.ts` directly in JS as they always did -- see Dashboard.tsx. Copying
+ * those six hues into CSS as well would be exactly the kind of second
+ * declaration this comment is warning against, for values nothing here reads.
+ * ###########################################################################
+ */
+@theme {
+  --font-ui: Archivo, 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+  /* tokens.ts `a.radius` is 4px everywhere -- buttons, cards, inputs. Pills
+     (GST position, premises class) use a separate full-round radius, applied
+     with `rounded-full` at the call site rather than through this token.
+
+     shadcn's generated components reach for `rounded-md`/`rounded-lg` etc.,
+     which Tailwind's own default scale would otherwise satisfy with ITS
+     values (0.375rem, 0.5rem, ...), silently ignoring `--radius` below. The
+     four sub-scale variables pin every one of those utilities to the SAME
+     4px, rather than the usual size-graded offsets from a base --radius --
+     because the original design used one flat radius everywhere, not a
+     scale, and a scale introduced here would be a visual regression nothing
+     asked for. */
+  --radius: 4px;
+  --radius-sm: 4px;
+  --radius-md: 4px;
+  --radius-lg: 4px;
+  --radius-xl: 4px;
+
+  /* a.surface / a.card / a.hairline / a.ink* */
+  --color-background: #F7F7F7;
+  --color-foreground: #111111;
+  --color-card: #FFFFFF;
+  --color-card-foreground: #111111;
+  --color-popover: #FFFFFF;
+  --color-popover-foreground: #111111;
+  --color-border: #E2E2E2;
+  --color-input: #C9C9C9;
+
+  /* a.brandGradient's stronger stop, used flat here; the gradient itself
+     survives as `.bg-brand-gradient` below for the handful of call sites that
+     used it as a gradient rather than a flat fill. a.inkStrong is the
+     foreground: gradient buttons deliberately used near-black text on orange
+     for the highest contrast, not white. */
+  --color-primary: #FA5C00;
+  --color-primary-foreground: #000000;
+
+  /* The Cancel-button look throughout: card background, ink border applied at
+     the call site via the outline variant, ink text. */
+  --color-secondary: #FFFFFF;
+  --color-secondary-foreground: #111111;
+
+  /* a.surface background, a.inkMuted text -- the "muted" reading used for
+     hints, captions and the em-dash for a null cell. */
+  --color-muted: #F7F7F7;
+  --color-muted-foreground: #6B6B6B;
+  /* The shared Pagination's "1–10 of 47" line; the console's value. */
+  --color-subtle-foreground: #82828F;
+
+  /* The pale orange tint used for the active nav row and the composition-
+     scheme pill background in App.tsx / GstRegistration.tsx. */
+  --color-accent: #FFF6EB;
+  --color-accent-foreground: #111111;
+
+  /* a.stop: "Reserved for archive, revoke and delete. Never a heading, never
+     a border." Unchanged here -- same reservation, same colour. */
+  --color-destructive: #C1121F;
+  --color-destructive-foreground: #FFFFFF;
+
+  --color-ring: #FA5C00;
+
+  /* Not a shadcn convention -- this project's own semantic status words, from
+     viz.ts, so a screen can reach `text-status-good` etc. instead of an inline
+     hex. NEVER used as a chart series colour; viz.ts's own comment reserves
+     these for fixed meaning (good/warning/serious/critical) and forbids reuse
+     as identity. */
+  --color-status-good: #0ca30c;
+  --color-status-warning: #fab219;
+  --color-status-serious: #ec835a;
+  --color-status-critical: #d03b3b;
+
+  /* a.inkOrange: the dark orange used as TEXT (active nav label, composition
+     pill text) -- distinct from --color-primary, which is the bright fill
+     colour. Conflating the two was the exact collision FRONTEND.md 10a
+     resolved once already; kept apart here on purpose. */
+  --color-ink-orange: #B84300;
+}
+
+/**
+ * The one thing `@theme`'s flat colours cannot express. Kept as a literal
+ * utility rather than folded into `--color-primary`, because most call sites
+ * (buttons) want a SOLID fill and only a few want the two-stop gradient
+ * exactly as `a.brandGradient` defined it.
+ */
+@utility bg-brand-gradient {
+  background: linear-gradient(180deg, var(--brand-gradient-from, #F9A008), var(--color-primary));
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-ui);
+}

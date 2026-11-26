@@ -1,0 +1,10 @@
+DROP TRIGGER IF EXISTS stock_movement_applies_to_balance ON app.stock_movement;
+DROP TRIGGER IF EXISTS stock_movement_append_only ON app.stock_movement;
+DROP FUNCTION IF EXISTS app.apply_stock_movement();
+DROP FUNCTION IF EXISTS app.deny_stock_movement_rewrite();
+DROP TABLE IF EXISTS app.stock_count_line;
+DROP TABLE IF EXISTS app.stock_count;
+DROP TABLE IF EXISTS app.stock_balance;
+DROP TABLE IF EXISTS app.stock_movement;
+DROP TABLE IF EXISTS app.stock_reason_kind;
+DROP TABLE IF EXISTS app.stock_reason;

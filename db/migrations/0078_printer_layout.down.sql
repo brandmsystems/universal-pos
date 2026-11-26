@@ -1,0 +1,24 @@
+ALTER TABLE app.branch
+  DROP CONSTRAINT branch_bill_printer_fk,
+  DROP CONSTRAINT branch_bill_prints_a_copy,
+  DROP COLUMN bill_auto_print,
+  DROP COLUMN bill_copy_counter,
+  DROP COLUMN bill_copy_kitchen,
+  DROP COLUMN bill_copy_customer,
+  DROP COLUMN bill_show_payments,
+  DROP COLUMN bill_show_tax,
+  DROP COLUMN bill_show_customer,
+  DROP COLUMN bill_show_details,
+  DROP COLUMN bill_show_logo,
+  DROP COLUMN bill_printer_id;
+
+ALTER TABLE app.printer
+  DROP CONSTRAINT printer_branch_id_key,
+  DROP CONSTRAINT printer_network_is_thermal,
+  DROP CONSTRAINT printer_roll_is_portrait,
+  DROP CONSTRAINT printer_paper_fits_type,
+  DROP COLUMN font_size_px,
+  DROP COLUMN margin_mm,
+  DROP COLUMN orientation,
+  DROP COLUMN paper_size,
+  DROP COLUMN printer_type;

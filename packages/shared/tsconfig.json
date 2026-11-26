@@ -1,0 +1,14 @@
+{
+  // Compiled to dist/ because the API runs as plain JavaScript in production
+  // and Node does not import TypeScript from another package. Types are read
+  // straight from src/ (see package.json "types"), so editors and typechecks
+  // never depend on a stale build.
+  "extends": "@katkitchen/tsconfig/node.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    "declaration": true,
+    "types": []
+  },
+  "include": ["src/**/*.ts"]
+}

@@ -1,0 +1,210 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+      # Rule 8: everything stored UTC. Also makes date_trunc('month', now())
+      # deterministic for the audit partition job.
+      TZ: UTC
+      PGTZ: UTC
+    ports:
+      # 5433, not 5432: the default port is routinely taken by another project's
+      # stack, and the app talks to the POOLER anyway. A direct connection here
+      # is for psql and the migration runner, not for the application.
+      - "5433:5432"
+    command:
+      - postgres
+      - -c
+      - timezone=UTC
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+    volumes:
+      - katkitchen_pgdata:/var/lib/postgresql/data
+      # The three roles and the database are created on first init, so the local
+      # stack is never reachable as a superuser by the app.
+      - ./db/bootstrap:/bootstrap:ro
+      - ./db/bootstrap/init:/docker-entrypoint-initdb.d:ro
+
+  # ##########################################################################
+  # THE POOLER IS PART OF THE LOCAL STACK, NOT A PRODUCTION DETAIL.
+  #
+  # `SET LOCAL` requires TRANSACTION-scoped pooling. Under statement mode it is
+  # discarded, `app.current_tenant_id()` raises on every query, and RLS stops
+  # working -- the single most dangerous misconfiguration in the system.
+  #
+  # Running it locally is what makes the startup probe earn its keep: a probe
+  # that only ever sees a direct connection has never been shown to fail. The
+  # `pgbouncer-statement` service below exists purely so the failing direction
+  # is exercised too.
+  # ##########################################################################
+  pgbouncer:
+    image: edoburu/pgbouncer:v1.23.1-p2
+    depends_on:
+      postgres:
+        condition: service_healthy
+    # The config is OURS, not generated from environment variables. The image's
+    # generator injects `auth_user=postgres`, which turns on an auth_query and
+    # needs the pooler to hold a superuser credential -- exactly what the three
+    # roles exist to avoid.
+    entrypoint: ["/usr/bin/pgbouncer"]
+    command: ["/etc/pgbouncer/transaction.ini"]
+    volumes:
+      - ./db/pgbouncer/userlist.txt:/etc/pgbouncer/userlist.txt:ro
+      - ./db/pgbouncer/transaction.ini:/etc/pgbouncer/transaction.ini:ro
+    ports:
+      - "6432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -p 5432 -U katkitchen_app"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  # Deliberately misconfigured, and never used by the app.
+  #
+  # It exists so the NEGATIVE direction of the pooling probe can be tested: a
+  # safety check that has only ever been observed to pass is a check nobody has
+  # shown to work. Started on demand:
+  #   docker compose --profile probe up -d pgbouncer-statement
+  pgbouncer-statement:
+    profiles: ["probe"]
+    image: edoburu/pgbouncer:v1.23.1-p2
+    depends_on:
+      postgres:
+        condition: service_healthy
+    entrypoint: ["/usr/bin/pgbouncer"]
+    command: ["/etc/pgbouncer/statement.ini"]
+    volumes:
+      - ./db/pgbouncer/userlist.txt:/etc/pgbouncer/userlist.txt:ro
+      - ./db/pgbouncer/statement.ini:/etc/pgbouncer/statement.ini:ro
+    ports:
+      - "6433:5432"
+
+  # The entitlement cache.
+  #
+  # NOT durable, and not treated as durable: `--save ''` turns persistence off
+  # explicitly rather than leaving it to a default nobody checked. A restart
+  # therefore comes back with an EMPTY keyspace, which is the case the warm-up
+  # exists for -- and running it that way locally means the warm-up is exercised
+  # on every `docker compose down && up`, not only in an incident.
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    ports:
+      # 6380, not 6379: the default is routinely taken by another project's
+      # stack, exactly as 5432 was.
+      - "6380:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  # Cron, and nothing else. Under the `scheduler` profile so it does not run
+  # during tests -- a background drain competing with a test's own drain is a
+  # source of flakiness nobody would enjoy diagnosing.
+  #
+  #   docker compose --profile scheduler up -d scheduler
+  scheduler:
+    profiles: ["scheduler"]
+    build:
+      context: .
+      dockerfile: deploy/scheduler.Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+      pgbouncer:
+        condition: service_healthy
+    environment:
+      # The jobs' own postures decide the ROLE; this only supplies the URLs.
+      # The lock connection is DIRECT on purpose: a session advisory lock through
+      # a transaction-mode pooler would be held by whichever client inherited the
+      # server connection.
+      DATABASE_URL_OWNER: postgres://katkitchen_owner:change_me@postgres:5432/katkitchen
+      DATABASE_URL_APP: postgres://katkitchen_app:change_me@pgbouncer:5432/katkitchen
+      REDIS_URL: redis://redis:6379
+      AUDIT_PARTITION_MONTHS_AHEAD: "3"
+      TZ: UTC
+
+  # ##########################################################################
+  # THE API. IT TALKS TO THE POOLER FOR REQUESTS AND DIRECTLY FOR LISTEN.
+  #
+  # Both urls are supplied because they are not interchangeable, and the split is
+  # the whole reason the startup probe has something to check: SET LOCAL must
+  # survive its transaction through pgbouncer, and LISTEN must survive on a
+  # session pgbouncer never touches. A kitchen screen attached through the pooler
+  # subscribes successfully and then silently receives nothing.
+  #
+  # It does NOT migrate on boot. Migrations are a deliberate act against a
+  # database that may be shared, and a container that migrates on start races
+  # every other replica of itself:
+  #   docker compose run --rm api node apps/api/dist/core/database/migrate.js up
+  #
+  # (dist/db/migrate.js, not dist/src/... -- tsconfig.build.json sets rootDir to
+  # src so the emit is flat and the test suite does not ship in the image.)
+  # ##########################################################################
+  api:
+    build:
+      context: .
+      dockerfile: deploy/api.Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+      pgbouncer:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      DATABASE_URL_OWNER: postgres://katkitchen_owner:change_me@postgres:5432/katkitchen
+      DATABASE_URL_APP: postgres://katkitchen_app:change_me@pgbouncer:5432/katkitchen
+      DATABASE_URL_PLATFORM_READONLY: postgres://katkitchen_platform_readonly:change_me@postgres:5432/katkitchen
+      REDIS_URL: redis://redis:6379
+      AUDIT_PARTITION_MONTHS_AHEAD: "3"
+      # Local only. There is deliberately no default in the code: a signing key
+      # with a fallback is one every deployment that forgot to set it shares.
+      JWT_SIGNING_KEY: local_stack_signing_key_change_me_32_chars_min
+      PORT: "8080"
+      TZ: UTC
+    ports:
+      - "8080:8080"
+    healthcheck:
+      # /healthz is public and unaudited, which is why it can be a health check
+      # at all -- an audited route would write a row every two seconds forever.
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8080/healthz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  # The POS client: static files behind nginx, with /api/ proxied to the API on
+  # the same origin so the build carries no environment-specific host.
+  web:
+    build:
+      context: .
+      dockerfile: deploy/web.Dockerfile
+    depends_on:
+      api:
+        condition: service_healthy
+    environment:
+      API_SCHEME: http
+      API_UPSTREAM: api:8080
+    ports:
+      # 5180, not 5173: 5173 is Vite's default and is routinely taken by another
+      # project's dev server, exactly as 5432 and 6379 were. A stack that answers
+      # on a port somebody else's project also uses is worse than one that does
+      # not start -- the browser serves the other project from cache and the
+      # error looks like ours.
+      #
+      # Bound to 127.0.0.1 EXPLICITLY, not 0.0.0.0, and that is the fix for a real
+      # symptom rather than a preference: on Windows a socket bound to the specific
+      # address 127.0.0.1:<port> takes precedence over one bound to 0.0.0.0:<port>,
+      # so another project's loopback-bound dev server silently wins every
+      # localhost connection while Docker still reports its binding as successful.
+      # Binding the same way means a collision FAILS TO START instead of quietly
+      # serving somebody else's app on our port.
+      - "127.0.0.1:9180:80"
+
+volumes:
+  katkitchen_pgdata:

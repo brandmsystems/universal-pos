@@ -1,0 +1,114 @@
+# Render Blueprint: everything -- the web clients, the API, the scheduler,
+# Postgres and Redis. Setup steps, in order: docs/deploy-render.md.
+
+databases:
+  - name: katkitchen-db
+    # Render may suffix this (katkitchen_fc08). If so, set KATKITCHEN_DATABASE_NAME
+    # for the bootstrap and use the suffixed name in every DATABASE_URL_*.
+    databaseName: katkitchen
+    # Render's admin user. Used ONCE, by scripts/bootstrap-managed.mts, to create
+    # the three roles; it is never given to the API or the scheduler.
+    user: katkitchen_admin
+    postgresMajorVersion: "16"
+    region: singapore
+    # The pooler is not available on the free plan, and the app refuses to boot
+    # without a transaction-mode one.
+    plan: 0.1c-256mb
+    connectionPool: pgbouncer
+
+services:
+  - name: katkitchen-redis
+    type: keyvalue
+    region: singapore
+    plan: free
+    # Internal network only. A cache restart empties it; the API's warm-up
+    # and miss-fill cover that.
+    ipAllowList: []
+    maxmemoryPolicy: allkeys-lru
+
+  - name: katkitchen-api
+    type: web
+    runtime: docker
+    dockerfilePath: ./deploy/api.Dockerfile
+    region: singapore
+    # Not free: a free instance sleeps when idle, and the first till to sign in
+    # after that waits about a minute.
+    plan: 0.5c-512mb
+    healthCheckPath: /healthz
+    # Once per deploy, before the new instance takes traffic, as the owner role.
+    # Not on boot: a migrating container races its own replicas. The seed is the
+    # idempotent catalogue + system-role reconciliation CLAUDE.md requires on
+    # every deploy.
+    preDeployCommand: node apps/api/dist/core/database/migrate.js up && node apps/api/dist/core/database/seed.js
+    envVars:
+      # Entered when the Blueprint is created (Render prompts for sync: false values only then;
+      # NOT inside an env group, where Render silently ignores them). Each url carries a
+      # role password from scripts/bootstrap-managed.mts, so it cannot live in this file.
+      # Internal hostname; only DATABASE_URL_APP uses the pooler (port 6432).
+      - key: DATABASE_URL_OWNER
+        sync: false
+      - key: DATABASE_URL_APP
+        sync: false
+      - key: DATABASE_URL_PLATFORM_READONLY
+        sync: false
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: katkitchen-redis
+          property: connectionString
+      # base64 of 256 random bits: comfortably over the 32-character minimum.
+      - key: JWT_SIGNING_KEY
+        generateValue: true
+      - key: AUDIT_PARTITION_MONTHS_AHEAD
+        value: "3"
+      - key: TZ
+        value: UTC
+
+  # The public address. The same nginx image as the local stack: it serves the
+  # three web documents by path (POS, manager admin, platform console) and
+  # forwards /api/* to the API over Render's
+  # private network, so the browser sees one origin and the client keeps its
+  # relative paths.
+  - name: katkitchen-web
+    type: web
+    runtime: docker
+    dockerfilePath: ./deploy/web.Dockerfile
+    region: singapore
+    plan: 0.5c-512mb
+    healthCheckPath: /
+    envVars:
+      # nginx listens on 80; this tells Render which port to route to.
+      - key: PORT
+        value: "80"
+      # The API's private host:port. Same region is required for the private
+      # network, which is why every service here is pinned to one.
+      - key: API_SCHEME
+        value: http
+      - key: API_UPSTREAM
+        fromService:
+          type: web
+          name: katkitchen-api
+          property: hostport
+
+  - name: katkitchen-scheduler
+    type: worker
+    runtime: docker
+    dockerfilePath: ./deploy/scheduler.Dockerfile
+    region: singapore
+    plan: 0.5c-512mb
+    envVars:
+      # The same two values as on katkitchen-api: the job lock is direct, the jobs pooled.
+      - key: DATABASE_URL_OWNER
+        sync: false
+      - key: DATABASE_URL_APP
+        sync: false
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: katkitchen-redis
+          property: connectionString
+      - key: AUDIT_PARTITION_MONTHS_AHEAD
+        value: "3"
+      - key: TZ
+        value: UTC
+

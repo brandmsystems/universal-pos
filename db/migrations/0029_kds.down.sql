@@ -1,0 +1,12 @@
+DROP TRIGGER IF EXISTS kot_state_is_derived ON app.kot;
+DROP FUNCTION IF EXISTS app.deny_manual_kot_state();
+DROP TRIGGER IF EXISTS kot_recall_derives_ticket_state ON app.kot_recall;
+DROP FUNCTION IF EXISTS app.derive_kot_state_from_recall();
+DROP TRIGGER IF EXISTS kot_line_derives_ticket_state ON app.kot_line;
+DROP FUNCTION IF EXISTS app.derive_kot_state_from_line();
+DROP FUNCTION IF EXISTS app.derive_kot_state(uuid, uuid);
+DROP POLICY IF EXISTS tenant_isolation ON app.kot_recall;
+DROP TABLE IF EXISTS app.kot_recall;
+ALTER TABLE app.kot_line DROP COLUMN version;
+DROP INDEX IF EXISTS app.order_line_by_guest_idx;
+ALTER TABLE app.order_line DROP COLUMN guest_no;

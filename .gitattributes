@@ -1,0 +1,29 @@
+# ###########################################################################
+# LINE ENDINGS ARE THE REPOSITORY'S DECISION, NOT THE CHECKOUT'S.
+#
+# `git add` on a Windows machine with core.autocrlf=true warns that "LF will be
+# replaced by CRLF the next time Git touches it" for every text file in the
+# tree. For most of them that is cosmetic. For one of them it is a break:
+# db/bootstrap/init/00_bootstrap.sh is executed INSIDE the Postgres container,
+# and a shebang followed by \r fails with `bad interpreter: /bin/sh^M` -- which
+# would only appear when somebody sets up a fresh environment, i.e. at the
+# worst possible moment and to the person least able to diagnose it.
+#
+# So the working copy is normalised to LF regardless of platform. Nothing here
+# needs CRLF: there are no .bat or .cmd files, and PowerShell, Node and Postgres
+# all read LF happily on Windows.
+# ###########################################################################
+* text=auto eol=lf
+
+# Explicit for the file where it is load-bearing rather than tidy.
+*.sh   text eol=lf
+*.sql  text eol=lf
+
+# Never touched, never diffed. Left here so a stray archive cannot be
+# line-ending-mangled on the way in if one is ever committed deliberately.
+*.tar.gz binary
+*.tgz    binary
+*.zip    binary
+*.png    binary
+*.jpg    binary
+*.pdf    binary
