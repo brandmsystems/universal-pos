@@ -6,7 +6,7 @@
 > can confirm or correct it **before the first real invoice**. Record the outcome at
 > the foot of this file; until then nothing may be described as GST-approved.
 
-Every sample figure below is asserted by `apps/api/tests/tax/gstSamples.test.ts`, so
+Every sample figure below is asserted by `backend/tests/tax/gstSamples.test.ts`, so
 this document cannot drift from the code. A reviewer's correction changes the code,
 that test and this file together.
 

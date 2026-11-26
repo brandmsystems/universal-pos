@@ -8,13 +8,14 @@ RUN corepack enable
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY scripts/check-lockfiles.mjs ./scripts/
 RUN node scripts/check-lockfiles.mjs
-COPY apps/web/package.json ./apps/web/
+COPY frontend/package.json ./frontend/
 COPY packages ./packages
+COPY shared ./shared
 RUN pnpm install --frozen-lockfile --ignore-scripts --filter @universalpos/web...
 RUN pnpm --filter @universalpos/shared build
-COPY apps/web ./apps/web
+COPY frontend ./frontend
 # The admin's Printers page offers the print agent program as a download.
-COPY apps/print-agent/universalpos-print-agent.mjs ./apps/print-agent/
+COPY print-agent/universalpos-print-agent.mjs ./print-agent/
 RUN pnpm --filter @universalpos/web build
 
 FROM nginx:1.27-alpine AS runtime
@@ -26,5 +27,5 @@ COPY deploy/web.nginx.conf /etc/nginx/templates/default.conf.template
 # Runs before the template is filled (15-local-resolvers < 18 < 20-envsubst).
 COPY --chmod=755 deploy/web-api-upstream.envsh /docker-entrypoint.d/18-api-upstream.envsh
 COPY --chmod=755 deploy/web-wake-api.sh /docker-entrypoint.d/40-wake-api.sh
-COPY --from=build /app/apps/web/dist /usr/share/nginx/html
+COPY --from=build /app/frontend/dist /usr/share/nginx/html
 EXPOSE 80

@@ -50,7 +50,7 @@ Wait until `katkitchen-db` shows **Available**.
 ## 2. Create the three roles (once)
 
 Render gives no superuser. `scripts/bootstrap-managed.mts` uses the database's
-admin user to do what `db/bootstrap/*.sql` does locally: it creates the
+admin user to do what `database/bootstrap/*.sql` does locally: it creates the
 `katkitchen_owner`, `katkitchen_app` and `katkitchen_platform_readonly` roles,
 hands the database to `katkitchen_owner`, and installs `citext` in the
 `extensions` schema.
@@ -129,7 +129,7 @@ If the probes fail, **the API refuses to start, and that is the design
 working**. The one thing not yet tested against real Render is whether its
 PgBouncer accepts our own roles (it was tested against a simulated non-superuser
 host). If `DATABASE_URL_APP` is refused at login, the fallback is to run
-`db/pgbouncer/transaction.ini` as a private Render service of its own.
+`database/pgbouncer/transaction.ini` as a private Render service of its own.
 
 The scheduler's logs should show `scheduler.heartbeat: succeeded` every five
 minutes, and `outbox.drain` and `print.drain` every minute.

@@ -6,7 +6,7 @@ kept below as history and marked so.
 
 ## Where things live
 
-`apps/web/src/app/<app>/` is each app's shell (platform, admin, pos — three
+`frontend/src/app/<app>/` is each app's shell (platform, admin, pos — three
 separate HTML documents, enforced at the bundle; the POS is `index.html`). Screens live in
 `features/<domain>/<app>/`, so a feature folder never mixes planes. Talking to
 the server is `services/`, pure logic is `lib/` (the truth model is
@@ -156,7 +156,7 @@ arithmetically broken.
 
 **ENFORCEMENT: unrepresentable, plus a gate.** `Minor` is a branded integer with no
 arithmetic operators exposed; the formatter is the only consumer.
-`apps/web/tests/moneyGate.test.ts` scans every source file outside `lib/money.ts`
+`frontend/tests/moneyGate.test.ts` scans every source file outside `lib/money.ts`
 for `/ 100`, `* 100` and arithmetic on a `minorFrom(...)` result, proven by
 synthetic lines built to violate each rule. Two shapes that are not money are
 recognised **per line, never per file**: a CSS percentage (`* 100}%`) and a line
@@ -878,7 +878,7 @@ rather than pixels nobody can recolour.
 
 ### The queue has a pump, and the pump is registered once
 
-`apps/web/src/services/pump.ts`. Started in `App.tsx`, only while somebody is on shift.
+`frontend/src/services/pump.ts`. Started in `App.tsx`, only while somebody is on shift.
 
 `createQueue` minted keys, persisted intents, capped itself and reported its
 depth — all correct, all tested — while **nothing in the application ever sent an
@@ -926,7 +926,7 @@ wrong table.
 
 ### `timestamptz::text` is not ISO 8601, and `Date.parse` returns NaN for it
 
-`apps/web/src/lib/pgtime.ts`. One parser, total, returns `number | null`.
+`frontend/src/lib/pgtime.ts`. One parser, total, returns `number | null`.
 
 Postgres renders `2026-09-01 14:56:42.009022+00`: a space instead of `T`, six
 fractional digits, and a **two-digit** offset. `Date.parse` needs `T` and `+00:00`
@@ -954,7 +954,7 @@ naive replace *is* NaN — so the test is not vacuous.
 
 ### The lease holder is a map, persisted, on server time
 
-`apps/web/src/services/lease.ts`.
+`frontend/src/services/lease.ts`.
 
 **A map, not a slot.** A waiter working four tables at once is the normal case,
 not an edge one. One timer renews all of them; renewal happens when a lease is
@@ -988,7 +988,7 @@ try; what the UI must not do is present it as live.
 > were deleted -- see "One POS screen" below. This section and the next are the
 > record of what they decided.
 
-`apps/web/src/features/orders/pos/Floor.tsx` (deleted). Occupancy is the **border**; writability is the
+`frontend/src/features/orders/pos/Floor.tsx` (deleted). Occupancy is the **border**; writability is the
 **fill**. Two separate facts, drawn separately, so neither can be read off the
 other.
 
@@ -1015,7 +1015,7 @@ lease on purpose would be leaving a trap on the board.
 
 ### Draft, queued, committed — three states, drawn differently
 
-`apps/web/src/features/orders/pos/Order.tsx` (deleted with the order pane).
+`frontend/src/features/orders/pos/Order.tsx` (deleted with the order pane).
 
 A line the waiter has tapped but not sent is a **draft**: theirs, no server
 identity, freely changeable, dashed and captioned "not sent". A line handed to
@@ -1061,7 +1061,7 @@ string ends up in access logs, proxy logs and browser history, and a cookie woul
 mean the API accepts cookie auth, which is a CSRF surface the whole token design
 exists to avoid.
 
-So `apps/web/src/services/stream.ts` is a plain `fetch` with an Authorization header,
+So `frontend/src/services/stream.ts` is a plain `fetch` with an Authorization header,
 read through a `ReadableStream` and framed by hand. About forty lines, and it buys
 back the property that a kitchen screen authenticates like everything else.
 

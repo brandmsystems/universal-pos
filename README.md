@@ -5,7 +5,7 @@ A multi-tenant restaurant POS SaaS. What is sold today is the **Basic** plan
 with printed copies -- plus the restaurant manager's admin screens, and a
 control plane (Super Admin and Sales) that provisions, configures and bills the
 restaurants. Kitchen tickets for Wi-Fi/Ethernet printers go through an
-on-premises print agent (`apps/print-agent`). The kitchen screen, the separate
+on-premises print agent (`print-agent`). The kitchen screen, the separate
 KOT and Billing apps, tablet setup codes and the stock screens were removed;
 their tables stay, because rows are records.
 
@@ -20,7 +20,7 @@ changing anything structural.
 ## 0. One thing to know before you clone
 
 `.gitattributes` pins the whole tree to LF, and it needs to stay that way. One
-file makes this more than cosmetic: `db/bootstrap/init/00_bootstrap.sh` executes
+file makes this more than cosmetic: `database/bootstrap/init/00_bootstrap.sh` executes
 *inside* the Postgres container, and a shebang followed by `\r` fails with
 `bad interpreter: /bin/sh^M` — on a fresh environment, i.e. at the worst possible
 moment and to the person least able to diagnose it.
@@ -90,7 +90,7 @@ Verify:
 
 ```bash
 pnpm typecheck                          # must be clean — see §4, this one is load-bearing
-pnpm test                               # apps/api suite (65 files, 1,224 tests, against katkitchen_test)
+pnpm test                               # backend suite (65 files, 1,224 tests, against katkitchen_test)
 pnpm build:web
 ```
 
@@ -154,7 +154,7 @@ screen's `LISTEN` connection. It went with the kitchen screen and is no longer r
 
 ```bash
 # the app
-pnpm dev:api                # tsx watch apps/api/src/server.ts
+pnpm dev:api                # tsx watch backend/src/server.ts
 pnpm dev:web                # vite dev server
 pnpm api                    # run once, no watch
 
@@ -211,7 +211,7 @@ Before running `pnpm dev:api`, stop the container anyway:
 docker compose stop api
 ```
 
-It is the same family as the POS port note in `apps/web/vite.config.ts`, and worse:
+It is the same family as the POS port note in `frontend/vite.config.ts`, and worse:
 that collision serves the wrong app, this one serves the wrong VERSION of the
 right app.
 
@@ -229,7 +229,7 @@ database that may be shared, and a container that migrates on start races every
 other replica of itself:
 
 ```bash
-docker compose run --rm api node apps/api/dist/core/database/migrate.js up
+docker compose run --rm api node backend/dist/core/database/migrate.js up
 ```
 
 ### Production: Render
@@ -253,7 +253,7 @@ Two planes, and the separation is enforced rather than reviewed:
   row-level security keyed on the `app.tenant_id` GUC.
 
 ```
-apps/api/src/
+backend/src/
   app.ts server.ts config/ jobs/
   core/       database/ (migrate, seed, pooling, tenant context, unit of work)
               errors/ (the error contract) middleware/ (registrars) security/ (guards)
@@ -261,17 +261,17 @@ apps/api/src/
               offline orders payments platform privacy reporting restaurants tax users
               (inventory keeps only deduct/reconcile, which the jobs call)
   routes/     route tables + handlers/ -- the thin route layer
-apps/web/src/
+frontend/src/
   app/        platform/ admin/ pos/ -- one shell per app (3 HTML entries;
               /{slug}/kot and /{slug}/billing serve the POS)
   features/   access auth billing dashboard orders restaurants settings users
               -- one subfolder per app inside each
   components/ services/ lib/ hooks/ types/ styles/
-apps/print-agent/  the on-premises bridge to Wi-Fi/Ethernet kitchen printers
+print-agent/  the on-premises bridge to Wi-Fi/Ethernet kitchen printers
 packages/     shared/ (code api and web both import), tsconfig/, eslint-config/
 ```
 
-`apps/api/tests/` holds 65 files, 1,224 tests (2026-11-18), all against a **real Postgres** —
+`backend/tests/` holds 65 files, 1,224 tests (2026-11-18), all against a **real Postgres** —
 there are no database mocks in this project. Run them with `pnpm test`.
 
 ### The documents that matter
@@ -284,7 +284,7 @@ there are no database mocks in this project. Run them with `pnpm test`.
 | **`AGENTS.md`** | The entry point for Codex and other agents: points to CLAUDE.md and repeats only the rules an agent must not miss |
 | **`FRONTEND.md`** | The client rules: the `known`/`stale`/`unknown` truth model, provenance, money, optimistic rendering, idempotency keys, degradation vocabulary |
 | `docs/deploy-render.md` | Deploying to Render, including the one-time role bootstrap |
-| `docs/print-agent-design.md`, `apps/print-agent/README.md` | Why the print agent exists, and installing it on a restaurant PC |
+| `docs/print-agent-design.md`, `print-agent/README.md` | Why the print agent exists, and installing it on a restaurant PC |
 | `docs/gst-review.md` | GST flows, sample invoices produced by the code, assumptions and open questions -- **Pending qualified GST review** |
 | `docs/billing-terms.md` | Billing vocabulary — and the GST reviewer checklist at its foot |
 | `docs/scheduler-monitoring.md` | What the cron jobs do and how to tell they stopped |
@@ -352,9 +352,9 @@ not a code change. Read what it is asking before you edit it.
   spelled `c:\...` (VS Code and Git Bash hand one over) Vite resolved `react` under
   `c:\` while Node resolved react-dom's own `react` under `C:\`; Node's module cache
   keys those apart, so there were two Reacts and most render tests failed with
-  `Cannot read properties of null (reading 'useState')`. `apps/web/vitest.config.ts`
+  `Cannot read properties of null (reading 'useState')`. `frontend/vitest.config.ts`
   now normalises the working directory on Windows (a no-op elsewhere), and
-  `apps/web/tests/reactSingleInstance.test.ts` fails if two Reacts ever load again.
+  `frontend/tests/reactSingleInstance.test.ts` fails if two Reacts ever load again.
   `pnpm test:web` works from either spelling.
 
 **Conventions worth absorbing from `CLAUDE.md` before you write code:**

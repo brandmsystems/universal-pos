@@ -28,7 +28,7 @@ never deleted. One restaurant runs:
   page): one screen -- New order, then the bill and payment -- plus Bills (history,
   today's edits, Submit Day Bills).
 - **Control plane** at `/superadmin` (Super Admin) and the Sales console.
-- **Print agent** (`apps/print-agent`): an on-premises Node script that prints
+- **Print agent** (`print-agent`): an on-premises Node script that prints
   kitchen tickets to Wi-Fi/Ethernet printers (0085).
 
 Removed, with their routes, handlers, screens and tests: the kitchen screen (KDS,
@@ -56,19 +56,21 @@ keys. Retired keys are listed in `KEYS_WITHOUT_ROUTES`.
 ### Code layout (pnpm monorepo)
 
 ```
-apps/api/src/   app.ts, server.ts, config/, jobs/
+backend/src/    app.ts, server.ts, config/, jobs/
                 core/      database/ errors/ middleware/ (registrars) security/ (guards)
                 modules/   auth authz billing inventory kitchen menu metering
                            notifications offline orders payments platform privacy
                            reporting restaurants tax users
                            (inventory keeps only deduct/reconcile, which the jobs call)
                 routes/    route tables + handlers/ (the thin route layer)
-apps/api/tests/ vitest, run from apps/api
-apps/web/src/   app/ (3 shells: platform admin pos), features/<domain>/<app>/,
+backend/tests/  vitest, run from backend
+frontend/src/   app/ (3 shells: platform admin pos), features/<domain>/<app>/,
                 components/ services/ lib/ hooks/ types/ styles/
-apps/print-agent/  the on-premises printer bridge
-packages/       shared (code both sides import), tsconfig, eslint-config
-db/ deploy/ docs/ scripts/   repo root
+shared/         code both sides import (@universalpos/shared)
+print-agent/    the on-premises printer bridge
+packages/       tsconfig, eslint-config (workspace tooling)
+database/       bootstrap/ migrations/ pgbouncer/
+deploy/ docs/ scripts/   repo root
 ```
 
 `modules/platform`, `modules/notifications` (the outbox) and `modules/billing` are
@@ -301,7 +303,7 @@ active memberships in scope.
   **A billing job must never take a restaurant offline.**
 - Provisioning is one idempotent, rollback-safe transaction; side effects go to the
   outbox. `tenant_owner_invite` stores only a SHA-256 `token_hash`.
-- `ENTITLEMENTS` in `packages/shared/src/constants/plans.ts` is the one definition of
+- `ENTITLEMENTS` in `shared/src/constants/plans.ts` is the one definition of
   what a plan includes; every plan version states every key (`validTerms`). Read
   through `entitlementsFromTerms`; the API gates and `getAdminMenu` read the same
   function.
@@ -616,8 +618,8 @@ pnpm build:web
 ```
 
 The web suite runs the same from any working-directory spelling: on Windows,
-`apps/web/vitest.config.ts` normalises a lowercase `c:\` drive before Vite resolves
-anything, asserted by `apps/web/tests/reactSingleInstance.test.ts`.
+`frontend/vitest.config.ts` normalises a lowercase `c:\` drive before Vite resolves
+anything, asserted by `frontend/tests/reactSingleInstance.test.ts`.
 
 ## Before the first real invoice
 

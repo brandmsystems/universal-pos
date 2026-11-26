@@ -10,7 +10,7 @@
 - **No DPAPI** (decision 9): the token is in `agent.json`, protected by file permissions.
 - Kitchen tickets only; bills keep the print dialog (decision 6). A crash between sending and reporting can print a ticket twice (open question 1). The agent remembers what it sent, so a report that was merely lost does not reprint.
 
-Setup: `apps/print-agent/README.md`. Behaviour: `universalpos.md` 5.5.
+Setup: `print-agent/README.md`. Behaviour: `universalpos.md` 5.5.
 
 ## The problem
 
@@ -45,7 +45,7 @@ port, and Render never connects in.
 | 6 | Bills on a network printer | **Phase 2 of the agent.** `print_job` is tied to a kitchen ticket (`kot_id NOT NULL`); bills need a `kind` column with a `bill_id` and a positive CHECK. Until then, bills keep the print dialog | Kitchen tickets are the gap today. Bills already have a working path |
 | 7 | Where it may print | Only printers of **its branch**, `connection_kind = 'network'`, address passing `parsePrinterAddress`. Checked on the server (the job query) **and** in the agent before it dials | The agent is on the LAN, so this is what stops a stolen agent token from scanning the network |
 | 8 | Test connection / Test print for a network printer | Manager screens send a `test` job through the same queue; the panel shows the agent's result and `last_seen_at` | One path. The server cannot test a LAN printer itself |
-| 9 | Packaging | Node 22 script in `apps/print-agent`, no dependencies beyond Node, run by Windows **Task Scheduler** at logon with restart on failure. The token is stored with Windows DPAPI (current user) | An installer or service wrapper is a later convenience; this one can be run and inspected |
+| 9 | Packaging | Node 22 script in `print-agent`, no dependencies beyond Node, run by Windows **Task Scheduler** at logon with restart on failure. The token is stored with Windows DPAPI (current user) | An installer or service wrapper is a later convenience; this one can be run and inspected |
 
 ## Failure behaviour
 
@@ -65,7 +65,7 @@ port, and Render never connects in.
   `print_job.claimed_by_agent_id`.
 - A token type, a guard, a registrar and three routes. The plane gates need
   updating: registrar, audit posture, error contract, route ratchets.
-- `apps/print-agent` with its own tests against a fake TCP printer.
+- `print-agent` with its own tests against a fake TCP printer.
 - Docs: the install steps.
 
 Estimated at several days. It cannot be tested against a real network printer

@@ -39,7 +39,7 @@ services:
     # Not on boot: a migrating container races its own replicas. The seed is the
     # idempotent catalogue + system-role reconciliation CLAUDE.md requires on
     # every deploy.
-    preDeployCommand: node apps/api/dist/core/database/migrate.js up && node apps/api/dist/core/database/seed.js
+    preDeployCommand: node backend/dist/core/database/migrate.js up && node backend/dist/core/database/seed.js
     envVars:
       # Entered when the Blueprint is created (Render prompts for sync: false values only then;
       # NOT inside an env group, where Render silently ignores them). Each url carries a

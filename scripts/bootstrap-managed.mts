@@ -1,6 +1,6 @@
 /**
  * Bootstrap for a MANAGED Postgres (Render) -- the provisioner that
- * db/bootstrap/00_roles.sql says creates the roles "in every other environment".
+ * database/bootstrap/00_roles.sql says creates the roles "in every other environment".
  *
  *   ADMIN_DATABASE_URL='postgres://<render user>:<pw>@<external host>/katkitchen?sslmode=require' \
  *   UNIVERSALPOS_OWNER_PASSWORD=... UNIVERSALPOS_APP_PASSWORD=... UNIVERSALPOS_READONLY_PASSWORD=... \
@@ -12,7 +12,7 @@
  * database to it. The admin is the stand-in for `postgres` locally -- it is
  * never put in any environment the application or the scheduler reads.
  *
- * Step 2 runs db/bootstrap/01_database.sql itself rather than a copy of it, so
+ * Step 2 runs database/bootstrap/01_database.sql itself rather than a copy of it, so
  * the schema, extension and search_path shape has one definition.
  *
  * Idempotent: re-running re-asserts the role attributes and RESETS the three
@@ -76,13 +76,13 @@ try {
   await client.query(`ALTER DATABASE ${database} SET timezone = 'UTC'`);
 
   // Step 2: the database shape, from the one definition of it.
-  const sqlPath = fileURLToPath(new URL('../db/bootstrap/01_database.sql', import.meta.url));
+  const sqlPath = fileURLToPath(new URL('../database/bootstrap/01_database.sql', import.meta.url));
   const sql = readFileSync(sqlPath, 'utf8')
     .split('\n')
     .filter((line) => !line.startsWith('\\'))
     .join('\n');
   await client.query(sql);
-  console.log('applied db/bootstrap/01_database.sql');
+  console.log('applied database/bootstrap/01_database.sql');
 
   // The startup probe re-checks this on every boot; checking here too means a
   // host that silently grants more than asked fails now, not at first deploy.

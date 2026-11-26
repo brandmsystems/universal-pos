@@ -25,8 +25,8 @@
  * ###########################################################################
  */
 import pg from 'pg';
-import { seedTaxClasses } from '../apps/api/src/modules/tax/taxClassSeed.js';
-import { env } from '../apps/api/src/config/env.js';
+import { seedTaxClasses } from '../backend/src/modules/tax/taxClassSeed.js';
+import { env } from '../backend/src/config/env.js';
 
 async function main(): Promise<void> {
   const client = new pg.Client({ connectionString: env.ownerDatabaseUrl() });

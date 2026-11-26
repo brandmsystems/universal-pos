@@ -18,10 +18,10 @@
  * Basic and only Basic is active.
  */
 import pg from 'pg';
-import { env } from '../apps/api/src/config/env.js';
-import { changeSubscription } from '../apps/api/src/modules/billing/planChange.js';
-import { applyDueChanges } from '../apps/api/src/modules/billing/scheduledChange.js';
-import { setPlanStatus } from '../apps/api/src/modules/platform/planCatalogue.js';
+import { env } from '../backend/src/config/env.js';
+import { changeSubscription } from '../backend/src/modules/billing/planChange.js';
+import { applyDueChanges } from '../backend/src/modules/billing/scheduledChange.js';
+import { setPlanStatus } from '../backend/src/modules/platform/planCatalogue.js';
 
 const dryRun = process.argv.includes('--dry-run');
 // ONE instant for 'due' and 'apply': the database clock and this process's clock

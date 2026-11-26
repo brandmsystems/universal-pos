@@ -15,8 +15,8 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { allRoutes } from '../apps/api/src/routes/index.js';
-import type { RouteDefinition } from '../apps/api/src/core/middleware/routeRegistry.js';
+import { allRoutes } from '../backend/src/routes/index.js';
+import type { RouteDefinition } from '../backend/src/core/middleware/routeRegistry.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = path.join(ROOT, 'docs', 'postman');

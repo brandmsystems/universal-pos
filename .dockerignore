@@ -17,8 +17,9 @@ dist
 # Nothing in the image needs these, and every one of them is a cache invalidation
 # on a file that cannot affect the build.
 tests
-apps/*/tests
+backend/tests
+frontend/tests
 docs
-apps/web/public/brand
+frontend/public/brand
 *.md
 !README.md

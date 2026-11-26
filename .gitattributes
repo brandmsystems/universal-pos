@@ -4,7 +4,7 @@
 # `git add` on a Windows machine with core.autocrlf=true warns that "LF will be
 # replaced by CRLF the next time Git touches it" for every text file in the
 # tree. For most of them that is cosmetic. For one of them it is a break:
-# db/bootstrap/init/00_bootstrap.sh is executed INSIDE the Postgres container,
+# database/bootstrap/init/00_bootstrap.sh is executed INSIDE the Postgres container,
 # and a shebang followed by \r fails with `bad interpreter: /bin/sh^M` -- which
 # would only appear when somebody sets up a fresh environment, i.e. at the
 # worst possible moment and to the person least able to diagnose it.

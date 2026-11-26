@@ -26,8 +26,8 @@ services:
       - katkitchen_pgdata:/var/lib/postgresql/data
       # The three roles and the database are created on first init, so the local
       # stack is never reachable as a superuser by the app.
-      - ./db/bootstrap:/bootstrap:ro
-      - ./db/bootstrap/init:/docker-entrypoint-initdb.d:ro
+      - ./database/bootstrap:/bootstrap:ro
+      - ./database/bootstrap/init:/docker-entrypoint-initdb.d:ro
 
   # ##########################################################################
   # THE POOLER IS PART OF THE LOCAL STACK, NOT A PRODUCTION DETAIL.
@@ -53,8 +53,8 @@ services:
     entrypoint: ["/usr/bin/pgbouncer"]
     command: ["/etc/pgbouncer/transaction.ini"]
     volumes:
-      - ./db/pgbouncer/userlist.txt:/etc/pgbouncer/userlist.txt:ro
-      - ./db/pgbouncer/transaction.ini:/etc/pgbouncer/transaction.ini:ro
+      - ./database/pgbouncer/userlist.txt:/etc/pgbouncer/userlist.txt:ro
+      - ./database/pgbouncer/transaction.ini:/etc/pgbouncer/transaction.ini:ro
     ports:
       - "6432:5432"
     healthcheck:
@@ -78,8 +78,8 @@ services:
     entrypoint: ["/usr/bin/pgbouncer"]
     command: ["/etc/pgbouncer/statement.ini"]
     volumes:
-      - ./db/pgbouncer/userlist.txt:/etc/pgbouncer/userlist.txt:ro
-      - ./db/pgbouncer/statement.ini:/etc/pgbouncer/statement.ini:ro
+      - ./database/pgbouncer/userlist.txt:/etc/pgbouncer/userlist.txt:ro
+      - ./database/pgbouncer/statement.ini:/etc/pgbouncer/statement.ini:ro
     ports:
       - "6433:5432"
 
@@ -141,7 +141,7 @@ services:
   # It does NOT migrate on boot. Migrations are a deliberate act against a
   # database that may be shared, and a container that migrates on start races
   # every other replica of itself:
-  #   docker compose run --rm api node apps/api/dist/core/database/migrate.js up
+  #   docker compose run --rm api node backend/dist/core/database/migrate.js up
   #
   # (dist/db/migrate.js, not dist/src/... -- tsconfig.build.json sets rootDir to
   # src so the emit is flat and the test suite does not ship in the image.)
