@@ -88,6 +88,9 @@ export interface BoardMenuItem {
   /** The kitchen this branch sends the item to; null for a combo, which routes per component. */
   readonly kitchen_station_id?: string | null;
   readonly kitchen_name?: string | null;
+  /** `single` | `combo` | `product`; a product is sold over a counter and never sent to a kitchen. */
+  readonly kind?: string;
+  readonly barcode?: string | null;
 }
 
 export interface BillTender {

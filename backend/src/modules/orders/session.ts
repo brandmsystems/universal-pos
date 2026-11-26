@@ -646,7 +646,11 @@ export async function markReadyForBilling(
 
   const lines = await context.client.query<{ items: string; unsent: string }>(
     `SELECT count(*) FILTER (WHERE ol.kind IN ('item', 'combo_parent'))::text AS items,
-            count(*) FILTER (WHERE ol.kind IN ('item', 'combo_parent') AND ol.fired_at IS NULL)::text AS unsent
+            -- A product is never sent to a kitchen, so it is never "unsent".
+            count(*) FILTER (WHERE ol.kind IN ('item', 'combo_parent') AND ol.fired_at IS NULL
+                               AND NOT EXISTS (SELECT 1 FROM app.menu_item p
+                                                WHERE p.tenant_id = ol.tenant_id AND p.id = ol.menu_item_id
+                                                  AND p.kind = 'product'))::text AS unsent
        FROM app.order_line ol
        JOIN app.sales_order so ON so.tenant_id = ol.tenant_id AND so.id = ol.order_id
       WHERE ol.tenant_id = $1 AND so.session_id = $2`,

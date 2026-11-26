@@ -37,5 +37,5 @@ export {
 } from './constants/businessTypes.js';
 export type {
   AdminSectionKey, BusinessTerms, BusinessTheme, BusinessTypeDefinition, BusinessTypeKey,
-  BusinessTypeStatus,
+  BusinessTypeStatus, BusinessWorkflow,
 } from './constants/businessTypes.js';

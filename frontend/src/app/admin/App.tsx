@@ -25,6 +25,7 @@ import { PrintedBill } from '../../features/billing/admin/PrintedBill.js';
 import { Bills } from '../../features/billing/admin/Bills.js';
 import { useThemeColor } from '../../lib/theme.js';
 import { accentFor, titleFor, useBusinessType, visibleSections } from '../../lib/business.js';
+import { BusinessProvider } from '../../lib/businessContext.js';
 import {
   AdminRestaurantLoading, RestaurantNotFound, RestaurantUnavailable, RestaurantUnreachable,
   slugFromPath, useRestaurantBySlug,
@@ -267,6 +268,7 @@ export function App(): ReactElement {
     : { included: false as const, availableOn: advancedReportsOn === null ? 'a higher' : PLAN_NAMES[advancedReportsOn] };
 
   return (
+    <BusinessProvider type={businessType}>
     <div className="flex min-h-screen flex-col bg-background font-sans text-foreground lg:flex-row">
       {/* Below lg: a top bar, and the sidebar becomes a drawer behind its Menu button. */}
       <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-3 border-b border-border bg-card/95 px-4 backdrop-blur lg:hidden">
@@ -383,5 +385,6 @@ export function App(): ReactElement {
         )}
       </main>
     </div>
+    </BusinessProvider>
   );
 }

@@ -8,7 +8,8 @@ import { describeRefusal } from '../../orders/pos/refusals.js';
 import { cn } from 'cn';
 import { Loading, Skeleton } from '@/components/ui/skeleton.js';
 import { Switch } from '@/components/ui/switch.js';
-import { Check, LoaderCircle, NotebookPen, Plus, ShoppingBag, ShoppingCart, UtensilsCrossed } from 'lucide-react';
+import { useBusiness } from '../../../lib/businessContext.js';
+import { Check, LoaderCircle, NotebookPen, Plus, ScanBarcode, ShoppingBag, ShoppingCart, UtensilsCrossed } from 'lucide-react';
 
 /**
  * Basic: the person at the counter takes the order, and Confirm does the rest
@@ -83,7 +84,13 @@ export function NewOrder(props: {
   onCancel: () => void;
   onHandedOver: (sessionId: string) => void;
 }): ReactElement {
+  // A shop's till is the same screen without a table, a parcel or a kitchen, and
+  // with a scan box. Chosen by the registry's `workflow`, never by a type's name.
+  const business = useBusiness();
+  const counter = business.workflow === 'counter_sale';
   const [menu, setMenu] = useState<readonly BoardMenuItem[] | null>(null);
+  const [query, setQuery] = useState('');
+  const [scanMessage, setScanMessage] = useState<string | null>(null);
   const [menuFailed, setMenuFailed] = useState(false);
   const [categories, setCategories] = useState<readonly Category[]>([]);
   const [category, setCategory] = useState<string | null>(null);
@@ -126,7 +133,7 @@ export function NewOrder(props: {
     const seq = ++quoteSeq.current;
     const timer = setTimeout(() => {
       void props.api.postDetailed<Quote>('/pos/quote', {
-        parcel,
+        parcel: counter ? false : parcel,
         lines: cart.map((l) => ({ menuItemId: l.item.id, quantity: l.quantity })),
         ...(parcel ? { parcelChargeMinor: chargeMinor } : {}),
       }).then((answer) => {
@@ -145,8 +152,14 @@ export function NewOrder(props: {
     return () => clearTimeout(timer);
   }, [props.api, cart, parcel, chargeMinor, chargeInvalid]);
 
-  const items = useMemo(() => (menu ?? []).filter((item) => item.orderable && (category === null || item.category_id === category)),
-    [menu, category]);
+  const items = useMemo(() => {
+    const text = query.trim().toLowerCase();
+    return (menu ?? []).filter((item) => item.orderable && (category === null || item.category_id === category)
+      && (text === '' || item.name.toLowerCase().includes(text) || (item.barcode ?? '').toLowerCase().includes(text)));
+  }, [menu, category, query]);
+
+  /** Nothing in this cart is cooked: no kitchen step, whatever the plan says. */
+  const needsKitchen = cart.some((l) => l.item.kind !== 'product');
 
   /** Any change to what is being ordered starts a new attempt -- allowed only before anything was written. */
   function edit(next: (current: readonly CartLine[]) => readonly CartLine[]): void {
@@ -158,6 +171,30 @@ export function NewOrder(props: {
     edit((current) => current.some((l) => l.item.id === item.id)
       ? current.map((l) => (l.item.id === item.id ? { ...l, quantity: l.quantity + 1 } : l))
       : [...current, { item, quantity: 1, note: '' }]);
+  }
+  /**
+   * Enter in the scan box: a barcode that matches exactly adds that product; a
+   * name that matches exactly one adds it; anything else says why nothing was added.
+   * A scanner types the digits and presses Enter, so this is the whole scan path.
+   */
+  function scan(): void {
+    const code = query.trim();
+    if (code === '' || locked) return;
+    const all = menu ?? [];
+    const exact = all.find((item) => item.barcode === code);
+    if (exact !== undefined && !exact.orderable) {
+      setScanMessage(`${exact.name} cannot be sold now${exact.unavailable_message ? `: ${exact.unavailable_message}` : '.'}`);
+      return;
+    }
+    const byName = exact === undefined ? all.filter((item) => item.orderable && item.name.toLowerCase().includes(code.toLowerCase())) : [];
+    const hit = exact ?? (byName.length === 1 ? byName[0] : undefined);
+    if (hit === undefined) {
+      setScanMessage(byName.length > 1 ? `${byName.length} products match; tap the one you want.` : `Nothing sells under "${code}".`);
+      return;
+    }
+    add(hit);
+    setQuery('');
+    setScanMessage(null);
   }
   function change(id: string, by: number): void {
     edit((current) => current
@@ -185,7 +222,7 @@ export function NewOrder(props: {
       if (run.opened === null) {
         const pickupName = name.trim() === '' ? null : name.trim();
         run.opened = await props.api.mutate<{ sessionId: string; orderId: string }>(
-          parcel ? '/pos/parcel' : '/pos/dine-in', { pickupName },
+          !counter && parcel ? '/pos/parcel' : '/pos/dine-in', { pickupName },
           { idempotencyKey: run.open, leaseToken: null });
       }
       const { sessionId, orderId } = run.opened;
@@ -196,11 +233,11 @@ export function NewOrder(props: {
           { menuItemId: line.item.id, quantity: line.quantity, ...(text === '' ? {} : { note: text }) },
           { idempotencyKey: run.lines[i]!, leaseToken: lease.token });
       }
-      if (parcel && chargeMinor !== null && chargeMinor > 0) {
+      if (!counter && parcel && chargeMinor !== null && chargeMinor > 0) {
         await props.api.send('POST', `/pos/order/${orderId}/parcel-charge`, { amountMinor: chargeMinor },
           { idempotencyKey: run.charge, leaseToken: lease.token });
       }
-      if (props.kot) {
+      if (props.kot && needsKitchen) {
         const board = await props.api.get<{ session: { version: number | string } }>(`/pos/session/${sessionId}/board`);
         await props.api.send('POST', `/pos/order/${orderId}/fire`, { sessionVersion: Number(board.session.version) },
           { idempotencyKey: run.fire, leaseToken: lease.token });
@@ -242,6 +279,19 @@ export function NewOrder(props: {
     <div className="grid h-full grid-cols-1 md:grid-cols-[minmax(0,1fr)_300px] xl:grid-cols-[minmax(0,1fr)_340px]">
       {/* The menu: every category as a tab along the top, the items straight below, using the whole width. */}
       <section className="flex min-w-0 flex-col">
+        {counter && (
+          <div className="flex flex-col gap-1 border-b border-border bg-background px-3 py-2.5 sm:px-4">
+            <label className="flex h-11 items-center gap-2 rounded-xl border-2 border-input bg-card px-3 focus-within:border-primary">
+              <ScanBarcode aria-hidden className="size-5 shrink-0 text-muted-foreground" />
+              <input aria-label="Scan a barcode or search products" value={query} disabled={locked} autoFocus
+                onChange={(e) => { setQuery(e.target.value); setScanMessage(null); }}
+                onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); scan(); } }}
+                placeholder="Scan a barcode or type a product name"
+                className="h-full min-w-0 grow bg-transparent text-base outline-none" />
+            </label>
+            {scanMessage !== null && <p role="status" className="m-0 text-sm text-destructive">{scanMessage}</p>}
+          </div>
+        )}
         <nav aria-label="Menu categories"
           className="sticky top-0 z-10 flex gap-2 overflow-x-auto border-b border-border bg-background/95 px-3 py-2.5 backdrop-blur sm:px-4">
           <button type="button" onClick={() => setCategory(null)} aria-pressed={category === null} className={chip(category === null)}>
@@ -306,7 +356,7 @@ export function NewOrder(props: {
         <div className="flex shrink-0 flex-col gap-2 border-b border-border p-3">
           <h2 className="m-0 flex items-center gap-2 text-base font-semibold">
             <ShoppingCart aria-hidden className="size-5 text-muted-foreground" />
-            New order
+            {counter ? `New ${business.terms.sale.toLowerCase()}` : 'New order'}
             {cart.length > 0 && (
               <span className="ml-auto rounded-full bg-background px-2.5 py-0.5 text-xs font-semibold text-muted-foreground">
                 {count} items
@@ -314,22 +364,22 @@ export function NewOrder(props: {
             )}
           </h2>
           <div className="flex items-center gap-2">
-            <label title="Parcel (take away)" className={cn('flex h-10 shrink-0 cursor-pointer items-center gap-1.5 rounded-lg border-2 px-2 text-sm font-semibold transition-colors duration-150',
+            {!counter && <label title="Parcel (take away)" className={cn('flex h-10 shrink-0 cursor-pointer items-center gap-1.5 rounded-lg border-2 px-2 text-sm font-semibold transition-colors duration-150',
               parcel ? 'border-primary bg-primary/5' : 'border-border')}>
               <Switch checked={parcel} disabled={locked} onCheckedChange={setParcel} aria-label="Parcel (take away)" />
               <ShoppingBag aria-hidden className={cn('size-4', parcel ? 'text-ink-orange' : 'text-muted-foreground')} />
-            </label>
-            {parcel && (
+            </label>}
+            {!counter && parcel && (
               <input aria-label="Parcel charge" title="Parcel charge" value={charge} inputMode="decimal" placeholder={`${currencySymbol()} 0.00`}
                 disabled={locked || quote?.parcelCharge?.maxMinor === 0}
                 onChange={(e) => typeCharge(e.target.value)}
                 className={cn('h-10 w-[84px] shrink-0 rounded-lg border bg-card px-2 font-mono text-sm tabular-nums transition-shadow focus-visible:ring-[3px] focus-visible:ring-ring/40 focus-visible:outline-none disabled:opacity-60',
                   chargeInvalid ? 'border-destructive' : 'border-input')} />
             )}
-            <input aria-label="Customer name (optional)" value={name} disabled={locked} maxLength={40} onChange={(e) => setName(e.target.value)}
+            <input aria-label={`${business.terms.customer} name (optional)`} value={name} disabled={locked} maxLength={40} onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Rahul" className="h-10 min-w-0 grow rounded-lg border border-input bg-card px-2.5 text-sm transition-shadow focus-visible:ring-[3px] focus-visible:ring-ring/40 focus-visible:outline-none" />
           </div>
-          {parcel && (chargeInvalid || quote?.parcelCharge) && (
+          {!counter && parcel && (chargeInvalid || quote?.parcelCharge) && (
             <p className={cn('m-0 text-[11px] leading-tight', chargeInvalid ? 'text-destructive' : 'text-muted-foreground')}>
               {chargeInvalid ? 'Enter an amount like 20 or 20.50.'
                 : quote?.parcelCharge?.maxMinor === 0 ? 'This branch takes no parcel charge. A manager sets one under Printed bill.'
@@ -353,7 +403,7 @@ export function NewOrder(props: {
                       </span>
                     </span>
                     <div className="flex shrink-0 items-center gap-1">
-                      {line.note === '' && !noting.has(line.item.id) && (
+                      {!counter && line.note === '' && !noting.has(line.item.id) && (
                         <button type="button" disabled={locked} aria-label={`Add a note for ${line.item.name}`} title="Note for the kitchen"
                           onClick={() => setNoting((open) => new Set(open).add(line.item.id))}
                           className="flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-background hover:text-foreground disabled:opacity-50">
@@ -367,7 +417,7 @@ export function NewOrder(props: {
                         onClick={() => change(line.item.id, 1)} className="size-8 rounded-md border border-input text-base transition-colors hover:bg-background active:scale-95 disabled:opacity-50">+</button>
                     </div>
                   </div>
-                  {(line.note !== '' || noting.has(line.item.id)) && (
+                  {!counter && (line.note !== '' || noting.has(line.item.id)) && (
                     <input aria-label={`Note for ${line.item.name}`} value={line.note} disabled={locked} maxLength={140}
                       autoFocus={line.note === ''}
                       onChange={(e) => note(line.item.id, e.target.value)} placeholder="Note for the kitchen"
@@ -386,7 +436,7 @@ export function NewOrder(props: {
                 Estimate <span className="font-normal normal-case tracking-normal">· the bill, made on Confirm, is the record</span>
               </span>
               <Row label="Items" minor={quote.itemsMinor} />
-              {parcel && <Row label="Parcel charge" minor={quote.parcelChargeMinor} />}
+              {!counter && parcel && <Row label="Parcel charge" minor={quote.parcelChargeMinor} />}
               <Row label={quote.pricesIncludeTax === true && quote.taxMinor > 0 ? 'Taxable value' : 'Subtotal'} minor={quote.subtotalMinor} />
               {quote.taxes.map((t) => (
                 <Row key={`${t.name}:${t.rateBps}`} minor={t.amountMinor}
@@ -399,7 +449,7 @@ export function NewOrder(props: {
             </div>
           )}
           {quoteRefusal !== null && <p role="status" className="m-0 text-xs text-destructive">{quoteRefusal}</p>}
-          {props.kot && <p className="m-0 text-xs text-muted-foreground">Confirm sends the order to the kitchen.</p>}
+          {props.kot && needsKitchen && <p className="m-0 text-xs text-muted-foreground">Confirm sends the order to the kitchen.</p>}
           {refusal !== null && (
             <p role="alert" className="m-0 rounded-md border border-destructive bg-destructive/10 p-2.5 text-sm">{refusal}</p>
           )}
@@ -411,7 +461,7 @@ export function NewOrder(props: {
             <button type="button" disabled={busy || cart.length === 0 || chargeInvalid} onClick={() => void confirm()}
               className="flex h-11 grow items-center justify-center gap-2 rounded-xl bg-primary text-base font-semibold text-white shadow-sm transition-[transform,filter] duration-150 hover:brightness-105 active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100">
               {busy ? <LoaderCircle aria-hidden className="size-5 animate-spin" /> : <Check aria-hidden className="size-5" />}
-              {busy ? 'Sending…' : locked ? 'Try again' : 'Confirm order'}
+              {busy ? 'Sending…' : locked ? 'Try again' : counter ? `Confirm ${business.terms.sale.toLowerCase()}` : 'Confirm order'}
             </button>
           </div>
         </div>

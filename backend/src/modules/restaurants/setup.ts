@@ -445,7 +445,7 @@ export interface MenuItemDetail {
   readonly description: string | null;
   readonly barcode: string | null;
   readonly categoryId: string | null;
-  readonly kind: 'single' | 'combo';
+  readonly kind: 'single' | 'combo' | 'product';
   readonly kitchenCode: string | null;
   readonly kitchenKind: 'food' | 'beverage' | null;
   readonly priceMinor: number;
@@ -459,7 +459,7 @@ export interface MenuItemDetail {
 export async function menuItemDetail(context: TenantContext, id: string): Promise<MenuItemDetail> {
   const result = await context.client.query<{
     id: string; key: string; name: string; description: string | null; barcode: string | null;
-    category_id: string | null; kind: 'single' | 'combo'; station_code: string | null;
+    category_id: string | null; kind: 'single' | 'combo' | 'product'; station_code: string | null;
     kitchen_kind: 'food' | 'beverage' | null; price_minor: string; prep_minutes: number | null;
     tax_class_id: string; add_ons: string[] | null;
     components: { itemId: string; name: string; quantity: number }[] | null; listed_at: string[] | null;
@@ -568,8 +568,15 @@ export async function createMenuItem(
 ): Promise<MenuItemDetail & ListingOutcome> {
   const name = text(input.name, 'name', { required: true, max: 120 })!;
   const description = text(input.description, 'description', { required: false, max: 1000 });
-  if (input.kind !== 'single' && input.kind !== 'combo') throw new SetupInvalidError('type must be "single" or "combo".');
+  if (input.kind !== 'single' && input.kind !== 'combo' && input.kind !== 'product') {
+    throw new SetupInvalidError('type must be "single", "combo" or "product".');
+  }
   const kind = input.kind;
+  // A product is sold over a counter and never cooked: it has no kitchen, and
+  // naming one is refused rather than ignored (the schema would refuse it anyway).
+  if (kind === 'product' && input.kitchenCode !== undefined && input.kitchenCode !== null && input.kitchenCode !== '') {
+    throw new SetupInvalidError('a product has no kitchen; leave the kitchen empty.');
+  }
   const kitchenCode = kind === 'single' ? await kitchenCodeOf(context, input.kitchenCode) : null;
   if (kind === 'single' && kitchenCode === null) throw new SetupInvalidError('kitchen is required for a single dish.');
   const priceMinor = wholeNumber(input.priceMinor, 'price', { min: 0, max: 100_000_000, required: true })!;
@@ -602,7 +609,7 @@ export async function editMenuItem(
   const item = found.rows[0];
   if (!item) throw new SetupRowNotFoundError('food item');
   if (input.kind !== undefined && input.kind !== item.kind) {
-    throw new SetupInvalidError('a dish cannot change between single and combo; archive it and create the other kind.');
+    throw new SetupInvalidError('an item cannot change between single, combo and product; archive it and create the other kind.');
   }
 
   const sets: string[] = [];

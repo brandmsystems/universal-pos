@@ -32,7 +32,7 @@ beforeAll(async () => {
   await app.connect();
   await seedPermissionCatalogue(owner);
   await seedPlatformAuthz(owner);
-  await ensureStandardPlans(owner);
+  await ensureStandardPlans(owner, null);
   planVersionId = (await owner.query<{ id: string }>(
     `SELECT pv.id FROM platform.plan_version pv JOIN platform.plan p ON p.id = pv.plan_id
       WHERE p.key = 'basic' ORDER BY pv.version DESC LIMIT 1`)).rows[0]!.id;
@@ -93,6 +93,18 @@ describe('the registry is complete and internally consistent', () => {
     }
     const themes = BUSINESS_TYPE_KEYS.map((key) => BUSINESS_TYPES[key].theme.id);
     expect(new Set(themes).size, 'two types share one theme id').toBe(themes.length);
+  });
+
+  it('gives every type a till workflow: a restaurant sends orders to a kitchen, every other type sells over a counter', () => {
+    expect(BUSINESS_TYPES.restaurant.workflow).toBe('kitchen_order');
+    for (const key of BUSINESS_TYPE_KEYS) {
+      expect(['kitchen_order', 'counter_sale'], key).toContain(BUSINESS_TYPES[key].workflow);
+      if (key !== 'restaurant') expect(BUSINESS_TYPES[key].workflow, key).toBe('counter_sale');
+    }
+    // A counter-sale type has no kitchen or open-orders section to show.
+    for (const key of BUSINESS_TYPE_KEYS.filter((k) => BUSINESS_TYPES[k].workflow === 'counter_sale')) {
+      expect(BUSINESS_TYPES[key].nav, key).not.toContain('kitchens');
+    }
   });
 
   it('keeps the restaurant exactly as it was: every section, in the original order', () => {

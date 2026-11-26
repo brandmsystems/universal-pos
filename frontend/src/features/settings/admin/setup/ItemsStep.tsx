@@ -14,11 +14,12 @@ import {
 import type { KitchenRow } from './KitchensStep.js';
 import { AddOnsSection, type AddOnGroup } from './AddOnsSection.js';
 import { TaxSplitText, useTaxSplits } from '../TaxSplit.js';
+import { useBusiness } from '../../../../lib/businessContext.js';
 
 interface ItemRow {
   readonly id: string;
   readonly name: string;
-  readonly kind: 'single' | 'combo';
+  readonly kind: 'single' | 'combo' | 'product';
   readonly price_minor: number;
   readonly category_id: string | null;
   readonly station_code: string | null;
@@ -30,13 +31,13 @@ interface CategoryRow { readonly id: string; readonly name: string }
 interface TaxRow { readonly id: string; readonly key: string; readonly name: string }
 interface Detail {
   readonly id: string; readonly name: string; readonly description: string | null; readonly barcode: string | null;
-  readonly categoryId: string | null; readonly kind: 'single' | 'combo'; readonly kitchenCode: string | null;
+  readonly categoryId: string | null; readonly kind: 'single' | 'combo' | 'product'; readonly kitchenCode: string | null;
   readonly priceMinor: number; readonly prepMinutes: number | null; readonly taxClassId: string;
   readonly addOnGroupIds: readonly string[]; readonly components: readonly { itemId: string; quantity: number }[];
 }
 
 interface Draft {
-  name: string; description: string; barcode: string; categoryId: string; kind: 'single' | 'combo' | '';
+  name: string; description: string; barcode: string; categoryId: string; kind: 'single' | 'combo' | 'product' | '';
   kitchenCode: string; price: string; prepMinutes: string; taxClassId: string;
   addOns: string[]; components: { itemId: string; quantity: string }[];
 }
@@ -46,7 +47,13 @@ const EMPTY: Draft = {
   prepMinutes: '', taxClassId: '', addOns: [], components: [],
 };
 
+/** What the Type column and badge say for a row. */
+const kindWord = (kind: string): string => (kind === 'combo' ? 'Combo' : kind === 'product' ? 'Product' : 'Single');
+
 export function ItemsStep(props: { api: Api; branchId: string | null; onChanged?: () => void }): ReactElement {
+  // A shop sells products (no kitchen); a restaurant sells single dishes and combos.
+  const business = useBusiness();
+  const counter = business.workflow === 'counter_sale';
   const items = useList<ItemRow>(props.api, '/admin/menu/items');
   const categories = useList<CategoryRow>(props.api, '/admin/menu/categories');
   const kitchens = useList<KitchenRow>(props.api, withBranch('/admin/kitchens', props.branchId));
@@ -72,7 +79,7 @@ export function ItemsStep(props: { api: Api; branchId: string | null; onChanged?
     setTouched(false); setRefusal(null);
     if (row === 'new') {
       const gst5 = taxes.rows?.find((t) => t.key === 'gst_5');
-      setDraft({ ...EMPTY, taxClassId: gst5?.id ?? '' });
+      setDraft({ ...EMPTY, kind: counter ? 'product' : 'single', taxClassId: gst5?.id ?? '' });
       setEditing('new');
       return;
     }
@@ -93,7 +100,7 @@ export function ItemsStep(props: { api: Api; branchId: string | null; onChanged?
   const priceMinor = paiseFrom(draft.price);
   const errors = {
     name: draft.name.trim() === '' ? 'Name is required.' : null,
-    kind: draft.kind === '' ? 'Choose Single or Combo.' : null,
+    kind: draft.kind === '' ? (counter ? 'Choose the type.' : 'Choose Single or Combo.') : null,
     kitchen: draft.kind === 'single' && draft.kitchenCode === '' ? 'Choose the kitchen that makes it.' : null,
     price: priceMinor === null ? 'A price like 249 or 249.50.' : null,
     tax: draft.taxClassId === '' ? 'Choose the tax rate.' : null,
@@ -161,17 +168,17 @@ export function ItemsStep(props: { api: Api; branchId: string | null; onChanged?
           onRemove={(row) => { void remove(row); }}
           columns={[
             { title: 'Item', value: (row) => `${row.name} ${row.barcode ?? ''}`, render: (row) => <span className="font-semibold">{row.name}</span> },
-            { title: 'Type', value: (row) => (row.kind === 'combo' ? 'Combo' : 'Single'), render: (row) => <Badge variant="secondary">{row.kind === 'combo' ? 'Combo' : 'Single'}</Badge> },
+            { title: 'Type', value: (row) => kindWord(row.kind), render: (row) => <Badge variant="secondary">{kindWord(row.kind)}</Badge> },
             { title: 'Category', value: (row) => categoryName(row.category_id), render: (row) => categoryName(row.category_id) },
-            { title: 'Kitchen', value: (row) => (row.kind === 'combo' ? 'from its dishes' : kitchenName(row.station_code)), render: (row) => (row.kind === 'combo' ? 'from its dishes' : kitchenName(row.station_code)) },
+            { title: 'Kitchen', value: (row) => (row.kind === 'combo' ? 'from its dishes' : row.kind === 'product' ? 'none' : kitchenName(row.station_code)), render: (row) => (row.kind === 'combo' ? 'from its dishes' : row.kind === 'product' ? 'none' : kitchenName(row.station_code)) },
             { title: 'Price', value: (row) => Number(row.price_minor), render: (row) => <span className="font-mono">{formatRupees(Number(row.price_minor))}</span> },
             { title: 'Time', value: (row) => row.prep_minutes, render: (row) => (row.prep_minutes === null ? '—' : `${row.prep_minutes} min`) },
           ]}
           filters={[
             { kind: 'choice', label: 'Category', value: (row) => categoryName(row.category_id) },
-            { kind: 'choice', label: 'Kitchen', value: (row) => (row.kind === 'combo' ? null : kitchenName(row.station_code)) },
+            { kind: 'choice', label: 'Kitchen', value: (row) => (row.kind === 'combo' || row.kind === 'product' ? null : kitchenName(row.station_code)) },
             { kind: 'choice', label: 'Tax', value: (row) => taxes.rows?.find((t) => t.id === row.tax_class_id)?.name ?? null },
-            { kind: 'choice', label: 'Type', value: (row) => (row.kind === 'combo' ? 'Combo' : 'Single') },
+            { kind: 'choice', label: 'Type', value: (row) => kindWord(row.kind) },
             { kind: 'range', label: `Price ${currencySymbol()}`, value: (row) => Number(row.price_minor), scale: 100 },
           ]} />
       </section>
@@ -179,7 +186,7 @@ export function ItemsStep(props: { api: Api; branchId: string | null; onChanged?
       <AddOnsSection api={props.api} groups={addOns.rows} failed={addOns.failed} reload={addOns.reload} />
 
       <FormModal open={editing !== null} busy={busy} wide onClose={() => setEditing(null)}
-        title={editing === 'new' ? 'Add food item' : 'Edit food item'}
+        title={editing === 'new' ? `Add ${counter ? business.terms.item.toLowerCase() : 'food item'}` : `Edit ${counter ? business.terms.item.toLowerCase() : 'food item'}`}
         footer={<ModalFooter busy={busy} saveLabel={editing === 'new' ? 'Add item' : 'Save changes'}
           onSave={() => { void save(); }} onCancel={() => setEditing(null)} />}>
         <div className="flex flex-col gap-3.5">
@@ -189,12 +196,12 @@ export function ItemsStep(props: { api: Api; branchId: string | null; onChanged?
               <Input value={draft.name} onChange={(e) => set('name', e.target.value)} placeholder="Butter Naan" className="h-10" />
             </Field>
             <Field label="Type" required error={show(errors.kind)} hint={editing !== 'new' ? 'Cannot be changed after it is created.' : undefined}>
-              <div className="grid grid-cols-2 gap-2" role="radiogroup" aria-label="Single or combo">
-                {(['single', 'combo'] as const).map((value) => (
+              <div className="grid grid-cols-2 gap-2" role="radiogroup" aria-label={counter ? 'Type' : 'Single or combo'}>
+                {(counter ? (['product'] as const) : (['single', 'combo'] as const)).map((value) => (
                   <button key={value} type="button" role="radio" aria-checked={draft.kind === value}
                     disabled={editing !== 'new'} onClick={() => set('kind', value)}
                     className={`h-10 rounded-md border text-sm font-semibold disabled:opacity-60 ${draft.kind === value ? 'border-primary bg-accent' : 'border-border'}`}>
-                    {value === 'single' ? 'Single' : 'Combo'}
+                    {kindWord(value)}
                   </button>
                 ))}
               </div>
@@ -225,9 +232,9 @@ export function ItemsStep(props: { api: Api; branchId: string | null; onChanged?
                   className="mt-1 block text-[11px] leading-snug text-foreground/70" />
               )}
             </Field>
-            <Field label="Preparation time (min)" error={show(errors.prep)}>
+            {draft.kind !== 'product' && <Field label="Preparation time (min)" error={show(errors.prep)}>
               <Input value={draft.prepMinutes} inputMode="numeric" onChange={(e) => set('prepMinutes', e.target.value.replace(/\D/g, ''))} placeholder="15" className="h-10" />
-            </Field>
+            </Field>}
           </div>
           <div className="grid gap-3.5 sm:grid-cols-3">
             <Field label="Category">
@@ -236,7 +243,7 @@ export function ItemsStep(props: { api: Api; branchId: string | null; onChanged?
                 {(categories.rows ?? []).map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
               </select>
             </Field>
-            {draft.kind !== 'combo' && (
+            {draft.kind === 'single' && (
               <Field label="Kitchen" required error={show(errors.kitchen)}>
                 <select value={draft.kitchenCode} onChange={(e) => set('kitchenCode', e.target.value)} className={selectClass}>
                   <option value="">Choose kitchen</option>

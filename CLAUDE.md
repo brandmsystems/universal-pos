@@ -67,6 +67,20 @@ complete workflow today.
   own, which is a restaurant's) and the corner radius (`data-radius`, from
   `styles/business-themes.css`). **Not yet:** the words inside screens and the POS
   checkout stay restaurant-shaped until a type's own workflow ships.
+- **`workflow`** (`kitchen_order` | `counter_sale`) picks the shape of the till's order
+  screen; the screen reads it from the registry, never a type's name. `counter_sale`
+  is `NewOrder` without table, parcel or kitchen, with a scan box (Enter adds the
+  barcode that matches exactly, or the one product a name matches).
+- **Item kind `product` (0090)** is a thing sold over a counter and never cooked: no
+  station (the routing CHECK is unchanged -- a station exists exactly for `single`),
+  no kitchen ticket. `fireOrder` skips product lines (and stamps them sent with the
+  rest), `markReadyForBilling` does not count them unsent, and **void, comp and
+  discount may act on an unfired product line** (a dish still must be fired first).
+  The cap and the reason requirement apply as ever. A product may sit on a
+  restaurant's order beside dishes. **Not built:** stock deduction for a sold product
+  (stock is recipe-driven and deducts at KOT fire; a sale movement is its own slice),
+  and a server-side barcode lookup -- the scan matches the branch menu already
+  loaded, which suits a small shop, not a supermarket's catalogue.
 - Adding a type: one registry entry; the tests that walk the registry (complete
   terms, real sections, unique theme id, a radius rule per radius, a CHECK equal to
   the keys) fail until the migration's CHECK and the stylesheet agree.

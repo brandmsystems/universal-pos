@@ -7,6 +7,8 @@ import { createQueue } from '../../services/queue.js';
 import { createLeases } from '../../services/lease.js';
 import { createPump } from '../../services/pump.js';
 import { createConsensusKeys } from '../../lib/consensus.js';
+import { businessTypeOf } from '@universalpos/shared';
+import { BusinessProvider } from '../../lib/businessContext.js';
 import '../../styles/pos.css';
 import { SignIn } from '../../features/auth/admin/SignIn.js';
 import { PinLogin } from '../../features/auth/pos/PinLogin.js';
@@ -99,6 +101,7 @@ function PosApp(props: { restaurant: PublicRestaurant }): ReactElement {
   useEffect(() => (session === null ? undefined : pump.start()), [pump, session]);
 
   return (
+    <BusinessProvider type={businessTypeOf(props.restaurant.businessType)}>
     <div className="min-h-screen bg-background font-sans text-foreground antialiased">
       {installHelp && (
         <InstallHelp restaurant={props.restaurant} onClose={() => {
@@ -148,6 +151,7 @@ function PosApp(props: { restaurant: PublicRestaurant }): ReactElement {
         />
       )}
     </div>
+    </BusinessProvider>
   );
 }
 

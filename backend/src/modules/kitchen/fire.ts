@@ -106,6 +106,10 @@ async function resolveRouting(
         WHERE ol.tenant_id = $1 AND ol.order_id = $2
           AND ol.fired_at IS NULL
           AND ol.kind IN ('item', 'combo_component')
+          -- A product is sold over a counter, never cooked: it has no station and
+          -- no KOT entry. (It is stamped fired with the rest, below.)
+          AND NOT EXISTS (SELECT 1 FROM app.menu_item p
+                           WHERE p.tenant_id = $1 AND p.id = ol.menu_item_id AND p.kind = 'product')
      ),
      item_routes AS (
        SELECT u.id AS order_line_id,

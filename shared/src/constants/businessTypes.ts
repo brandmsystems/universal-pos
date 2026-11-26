@@ -62,11 +62,20 @@ export interface BusinessTheme {
   readonly radius: 'sharp' | 'soft' | 'round';
 }
 
+/**
+ * The shape of the till's order screen. `kitchen_order` opens an order, sends it
+ * to a kitchen and hands it to billing (dine-in, parcels, kitchen tickets);
+ * `counter_sale` scans or picks products and goes straight to billing, with no
+ * kitchen, table or parcel. The screen is chosen by this, never by a type's name.
+ */
+export type BusinessWorkflow = 'kitchen_order' | 'counter_sale';
+
 export interface BusinessTypeDefinition {
   readonly key: BusinessTypeKey;
   readonly label: string;
   readonly description: string;
   readonly status: BusinessTypeStatus;
+  readonly workflow: BusinessWorkflow;
   readonly terms: BusinessTerms;
   /** Manager sections shown, in order. Plan gates and permissions still apply on top. */
   readonly nav: readonly AdminSectionKey[];
@@ -83,7 +92,7 @@ const NO_TABLE_SECTIONS: readonly AdminSectionKey[] = ADMIN_SECTION_KEYS.filter(
 
 export const BUSINESS_TYPES: Readonly<Record<BusinessTypeKey, BusinessTypeDefinition>> = {
   restaurant: {
-    key: 'restaurant', label: 'Restaurant / Hotel', status: 'available',
+    key: 'restaurant', label: 'Restaurant / Hotel', status: 'available', workflow: 'kitchen_order',
     description: 'Dine-in and parcels, kitchen tickets, bills and payments.',
     terms: {
       item: 'Dish', items: 'Dishes', sale: 'Order', sales: 'Orders',
@@ -95,7 +104,7 @@ export const BUSINESS_TYPES: Readonly<Record<BusinessTypeKey, BusinessTypeDefini
     theme: { id: 'restaurant', primary: null, radius: 'soft' },
   },
   general_retail: {
-    key: 'general_retail', label: 'General retail', status: 'preview',
+    key: 'general_retail', label: 'General retail', status: 'preview', workflow: 'counter_sale',
     description: 'Products and categories, inventory, billing and returns for any shop.',
     terms: {
       item: 'Product', items: 'Products', sale: 'Sale', sales: 'Sales',
@@ -107,7 +116,7 @@ export const BUSINESS_TYPES: Readonly<Record<BusinessTypeKey, BusinessTypeDefini
     theme: { id: 'retail', primary: '#2563eb', radius: 'sharp' },
   },
   optical: {
-    key: 'optical', label: 'Optical shop', status: 'planned',
+    key: 'optical', label: 'Optical shop', status: 'planned', workflow: 'counter_sale',
     description: 'Frames and lenses, prescriptions and eye-power records.',
     terms: {
       item: 'Frame', items: 'Frames & lenses', sale: 'Sale', sales: 'Sales',
@@ -119,7 +128,7 @@ export const BUSINESS_TYPES: Readonly<Record<BusinessTypeKey, BusinessTypeDefini
     theme: { id: 'optical', primary: '#0f766e', radius: 'round' },
   },
   clothing: {
-    key: 'clothing', label: 'Clothing shop', status: 'planned',
+    key: 'clothing', label: 'Clothing shop', status: 'planned', workflow: 'counter_sale',
     description: 'Sizes and colours, barcode labels, stock by variant and exchanges.',
     terms: {
       item: 'Garment', items: 'Garments', sale: 'Sale', sales: 'Sales',
@@ -131,7 +140,7 @@ export const BUSINESS_TYPES: Readonly<Record<BusinessTypeKey, BusinessTypeDefini
     theme: { id: 'clothing', primary: '#be185d', radius: 'round' },
   },
   supermarket: {
-    key: 'supermarket', label: 'Supermarket', status: 'planned',
+    key: 'supermarket', label: 'Supermarket', status: 'planned', workflow: 'counter_sale',
     description: 'Barcode-first checkout, weighed and bulk goods, expiry and batches.',
     terms: {
       item: 'Product', items: 'Products', sale: 'Sale', sales: 'Sales',
@@ -143,7 +152,7 @@ export const BUSINESS_TYPES: Readonly<Record<BusinessTypeKey, BusinessTypeDefini
     theme: { id: 'supermarket', primary: '#15803d', radius: 'sharp' },
   },
   mobile: {
-    key: 'mobile', label: 'Mobile shop', status: 'planned',
+    key: 'mobile', label: 'Mobile shop', status: 'planned', workflow: 'counter_sale',
     description: 'IMEI and serial numbers, warranty, accessories, repairs.',
     terms: {
       item: 'Device', items: 'Devices & accessories', sale: 'Sale', sales: 'Sales',
@@ -155,7 +164,7 @@ export const BUSINESS_TYPES: Readonly<Record<BusinessTypeKey, BusinessTypeDefini
     theme: { id: 'mobile', primary: '#4f46e5', radius: 'soft' },
   },
   salon: {
-    key: 'salon', label: 'Salon / Spa', status: 'planned',
+    key: 'salon', label: 'Salon / Spa', status: 'planned', workflow: 'counter_sale',
     description: 'Services and packages, appointments, staff assignment, client history.',
     terms: {
       item: 'Service', items: 'Services', sale: 'Appointment', sales: 'Appointments',

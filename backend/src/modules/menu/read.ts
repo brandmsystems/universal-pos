@@ -55,7 +55,7 @@ export async function readMenuForBranch(
   // snapshotted; a number on its way to a SCREEN must be live.
   // ###########################################################################
   const catalogue = await context.client.query<Record<string, unknown>>(
-    `SELECT mi.id, mi.name, mi.category_id, mi.station_code, mi.kind,
+    `SELECT mi.id, mi.name, mi.barcode, mi.category_id, mi.station_code, mi.kind,
             COALESCE(bp.price_minor, mi.price_minor)::text AS price_minor,
             tc.rate_bps AS tax_rate_bps, tc.key AS tax_class_key,
             ks.id AS kitchen_station_id, ks.name AS kitchen_name

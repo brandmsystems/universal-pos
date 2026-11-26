@@ -75,6 +75,8 @@ interface TargetLine {
   unit_price_minor: string;
   quantity: number;
   fired_at: string | null;
+  /** The catalogue kind of the item sold. A `product` is never fired, so it is adjusted unfired. */
+  item_kind: string | null;
   net_quantity: string;
   net_money: string;
 }
@@ -92,6 +94,8 @@ async function lockTarget(context: TenantContext, lineId: string): Promise<Targe
   const result = await context.client.query<TargetLine>(
     `SELECT ol.id, ol.branch_id, ol.order_id, ol.kind, ol.display_name,
             ol.unit_price_minor::text, ol.quantity, ol.fired_at::text,
+            (SELECT mi.kind FROM app.menu_item mi
+              WHERE mi.tenant_id = ol.tenant_id AND mi.id = ol.menu_item_id) AS item_kind,
             COALESCE((SELECT sum(adj.quantity) FROM app.order_line adj
                        WHERE adj.tenant_id = ol.tenant_id AND adj.adjusts_line_id = ol.id),
                      0)::text AS net_quantity,
@@ -166,7 +170,7 @@ export async function voidLine(
   }
 
   const target = await lockTarget(context, request.lineId);
-  if (target.fired_at === null) throw new LineNotFiredError(request.lineId);
+  if (target.fired_at === null && target.item_kind !== 'product') throw new LineNotFiredError(request.lineId);
 
   const remaining = target.quantity + Number(target.net_quantity);
   if (request.quantity > remaining) {
@@ -199,7 +203,7 @@ export async function compLine(
   }
 
   const target = await lockTarget(context, request.lineId);
-  if (target.fired_at === null) throw new LineNotFiredError(request.lineId);
+  if (target.fired_at === null && target.item_kind !== 'product') throw new LineNotFiredError(request.lineId);
 
   const unitPrice = Number(target.unit_price_minor);
   const money = unitPrice * request.quantity;
@@ -270,7 +274,7 @@ export async function discountLine(
   }
 
   const target = await lockTarget(context, request.lineId);
-  if (target.fired_at === null) throw new LineNotFiredError(request.lineId);
+  if (target.fired_at === null && target.item_kind !== 'product') throw new LineNotFiredError(request.lineId);
 
   const unitPrice = Number(target.unit_price_minor);
   const original = unitPrice * target.quantity;
