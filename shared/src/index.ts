@@ -31,3 +31,11 @@ export {
   PRINTER_DEFAULT_PORT, PRINTER_PORT_MAX, PRINTER_PORT_MIN, parsePrinterAddress, printerAddress, printerAddressProblem,
   printerPortProblem,
 } from './constants/printerAddress.js';
+export {
+  ADMIN_SECTION_KEYS, BUSINESS_TYPES, BUSINESS_TYPE_KEYS, DEFAULT_BUSINESS_TYPE, businessTypeOf,
+  isBusinessTypeKey, sectionTitle, selectableBusinessTypes,
+} from './constants/businessTypes.js';
+export type {
+  AdminSectionKey, BusinessTerms, BusinessTheme, BusinessTypeDefinition, BusinessTypeKey,
+  BusinessTypeStatus,
+} from './constants/businessTypes.js';

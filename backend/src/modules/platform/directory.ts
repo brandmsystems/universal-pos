@@ -52,6 +52,8 @@ export interface TenantSummary {
   readonly themeColor: string | null;
   /** The second brand colour, `#rrggbb`, or null. */
   readonly themeColorSecondary: string | null;
+  /** Registry key (shared `BUSINESS_TYPES`): what kind of business this is. */
+  readonly businessType: string;
   /** Public, versioned by content; null when the restaurant has no logo. */
   readonly logoUrl: string | null;
   readonly status: string;
@@ -164,6 +166,7 @@ export async function listTenants(
     status_changed_at: string; delinquent_since: string | null;
     deactivated_at: string | null; deactivation_reason: string | null;
     tax_jurisdiction: string; default_currency: string; default_timezone: string; created_at: string;
+    business_type: string;
     subscription_id: string | null; subscription_status: string | null;
     current_period_start: string | null; current_period_end: string | null;
     plan_version_id: string | null;
@@ -180,6 +183,7 @@ export async function listTenants(
             t.status_changed_at::text, t.delinquent_since::text,
             t.deactivated_at::text, t.deactivation_reason,
             t.tax_jurisdiction, t.default_currency, t.default_timezone, t.created_at::text,
+            t.business_type,
             s.id AS subscription_id, s.status AS subscription_status,
             s.current_period_start::text, s.current_period_end::text,
             pv.id AS plan_version_id,
@@ -253,6 +257,7 @@ export async function listTenants(
     address: row.address,
     themeColor: row.theme_color,
     themeColorSecondary: row.theme_color_secondary,
+    businessType: row.business_type,
     logoUrl: logoUrl(row.slug, row.logo_sha256),
     status: row.status,
     statusChangedAt: row.status_changed_at,
@@ -461,6 +466,8 @@ export interface PublicRestaurant {
   readonly themeColor: string | null;
   /** The second brand colour, for tinted surfaces; null keeps tints of the primary. */
   readonly themeColorSecondary: string | null;
+  /** Registry key: the public pages pick their words and look from it. */
+  readonly businessType: string;
   readonly logoUrl: string | null;
   /**
    * Addresses this restaurant had before a rename. They were public addresses
@@ -525,9 +532,10 @@ export async function publicRestaurantBySlug(
   const found = await client.query<{
     slug: string; name: string; status: string; theme_color: string | null; theme_color_secondary: string | null;
     logo_sha256: Buffer | null; former_slugs: string[]; default_currency: string; tax_jurisdiction: string;
+    business_type: string;
   }>(
     `SELECT t.slug::text AS slug, t.name, t.status, t.theme_color, t.theme_color_secondary, l.sha256 AS logo_sha256,
-            t.default_currency, t.tax_jurisdiction,
+            t.default_currency, t.tax_jurisdiction, t.business_type,
             ARRAY(SELECT h.slug::text FROM platform.tenant_slug_history h
                    WHERE h.tenant_id = t.id ORDER BY h.retired_at) AS former_slugs
        FROM platform.tenant t
@@ -541,6 +549,7 @@ export async function publicRestaurantBySlug(
   return {
     slug: row.slug, name: row.name, signInAvailable: authenticable.includes(row.status),
     themeColor: row.theme_color, themeColorSecondary: row.theme_color_secondary,
+    businessType: row.business_type,
     logoUrl: logoUrl(row.slug, row.logo_sha256), formerSlugs: row.former_slugs,
     currency: row.default_currency, locale: localeForCurrency(row.default_currency),
     billRounding: jurisdiction(row.tax_jurisdiction).billRounding,

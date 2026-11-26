@@ -23,6 +23,8 @@ export interface TenantSummary {
   readonly address: string | null;
   readonly themeColor: string | null;
   readonly themeColorSecondary?: string | null;
+  /** Registry key (shared `BUSINESS_TYPES`); absent from an older API, which only had restaurants. */
+  readonly businessType?: string;
   readonly logoUrl: string | null;
   readonly status: string;
   readonly delinquentSince: string | null;

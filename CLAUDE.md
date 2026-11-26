@@ -40,6 +40,39 @@ keys. Retired keys are listed in `KEYS_WITHOUT_ROUTES`.
 
 ---
 
+## Business types (0089, 2026-11-26)
+
+UniversalPOS serves more than restaurants; a restaurant is the one type with a
+complete workflow today.
+
+- **The registry is the one definition** (`shared/src/constants/businessTypes.ts`):
+  per type, its words (`terms`), the manager sections it shows (`nav`, a subset of
+  `ADMIN_SECTION_KEYS`), their titles, its modules and its theme. The API and every
+  web client read it; **no screen branches on a type's name**.
+- **The database stores only the key**: `platform.tenant.business_type`, text + CHECK,
+  default `restaurant` (every tenant before 0089). A test asserts the CHECK lists
+  exactly the registry's keys. A table copy of the registry is not built.
+- **`status`** is what a type can honestly do: `available` (own workflow end to
+  end: restaurant), `preview` (selectable, runs on the shared order flow: general
+  retail), `planned` (defined, cannot be selected). `selectableBusinessTypes()` is what
+  every picker and `checkedBusinessType` accept; a planned type is refused by name
+  (`business_type_unavailable`).
+- **Control plane only.** Provisioning (`POST /tenants`) and the tenant edit
+  (`PATCH /tenants/:id`) take `businessType`; no tenant request names it. The type is
+  **fixed once the business has taken an order** (`business_type_locked`, counted
+  from `app.table_session`). The create form has no preselected type, as it has no
+  preselected country.
+- **What follows the type today:** the manager sidebar (sections, order, titles),
+  the accent colour (a colour the business chose itself wins; `null` = the product's
+  own, which is a restaurant's) and the corner radius (`data-radius`, from
+  `styles/business-themes.css`). **Not yet:** the words inside screens and the POS
+  checkout stay restaurant-shaped until a type's own workflow ships.
+- Adding a type: one registry entry; the tests that walk the registry (complete
+  terms, real sections, unique theme id, a radius rule per radius, a CHECK equal to
+  the keys) fail until the migration's CHECK and the stylesheet agree.
+
+---
+
 ## Stack
 
 - Backend:      Node 22 + Fastify 5 + TypeScript (ESM)

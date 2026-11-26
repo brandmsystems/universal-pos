@@ -14,7 +14,9 @@ import {
 import type { CountrySettings, PlanOption, PlanVersion, TenantSummary } from '../../../types/restaurant.js';
 import { restaurantLinks } from '../../../lib/restaurantPath.js';
 import { TenantStaff } from './TenantStaff.js';
-import { ADDRESS_MIN_LENGTH, entitlementsFromTerms, normaliseThemeColor, slugProblem } from '@universalpos/shared';
+import {
+  ADDRESS_MIN_LENGTH, businessTypeOf, entitlementsFromTerms, normaliseThemeColor, selectableBusinessTypes, slugProblem,
+} from '@universalpos/shared';
 import {
   BrandPreview, LogoField, ThemeColorField, readLogo, type LogoChoice,
 } from '../../../components/platform/branding.js';
@@ -42,6 +44,7 @@ export function EditRestaurantModal(props: {
   const [address, setAddress] = useState('');
   const [themeColor, setThemeColor] = useState('');
   const [themeColorSecondary, setThemeColorSecondary] = useState('');
+  const [businessType, setBusinessType] = useState('restaurant');
   const [logo, setLogo] = useState<LogoChoice | null>(null);
   const [logoRemoved, setLogoRemoved] = useState(false);
   const [logoError, setLogoError] = useState<string | null>(null);
@@ -55,6 +58,7 @@ export function EditRestaurantModal(props: {
     setAddress(props.tenant?.address ?? '');
     setThemeColor(props.tenant?.themeColor ?? '');
     setThemeColorSecondary(props.tenant?.themeColorSecondary ?? '');
+    setBusinessType(businessTypeOf(props.tenant?.businessType).key);
     setLogo(null); setLogoRemoved(false); setLogoError(null);
     setRefusal(null);
   }, [props.tenant]);
@@ -73,6 +77,7 @@ export function EditRestaurantModal(props: {
     if (address.trim() !== (props.tenant.address ?? '')) fields['address'] = address.trim() === '' ? null : address.trim();
     if (colour !== props.tenant.themeColor && colourError === null) fields['themeColor'] = colour;
     if (secondColour !== (props.tenant.themeColorSecondary ?? null) && secondColourError === null) fields['themeColorSecondary'] = secondColour;
+    if (businessType !== businessTypeOf(props.tenant.businessType).key) fields['businessType'] = businessType;
   }
   const slugChanged = props.canRename && props.tenant !== null && slug.trim() !== props.tenant.slug;
   const slugError = slugChanged ? slugProblem(slug.trim()) ?? slugTaken : null;
@@ -143,6 +148,9 @@ export function EditRestaurantModal(props: {
           <TextField label="Slug" value={props.tenant?.slug ?? ''} onChange={() => undefined} mono disabled
             hint="The restaurant's address and sign-in path. Only a Super Admin can change it." />
         )}
+        <SelectField label="Kind of business" value={businessType} onChange={setBusinessType}
+          options={selectableBusinessTypes().map((type) => ({ value: type.key, label: type.status === 'preview' ? `${type.label} (preview)` : type.label }))}
+          hint="Sets the screens, words and look. Fixed once the business has taken an order; the server refuses a change after that." />
         <TextArea label="Address" value={address} onChange={setAddress}
           hint={addressError ?? 'Where the restaurant is.'} />
         <div className="grid gap-3.5 sm:grid-cols-2">

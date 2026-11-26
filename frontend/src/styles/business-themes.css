@@ -1,0 +1,24 @@
+/*
+ * Corner radius by business type. The registry (shared `BUSINESS_TYPES`) says
+ * which of `sharp | soft | round` a type uses and `lib/business.ts` writes it
+ * to `data-radius` on the document root; `soft` is the product's own radius and
+ * writes nothing. A test asserts there is a rule here for every radius the
+ * registry uses.
+ *
+ * Unlayered on purpose: it must beat the `@theme` tokens that Tailwind emits.
+ */
+:root[data-radius="sharp"] {
+  --radius: 2px;
+  --radius-sm: 2px;
+  --radius-md: 2px;
+  --radius-lg: 3px;
+  --radius-xl: 4px;
+}
+
+:root[data-radius="round"] {
+  --radius: 10px;
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+}

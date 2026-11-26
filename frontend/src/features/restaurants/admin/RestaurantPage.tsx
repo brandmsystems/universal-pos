@@ -24,6 +24,8 @@ export interface PublicRestaurant {
   readonly themeColor: string | null;
   /** The second brand colour; absent from an older API. */
   readonly themeColorSecondary?: string | null;
+  /** Registry key; absent from an older server, which only had restaurants. */
+  readonly businessType?: string;
   readonly logoUrl: string | null;
   /** Addresses it had before a rename (absent from an older server). */
   readonly formerSlugs?: readonly string[];

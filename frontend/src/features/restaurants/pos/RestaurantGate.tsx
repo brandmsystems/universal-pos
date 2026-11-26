@@ -7,6 +7,7 @@ import {
 } from '../admin/RestaurantPage.js';
 import { tabletSlugFromPath, type TabletApp } from '../../../lib/restaurantPath.js';
 import { useThemeColor, type Surface } from '../../../lib/theme.js';
+import { accentFor, useBusinessType } from '../../../lib/business.js';
 
 /**
  * The POS starts here. The restaurant comes from the address -- `/{slug}/pos`
@@ -22,7 +23,8 @@ export function RestaurantGate(props: {
   const slug = tabletSlugFromPath(props.app);
   const lookup = useRestaurantBySlug(slug);
   const restaurant = lookup?.state === 'found' ? lookup.restaurant : null;
-  useThemeColor(restaurant?.themeColor ?? null, props.surface, restaurant?.themeColorSecondary ?? null);
+  const businessType = useBusinessType(restaurant?.businessType);
+  useThemeColor(accentFor(restaurant?.themeColor ?? null, businessType), props.surface, restaurant?.themeColorSecondary ?? null);
 
   if (slug === null) return <ChooseRestaurant />;
   if (lookup === null || lookup.state === 'loading') return <RestaurantLoading />;

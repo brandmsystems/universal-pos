@@ -24,6 +24,7 @@ import { OpenOrders } from '../../features/orders/admin/OpenOrders.js';
 import { PrintedBill } from '../../features/billing/admin/PrintedBill.js';
 import { Bills } from '../../features/billing/admin/Bills.js';
 import { useThemeColor } from '../../lib/theme.js';
+import { accentFor, titleFor, useBusinessType, visibleSections } from '../../lib/business.js';
 import {
   AdminRestaurantLoading, RestaurantNotFound, RestaurantUnavailable, RestaurantUnreachable,
   slugFromPath, useRestaurantBySlug,
@@ -161,7 +162,10 @@ export function App(): ReactElement {
   // signed-in restaurant. Its public lookup carries the name, logo and colour.
   const lookup = useRestaurantBySlug(urlSlug ?? session?.tenantSlug ?? null);
   const brand = lookup?.state === 'found' ? lookup.restaurant : null;
-  useThemeColor(brand?.themeColor ?? null, 'light', brand?.themeColorSecondary ?? null);
+  // The kind of business decides the sections, their words and the look; a colour the business chose itself wins.
+  const businessType = useBusinessType(brand?.businessType);
+  const typeSections = useMemo(() => visibleSections(SECTIONS, businessType), [businessType]);
+  useThemeColor(accentFor(brand?.themeColor ?? null, businessType), 'light', brand?.themeColorSecondary ?? null);
   const [plan, setPlan] = useState<PlanRead>({ state: 'loading' });
   // Below lg the sidebar is a drawer; this is only whether it is drawn open.
   const [navOpen, setNavOpen] = useState(false);
@@ -178,13 +182,13 @@ export function App(): ReactElement {
   useEffect(() => {
     const here = adminLocationFromPath();
     if (session === null || plan.state === 'loading' || here?.slug !== session.tenantSlug) return;
-    const shown = offered(plan, active.requires) ? active : SECTIONS[0]!;
+    const shown = offered(plan, active.requires) && typeSections.includes(active) ? active : SECTIONS[0]!;
     if (shown !== active) setActive(shown);
     if (here.section !== shown.path) {
       const { search, hash } = window.location;
       window.history.replaceState(null, '', adminPath(here.slug, shown.path) + search + hash);
     }
-  }, [session, plan, active]);
+  }, [session, plan, active, typeSections]);
 
   useEffect(() => {
     if (session === null) return;
@@ -241,7 +245,7 @@ export function App(): ReactElement {
   }
   if (session === null) return <SignIn api={api} onSignedIn={setSession} prefill={prefill} />;
 
-  const sections = SECTIONS.filter((section) => offered(plan, section.requires));
+  const sections = typeSections.filter((section) => offered(plan, section.requires));
   // A section the plan no longer offers (a downgrade, or a stale selection)
   // falls back to the dashboard rather than rendering a screen that refuses.
   const current = sections.find((section) => section.resource === active.resource) ?? SECTIONS[0]!;
@@ -272,7 +276,7 @@ export function App(): ReactElement {
         </button>
         {brand?.logoUrl != null && <img src={brand.logoUrl} alt="" className="size-8 shrink-0 rounded-md object-contain" />}
         <span className="min-w-0 truncate text-base font-bold tracking-tight">{brand?.name ?? session.tenantSlug}</span>
-        <span className="ml-auto truncate text-sm font-medium text-muted-foreground">{pending ? active.title : current.title}</span>
+        <span className="ml-auto truncate text-sm font-medium text-muted-foreground">{titleFor(businessType, pending ? active : current)}</span>
       </header>
       {navOpen && (
         <>
@@ -325,7 +329,7 @@ export function App(): ReactElement {
               )}
             >
               {Icon !== undefined && <Icon aria-hidden className={cn('size-[18px] shrink-0', isActive && 'text-ink-orange')} />}
-              <span className="truncate">{section.title}</span>
+              <span className="truncate">{titleFor(businessType, section)}</span>
             </button>
           );
         })}
@@ -344,7 +348,7 @@ export function App(): ReactElement {
 
       <main className="min-w-0 grow p-4 animate-in fade-in duration-300 sm:p-6 lg:p-8" key={current.resource}>
         {pending ? (
-          <PageSkeleton label={active.title} />
+          <PageSkeleton label={titleFor(businessType, active)} />
         ) : current.resource === '' ? (
           <>
             <InstallPosApp api={api} slug={session.tenantSlug} restaurantName={brand?.name ?? session.tenantSlug}
@@ -374,7 +378,7 @@ export function App(): ReactElement {
             key={current.resource}
             api={api}
             resource={current.resource}
-            title={current.title}
+            title={titleFor(businessType, current)}
           />
         )}
       </main>

@@ -721,6 +721,14 @@ export const ERROR_CONTRACT: Readonly<Record<string, Mapping>> = {
     status: 409, retryable: false,
     clientAction: 'the restaurant has billed, so its country is fixed; a move is a new restaurant',
   },
+  business_type_locked: {
+    status: 409, retryable: false,
+    clientAction: 'the business has taken orders, so its type is fixed; a different kind of business is a new tenant',
+  },
+  business_type_unavailable: {
+    status: 400, retryable: false,
+    clientAction: 'choose a business type the picker offers; planned types cannot be selected yet',
+  },
   country_change_while_orders_open: {
     status: 409, retryable: false,
     clientAction: 'finish or cancel the open orders, then change the country',

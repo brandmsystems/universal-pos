@@ -12,6 +12,9 @@ import { seedTaxClasses } from '../tax/taxClassSeed.js';
 import { seedFloorTypes } from '../restaurants/setup.js';
 import { jurisdiction } from '../tax/registry.js';
 import { offeredCountry } from './countries.js';
+import {
+  DEFAULT_BUSINESS_TYPE, isBusinessTypeKey, selectableBusinessTypes, type BusinessTypeKey,
+} from '@universalpos/shared';
 
 /**
  * Creating a tenant is one transaction: tenant + subscription + seeded roles and
@@ -56,6 +59,13 @@ export interface ProvisionRequest {
    * #######################################################################
    */
   readonly taxJurisdiction: string;
+  /**
+   * The registry key of what kind of business this is (shared `BUSINESS_TYPES`).
+   * Omitted means a restaurant, which is every tenant that existed before the
+   * field did; the Super Admin's form always states it. A `planned` type is
+   * refused: it has no workflow to run yet.
+   */
+  readonly businessType?: string | undefined;
   readonly requestedByPlatformUserId: string | null;
   /** The Restaurant Manager's phone, as the salesperson was given it. Optional. */
   readonly ownerPhone?: string | null | undefined;
@@ -73,6 +83,25 @@ export interface ProvisionRequest {
   /** `#rrggbb`, applied to the restaurant's own admin screens. Optional. */
   readonly themeColor?: string | null | undefined;
   readonly themeColorSecondary?: string | null | undefined;
+}
+
+/** The registry key to store: absent is a restaurant, planned or unknown is refused. */
+export function checkedBusinessType(value: string | undefined): BusinessTypeKey {
+  if (value === undefined || value === '') return DEFAULT_BUSINESS_TYPE;
+  if (!isBusinessTypeKey(value) || !selectableBusinessTypes().some((type) => type.key === value)) {
+    throw new BusinessTypeUnavailableError(value);
+  }
+  return value;
+}
+
+export class BusinessTypeUnavailableError extends Error {
+  readonly statusCode = 400;
+  readonly code = 'business_type_unavailable';
+  constructor(requested: string) {
+    super(`business type ${JSON.stringify(requested)} cannot be selected. Selectable now: `
+      + `${selectableBusinessTypes().map((type) => type.key).join(', ')}.`);
+    this.name = 'BusinessTypeUnavailableError';
+  }
 }
 
 export class ProvisionInputInvalidError extends Error {
@@ -132,6 +161,7 @@ function digestOf(request: ProvisionRequest): Buffer {
     request.taxJurisdiction,
     // Appended only when they differ from the default, so a retry of a request
     // made before these fields existed still produces the digest it stored.
+    ...(request.businessType && request.businessType !== DEFAULT_BUSINESS_TYPE ? [`type:${request.businessType}`] : []),
     ...(request.ownerPhone ? [`phone:${request.ownerPhone}`] : []),
     ...(request.startMode === 'paid' ? ['start:paid'] : []),
     ...(request.legalName ? [`legal:${request.legalName}`] : []),
@@ -205,6 +235,8 @@ export async function provisionTenant(
       'ownerPhone must be digits, with optional spaces, dashes, brackets and a leading +.');
   }
 
+  const businessType = checkedBusinessType(request.businessType);
+
   // Before the idempotency claim, like the jurisdiction: a slug that could
   // never be stored is the caller's mistake and must not consume the key.
   const address = addressOf(request.address ?? undefined) ?? null;
@@ -266,8 +298,9 @@ export async function provisionTenant(
     await client.query(
       `INSERT INTO platform.tenant
          (id, slug, name, default_currency, default_timezone, tax_jurisdiction,
-          created_by_platform_user_id, legal_name, address, theme_color, theme_color_secondary)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
+          created_by_platform_user_id, legal_name, address, theme_color, theme_color_secondary,
+          business_type)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
       [
         tenantId,
         request.slug,
@@ -284,6 +317,7 @@ export async function provisionTenant(
         address,
         themeColor,
         themeColorSecondary,
+        businessType,
       ],
     );
   } catch (error) {

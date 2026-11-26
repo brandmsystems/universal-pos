@@ -223,7 +223,7 @@ describe('/{slug} shows that restaurant and no other', () => {
     const page = await http('GET', `/api/public/restaurants/${restaurantA.slug}`);
     expect(page.status).toBe(200);
     expect(page.body).toEqual({
-      slug: restaurantA.slug, name: 'ABC Restaurant', signInAvailable: true, themeColor: null, themeColorSecondary: null, logoUrl: null, formerSlugs: [],
+      slug: restaurantA.slug, name: 'ABC Restaurant', signInAvailable: true, themeColor: null, themeColorSecondary: null, businessType: 'restaurant', logoUrl: null, formerSlugs: [],
       currency: 'INR', locale: 'en-IN', billRounding: 'nearest_rupee',
     });
   });

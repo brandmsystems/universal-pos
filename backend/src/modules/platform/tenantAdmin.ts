@@ -2,12 +2,23 @@ import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import type pg from 'pg';
 import { publishAndAnnounce } from './entitlements.js';
 import { addressOf, checkedLogo, logoUrl, themeColorOf } from './branding.js';
+import { adoptTenantContext } from '../../core/database/unitOfWork.js';
+import { checkedBusinessType } from './provisioning.js';
 
 /**
  * A Super Admin's (and, for editing, a Salesperson's) hand on a restaurant
  * record. Control plane only: every statement here reads or writes schema
  * `platform`, same boundary as `directory.ts`.
  */
+
+export class BusinessTypeLockedError extends Error {
+  readonly statusCode = 409;
+  readonly code = 'business_type_locked';
+  constructor(readonly orders: number) {
+    super(`this business has taken ${orders} order(s), so its type is fixed: what it sold was recorded under one kind of business. A different kind of business is set up as a new tenant.`);
+    this.name = 'BusinessTypeLockedError';
+  }
+}
 
 export class TenantUnknownError extends Error {
   readonly statusCode = 404;
@@ -109,11 +120,13 @@ export async function editTenant(
     address?: unknown;
     themeColor?: unknown;
     themeColorSecondary?: unknown;
+    businessType?: unknown;
     provisionedByPlatformUserId?: string | undefined;
   },
 ): Promise<{
   tenantId: string; name: string; legalName: string | null;
   address: string | null; themeColor: string | null; themeColorSecondary: string | null;
+  businessType: string;
 }> {
   await lockTenant(client, input.tenantId, input.provisionedByPlatformUserId);
   const sets: string[] = [];
@@ -151,21 +164,38 @@ export async function editTenant(
     values.push(themeColorSecondary);
     sets.push(`theme_color_secondary = $${values.length}`);
   }
+  if (input.businessType !== undefined) {
+    if (typeof input.businessType !== 'string') throw new TenantEditInvalidError('businessType must be a registry key.');
+    const next = checkedBusinessType(input.businessType);
+    const current = await client.query<{ business_type: string }>(
+      `SELECT business_type FROM platform.tenant WHERE id = $1`, [input.tenantId]);
+    if (current.rows[0]!.business_type !== next) {
+      // Fixed once the business has taken an order: what it sold was recorded
+      // under one kind of business, and a change would relabel its history.
+      await adoptTenantContext(client, input.tenantId);
+      const orders = await client.query<{ n: string }>(
+        `SELECT count(*)::text AS n FROM app.table_session WHERE tenant_id = $1`, [input.tenantId]);
+      if (Number(orders.rows[0]!.n) > 0) throw new BusinessTypeLockedError(Number(orders.rows[0]!.n));
+      values.push(next);
+      sets.push(`business_type = $${values.length}`);
+    }
+  }
   if (sets.length === 0) {
-    throw new TenantEditInvalidError('nothing to change: send name, legalName, address, themeColor or themeColorSecondary.');
+    throw new TenantEditInvalidError('nothing to change: send name, legalName, address, themeColor, themeColorSecondary or businessType.');
   }
 
   const updated = await client.query<{
     name: string; legal_name: string | null; address: string | null; theme_color: string | null;
-    theme_color_secondary: string | null;
+    theme_color_secondary: string | null; business_type: string;
   }>(
     `UPDATE platform.tenant SET ${sets.join(', ')} WHERE id = $1
-     RETURNING name, legal_name, address, theme_color, theme_color_secondary`,
+     RETURNING name, legal_name, address, theme_color, theme_color_secondary, business_type`,
     values);
   const row = updated.rows[0]!;
   return {
     tenantId: input.tenantId, name: row.name, legalName: row.legal_name,
     address: row.address, themeColor: row.theme_color, themeColorSecondary: row.theme_color_secondary,
+    businessType: row.business_type,
   };
 }
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ADDRESS_MIN_LENGTH, normaliseThemeColor, slugProblem, slugify } from '@universalpos/shared';
+import { ADDRESS_MIN_LENGTH, businessTypeOf, normaliseThemeColor, selectableBusinessTypes, slugProblem, slugify } from '@universalpos/shared';
 import type { ReactElement } from 'react';
 import type { PlatformApi } from '../../../services/platformApi.js';
 import { Button } from '@/components/ui/button.js';
@@ -72,6 +72,8 @@ export function NewRestaurantModal(props: {
   const [ownerUsername, setOwnerUsername] = useState('');
   const [ownerPassword, setOwnerPassword] = useState('');
   const [startMode, setStartMode] = useState<'trial' | 'paid'>('trial');
+  // Chosen, never assumed: no type is preselected, as no country is.
+  const [businessType, setBusinessType] = useState('');
   const [firstBranchName, setFirstBranchName] = useState('Main branch');
   const [currency, setCurrency] = useState('');
   const [timezone, setTimezone] = useState('');
@@ -154,6 +156,7 @@ export function NewRestaurantModal(props: {
     ownerPhone: ownerPhone.trim() !== '' && !/^\+?[0-9][0-9 ()-]{5,19}$/.test(ownerPhone.trim())
       ? 'Digits, spaces, dashes and an optional leading +.' : null,
     firstBranchName: firstBranchName.trim() === '' ? 'Required.' : null,
+    businessType: businessType === '' ? 'Choose what kind of business this is.' : null,
     country: taxJurisdiction === '' ? 'Choose a country.' : null,
     currency: !/^[A-Z]{3}$/.test(currency) ? 'Choose a currency.' : null,
     timezone: timezone.trim() === '' ? 'Required.' : null,
@@ -171,7 +174,7 @@ export function NewRestaurantModal(props: {
     setOwnerUsername(''); setOwnerPassword('');
     setFirstBranchName('Main branch');
     if (countries !== null) chooseCountry(countries.defaultCountry);
-    setPlanVersionId(''); setTouched(false); setRefusal(null); setResult(null);
+    setBusinessType(''); setPlanVersionId(''); setTouched(false); setRefusal(null); setResult(null);
     setAddress(''); setThemeColor(''); setLogo(null); setLogoError(null);
   }
 
@@ -191,7 +194,7 @@ export function NewRestaurantModal(props: {
         ownerEmail: ownerEmail.trim(), ownerName: ownerName.trim(),
         ...(ownerPhone.trim() === '' ? {} : { ownerPhone: ownerPhone.trim() }),
         startMode,
-        firstBranchName: firstBranchName.trim(), planVersionId, taxJurisdiction,
+        firstBranchName: firstBranchName.trim(), planVersionId, taxJurisdiction, businessType,
         address: address.trim(),
         ...(themeColor.trim() === '' ? {} : { themeColor: normaliseThemeColor(themeColor) }),
         ...(themeColorSecondary.trim() === '' ? {} : { themeColorSecondary: normaliseThemeColor(themeColorSecondary) }),
@@ -301,6 +304,9 @@ export function NewRestaurantModal(props: {
                   placeholder="12 MG Road, Bengaluru 560001"
                   hint={show(errors.address) ?? 'Where the restaurant is. Shown to the restaurant and on its records.'} />
               </div>
+              <SelectField label="Kind of business" value={businessType} onChange={setBusinessType} required
+                placeholder="Choose a kind of business" options={BUSINESS_TYPE_OPTIONS}
+                hint={show(errors.businessType) ?? (businessType === '' ? 'Sets the screens, words and look. Fixed once it has taken an order.' : businessTypeOf(businessType).description)} />
               <SelectField label="Plan" value={planVersionId} onChange={setPlanVersionId} required
                 placeholder="Choose a plan"
                 options={props.planOptions.map((p) => ({ value: p.planVersionId, label: p.label }))}
@@ -390,6 +396,12 @@ export function NewRestaurantModal(props: {
  * server computes the real ones from its own clock, and these are from the
  * same rule -- 14 days for a trial, one billing period for a paid start.
  */
+/** What a Super Admin may pick: every type not merely planned. A preview says so, so nobody promises a shop what it cannot yet do. */
+const BUSINESS_TYPE_OPTIONS = selectableBusinessTypes().map((type) => ({
+  value: type.key,
+  label: type.status === 'preview' ? `${type.label} (preview)` : type.label,
+}));
+
 function SubscriptionPreview(props: { startMode: 'trial' | 'paid'; plan: PlanOption | null }): ReactElement {
   const start = new Date();
   const end = new Date(start);
