@@ -1,5 +1,5 @@
-import type { TenantContext } from '../../core/database/tenantContext.js';
-import { readMenuForBranch } from '../menu/read.js';
+import type { TenantContext } from '../../database/tenantContext.js';
+import { readMenuForBranch } from '../products/read.js';
 
 /**
  * The POS board read.

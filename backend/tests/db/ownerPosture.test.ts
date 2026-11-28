@@ -32,7 +32,7 @@ const OWNER_POSTURE: ReadonlyArray<{ fn: string; why: string }> = [
   { fn: 'seedPermissionCatalogue', why: 'the catalogue seed runs as the owner on every deploy' },
   { fn: 'seedPlatformAuthz', why: 'control-plane seeding, owner-role' },
   { fn: 'seedTenantSystemRoles', why: 'the seed must be able to push new keys into locked system roles, which only the owner may do' },
-  { fn: 'reconcileAllTenantSystemRoles', why: 'the deploy seed (core/database/seed.ts) and pnpm reconcile:roles run it as the owner: seedTenantSystemRoles for every tenant' },
+  { fn: 'reconcileAllTenantSystemRoles', why: 'the deploy seed (database/seed.ts) and pnpm reconcile:roles run it as the owner: seedTenantSystemRoles for every tenant' },
   { fn: 'catalogueDrift', why: 'reads the seeded catalogue as the seeder sees it' },
   { fn: 'grantOwnerMemberships', why: 'part of the provisioning transaction, which is owner-role' },
   { fn: 'provisionTenant', why: 'runs in the owner transaction before any tenant session exists' },

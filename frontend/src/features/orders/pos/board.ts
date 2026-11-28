@@ -220,7 +220,7 @@ export function componentsOf(
  * server path that deals in money or in food filters on exactly those two:
  *
  *   billableLines   (src/modules/payments/billing.ts)   kind IN ('item','combo_component')
- *   fireOrder       (src/modules/kitchen/fire.ts)      kind IN ('item','combo_component')
+ *   fireOrder       (src/modules/business-types/restaurant/kitchen/fire.ts)      kind IN ('item','combo_component')
  *   lockTarget      (src/modules/orders/adjustments.ts) refuses anything else outright --
  *                   "a combo is adjusted through its components"
  *

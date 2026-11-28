@@ -12,7 +12,7 @@
 # and failed with "not found".
 set -e
 if [ "${MIGRATE_ON_START:-}" = "1" ]; then
-  node backend/dist/core/database/migrate.js up
-  node backend/dist/core/database/seed.js
+  node backend/dist/database/migrate.js up
+  node backend/dist/database/seed.js
 fi
-exec node backend/dist/server.js
+exec node backend/dist/server/server.js

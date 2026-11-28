@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
-import type { TenantContext } from '../../core/database/tenantContext.js';
-import { allocateComboPrice } from '../menu/comboAllocation.js';
+import type { TenantContext } from '../../database/tenantContext.js';
+import { allocateComboPrice } from '../products/comboAllocation.js';
 import { resolveSupply } from '../tax/registry.js';
 import { implementedTenantRegime, tenantCurrency } from '../tax/tenantRegime.js';
 import {

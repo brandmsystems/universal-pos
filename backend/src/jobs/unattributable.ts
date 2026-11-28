@@ -1,4 +1,4 @@
-import type { UnattributableDetail } from '../core/middleware/routeRegistry.js';
+import type { UnattributableDetail } from '../middleware/routeRegistry.js';
 
 /**
  * An unattributable action is an internal invariant violation: the permission

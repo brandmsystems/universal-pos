@@ -1,4 +1,4 @@
-import type { TenantContext } from '../../core/database/tenantContext.js';
+import type { TenantContext } from '../../database/tenantContext.js';
 import {
   ParcelChargeNotParcelError, priceParcelCharge, priceRequestedLine, type PriceLineRequest, type PricedAmount,
 } from '../orders/orderEntry.js';

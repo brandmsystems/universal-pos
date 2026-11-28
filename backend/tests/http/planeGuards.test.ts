@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import Fastify, { type FastifyInstance } from 'fastify';
-import { signToken, verifyToken, TokenError } from '../../src/modules/auth/jwt.js';
-import { checkPlane, planeGuard } from '../../src/core/security/planeGuards.js';
+import { signToken, verifyToken, TokenError } from '../../src/modules/authentication/jwt.js';
+import { checkPlane, planeGuard } from '../../src/middleware/security/planeGuards.js';
 
 /**
  * Hard boundaries 3 and 4. Tokens are signed with the real key by the real

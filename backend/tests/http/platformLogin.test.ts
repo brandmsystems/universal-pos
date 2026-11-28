@@ -3,13 +3,13 @@ import { randomUUID } from 'node:crypto';
 import Fastify, { type FastifyInstance } from 'fastify';
 import pg from 'pg';
 import { ownerClient } from '../helpers/db.js';
-import { hashSecret } from '../../src/modules/auth/deviceAuth.js';
-import { verifyToken } from '../../src/modules/auth/jwt.js';
-import { registerPublicRoute } from '../../src/core/middleware/publicRoute.js';
+import { hashSecret } from '../../src/modules/authentication/deviceAuth.js';
+import { verifyToken } from '../../src/modules/authentication/jwt.js';
+import { registerPublicRoute } from '../../src/middleware/publicRoute.js';
 import { allRoutes } from '../../src/routes/index.js';
 import { authHandlers } from '../../src/routes/handlers/auth.js';
 import { seedPlatformAuthz, seedPermissionCatalogue } from '../../src/modules/authz/seed.js';
-import { readPlatformRefreshClaims, issueSession } from '../../src/modules/auth/session.js';
+import { readPlatformRefreshClaims, issueSession } from '../../src/modules/authentication/session.js';
 
 /**
  * ###########################################################################

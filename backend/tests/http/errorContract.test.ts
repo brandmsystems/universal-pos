@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
-import { ERROR_CONTRACT, BOOT_REFUSALS, toErrorResponse } from '../../src/core/errors/errors.js';
+import { ERROR_CONTRACT, BOOT_REFUSALS, toErrorResponse } from '../../src/utils/errors/errors.js';
 
 /**
  * Every named refusal is either told to a client or refuses the boot.

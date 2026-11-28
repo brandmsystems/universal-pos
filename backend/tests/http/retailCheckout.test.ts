@@ -5,9 +5,9 @@ import pg from 'pg';
 import { ownerClient } from '../helpers/db.js';
 import { planDocument } from '../helpers/plans.js';
 import type { PlanKey } from '@universalpos/shared';
-import { buildServer } from '../../src/app.js';
-import { resetRegistry } from '../../src/core/middleware/routeRegistry.js';
-import { signToken } from '../../src/modules/auth/jwt.js';
+import { buildServer } from '../../src/server/app.js';
+import { resetRegistry } from '../../src/middleware/routeRegistry.js';
+import { signToken } from '../../src/modules/authentication/jwt.js';
 import { allRoutes } from '../../src/routes/index.js';
 import { isUnserved, mergeHandlers } from '../../src/routes/lookup.js';
 import { posHandlers } from '../../src/routes/handlers/pos.js';
@@ -23,7 +23,7 @@ import { platformHandlers } from '../../src/routes/handlers/platform.js';
 import { authHandlers } from '../../src/routes/handlers/auth.js';
 import { seedPermissionCatalogue, seedPlatformAuthz } from '../../src/modules/authz/seed.js';
 import { ensureStandardPlans } from '../../src/modules/platform/planCatalogue.js';
-import { withTenantTransaction } from '../../src/core/database/unitOfWork.js';
+import { withTenantTransaction } from '../../src/database/unitOfWork.js';
 import { discountLine, voidLine, compLine, LineNotFiredError } from '../../src/modules/orders/adjustments.js';
 
 /**

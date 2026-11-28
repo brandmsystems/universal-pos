@@ -13,9 +13,9 @@ import pg from 'pg';
  */
 const ROOT = fileURLToPath(new URL('../../../', import.meta.url));
 const STEPS = [
-  ['backend/src/core/database/migrate.ts', 'up'],
-  ['backend/src/core/database/seed.ts'],
-  ['backend/src/core/database/partitions.ts'],
+  ['backend/src/database/migrate.ts', 'up'],
+  ['backend/src/database/seed.ts'],
+  ['backend/src/database/partitions.ts'],
 ] as const;
 
 export default async function setup(): Promise<void> {

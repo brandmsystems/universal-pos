@@ -3,11 +3,11 @@ import { randomUUID } from 'node:crypto';
 import Fastify, { type FastifyInstance } from 'fastify';
 import pg from 'pg';
 import { ownerClient } from '../helpers/db.js';
-import { signToken } from '../../src/modules/auth/jwt.js';
-import { checkPlane, planeGuard } from '../../src/core/security/planeGuards.js';
-import { impersonationGuard } from '../../src/core/security/impersonationGuard.js';
-import { registerTenantRoute, resetRegistry } from '../../src/core/middleware/routeRegistry.js';
-import { BranchRepository } from '../../src/core/database/repositories.js';
+import { signToken } from '../../src/modules/authentication/jwt.js';
+import { checkPlane, planeGuard } from '../../src/middleware/security/planeGuards.js';
+import { impersonationGuard } from '../../src/middleware/security/impersonationGuard.js';
+import { registerTenantRoute, resetRegistry } from '../../src/middleware/routeRegistry.js';
+import { BranchRepository } from '../../src/database/repositories.js';
 import {
   impersonationPosture,
   loadLiveSession,

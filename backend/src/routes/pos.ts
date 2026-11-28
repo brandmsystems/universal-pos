@@ -1,4 +1,4 @@
-import { leasedOn, type RouteDefinition } from '../core/middleware/routeRegistry.js';
+import { leasedOn, type RouteDefinition } from '../middleware/routeRegistry.js';
 import { handlerLookup, pathId, type Handler } from './lookup.js';
 
 /**
@@ -11,7 +11,7 @@ import { handlerLookup, pathId, type Handler } from './lookup.js';
  *
  * The board READ is not here -- it is `src/modules/orders/board.ts`. This module is
  * declarative: the route table only. The two request-shape guards (idempotency
- * key, lease token) are `core/middleware/posHeaders.ts`, which app.ts calls.
+ * key, lease token) are `middleware/posHeaders.ts`, which app.ts calls.
  * Nothing here issues SQL, and the thin-handler gate enforces that across the
  * whole route layer rather than over one directory inside it.
  */
@@ -143,7 +143,7 @@ export function posRoutes(handlers: Record<string, Handler> = {}): readonly Rout
     },
     {
       // The till's own X-read: what the signed-in person took, by day, week or
-      // month, or a chosen from/to range. A till key, not a report (modules/reporting/tillSummary.ts).
+      // month, or a chosen from/to range. A till key, not a report (modules/reports/tillSummary.ts).
       method: 'GET', url: '/pos/my-takings', plane: 'tenant',
       permission: { plane: 'tenant', key: 'till.summary.view' }, audit: 'none', handler: h('myTakings'),
     },

@@ -1,5 +1,5 @@
 import type { FastifyRequest } from 'fastify';
-import type { RouteDefinition } from '../../core/middleware/routeRegistry.js';
+import type { RouteDefinition } from '../../middleware/routeRegistry.js';
 import { listAccess } from '../../modules/users/staffAccess.js';
 import { readMe } from '../../modules/users/me.js';
 import { hasFeature } from '../../modules/platform/entitlements.js';

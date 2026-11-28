@@ -1,5 +1,5 @@
-import type { TenantContext } from '../../core/database/tenantContext.js';
-import { BranchRepository, TaxClassRepository } from '../../core/database/repositories.js';
+import type { TenantContext } from '../../database/tenantContext.js';
+import { BranchRepository, TaxClassRepository } from '../../database/repositories.js';
 import { headRateBps, headsOf } from './registry.js';
 import { tenantRegime } from './tenantRegime.js';
 import type { TaxAccount } from './jurisdictions.js';

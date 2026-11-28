@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import type { TenantContext } from '../../core/database/tenantContext.js';
+import type { TenantContext } from '../../database/tenantContext.js';
 import { OFFLINE_WINDOW_HOURS, OFFLINE_WINDOW_MS } from './window.js';
 import { leaseState } from './lease.js';
 

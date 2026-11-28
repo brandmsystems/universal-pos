@@ -9,7 +9,7 @@ import path from 'node:path';
  * ###########################################################################
  * THE API SERVER COULD NOT BE STARTED FROM A FRESH SHELL.
  *
- * `pnpm dev:api` was `tsx watch src/server.ts` -- no `--env-file-if-exists`.
+ * `pnpm dev:api` was `tsx watch src/server/server.ts` -- no `--env-file-if-exists`.
  * From a shell that had not exported the file by hand it answered
  * `startup failed: JWT_SIGNING_KEY is not set`, which reads as "this branch is
  * broken" rather than "this shell has no env".
@@ -118,7 +118,7 @@ describe('the scripts a human runs can find their environment', () => {
 
   it('puts the flag where the runtime will read it, not after the script name',
     async () => {
-      // `node dist/server.js --env-file-if-exists=.env` passes the flag to the
+      // `node dist/server/server.js --env-file-if-exists=.env` passes the flag to the
       // PROGRAM as an argument and node ignores it -- the script would look
       // fixed, run identically, and fail identically. Position is the whole
       // difference, so it is asserted rather than assumed.

@@ -1,14 +1,14 @@
 import type { FastifyRequest } from 'fastify';
 import type { Handler } from '../lookup.js';
-import type { TenantContext } from '../../core/database/tenantContext.js';
+import type { TenantContext } from '../../database/tenantContext.js';
 import {
   salesBy, salesSummary, paymentMix, previousWindow, salesSummaryCompared,
   type SalesDimension, type SalesRow,
-} from '../../modules/reporting/salesReports.js';
-import { exceptionReport as readExceptions } from '../../modules/reporting/exceptionReport.js';
-import { outwardSupplyReturn, reconcileReturnToBills } from '../../modules/reporting/gstReturn.js';
-import { REPORTS } from '../../modules/reporting/registry.js';
-import { branchPrintFailures } from '../../modules/kitchen/printWorker.js';
+} from '../../modules/reports/salesReports.js';
+import { exceptionReport as readExceptions } from '../../modules/reports/exceptionReport.js';
+import { outwardSupplyReturn, reconcileReturnToBills } from '../../modules/reports/gstReturn.js';
+import { REPORTS } from '../../modules/reports/registry.js';
+import { branchPrintFailures } from '../../modules/business-types/restaurant/kitchen/printWorker.js';
 import { currentBusinessDate } from '../../modules/orders/session.js';
 
 /**
@@ -17,7 +17,7 @@ import { currentBusinessDate } from '../../modules/orders/session.js';
  * ###########################################################################
  * A REPORT READS A SNAPSHOT. THIS LAYER DOES NOT GET TO CHOOSE.
  *
- * Every figure here comes from `src/modules/reporting/*`, which the snapshot-only
+ * Every figure here comes from `src/modules/reports/*`, which the snapshot-only
  * scanner (tests/reporting/snapshotOnly.test.ts) holds to an ALLOWLIST of
  * readable tables. That gate stops at the directory boundary, so the way this
  * file stays inside it is by adding no read of its own: it parses a range,
@@ -153,7 +153,7 @@ export class ReportNotDeclaredError extends Error {
   constructor(readonly names: readonly string[]) {
     super(
       `these handlers serve reports the registry does not declare: ${names.join(', ')}. ` +
-        'src/modules/reporting/registry.ts is what ties a report to the permission that guards ' +
+        'src/modules/reports/registry.ts is what ties a report to the permission that guards ' +
         'it; a report outside it is a screen nobody granted access to.',
     );
     this.name = 'ReportNotDeclaredError';
@@ -365,7 +365,7 @@ export function reportHandlers(): Record<string, Handler> {
   const handlers: Record<string, Handler> = {
     /**
      * The sales report. Six dimensions off ONE projection, each read from the
-     * order line's own snapshot -- see src/modules/reporting/salesReports.ts for why
+     * order line's own snapshot -- see src/modules/reports/salesReports.ts for why
      * `quantityMade` and `quantitySold` are two different figures.
      */
     salesReport: async (request, _reply, context) => {

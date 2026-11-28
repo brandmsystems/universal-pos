@@ -1,18 +1,18 @@
 import type { FastifyRequest } from 'fastify';
-import type { RouteDefinition } from '../../core/middleware/routeRegistry.js';
+import type { RouteDefinition } from '../../middleware/routeRegistry.js';
 import {
   SetupInvalidError, archiveAddOn, archiveKitchen, createAddOn, createKitchen, createMenuItem, editAddOn, editKitchen,
   editMenuItem, listAddOns, listAtBranch, listKitchens, menuItemDetail, setupProgress,
-} from '../../modules/restaurants/setup.js';
+} from '../../modules/businesses/setup.js';
 import { AdminBranchConflictError } from './admin.js';
-import { importSetup } from '../../modules/restaurants/setupImport.js';
+import { importSetup } from '../../modules/businesses/setupImport.js';
 import { hasFeature } from '../../modules/platform/entitlements.js';
 import { taxClassSplits } from '../../modules/tax/taxSplits.js';
 import { setBranchTaxSettings } from '../../modules/tax/branchTaxSettings.js';
 import type { SetupSheets } from '@universalpos/shared';
 import {
   issuePrintAgent, listPrintAgents, pollPrintAgent, requestTestPrint, revokePrintAgent,
-} from '../../modules/kitchen/printAgent.js';
+} from '../../modules/business-types/restaurant/kitchen/printAgent.js';
 
 /**
  * The manager's setup screens: kitchens, add-ons, food items and progress.

@@ -3,20 +3,20 @@ import { randomUUID } from 'node:crypto';
 import Fastify, { type FastifyInstance } from 'fastify';
 import pg from 'pg';
 import { ownerClient, assertCheckedSet } from '../helpers/db.js';
-import { signToken } from '../../src/modules/auth/jwt.js';
-import { planeGuard } from '../../src/core/security/planeGuards.js';
+import { signToken } from '../../src/modules/authentication/jwt.js';
+import { planeGuard } from '../../src/middleware/security/planeGuards.js';
 import {
   MissingAuditPostureError,
   registerTenantRoute,
   registeredRoutes,
   resetRegistry,
   type UnattributableDetail,
-} from '../../src/core/middleware/routeRegistry.js';
-import { preparePayload, redact, PAYLOAD_LIMIT_BYTES } from '../../src/core/middleware/auditPayload.js';
-import { withTenantTransaction } from '../../src/core/database/unitOfWork.js';
-import { BranchRepository } from '../../src/core/database/repositories.js';
+} from '../../src/middleware/routeRegistry.js';
+import { preparePayload, redact, PAYLOAD_LIMIT_BYTES } from '../../src/middleware/auditPayload.js';
+import { withTenantTransaction } from '../../src/database/unitOfWork.js';
+import { BranchRepository } from '../../src/database/repositories.js';
 import { seedPermissionCatalogue, seedTenantSystemRoles, grantOwnerMemberships } from '../../src/modules/authz/seed.js';
-import { productionRouteDeps } from '../../src/core/middleware/deps.js';
+import { productionRouteDeps } from '../../src/middleware/deps.js';
 import { resolveActor } from '../../src/modules/authz/authorityStore.js';
 import {
   assertNoUnattributableActions,

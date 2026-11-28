@@ -78,7 +78,7 @@ async function outboxDrain(client: pg.ClientBase): Promise<JobOutcome> {
 }
 
 async function printDrain(client: pg.ClientBase): Promise<JobOutcome> {
-  const { printOnce, verifyPrintDrain } = await import('../modules/kitchen/printWorker.js');
+  const { printOnce, verifyPrintDrain } = await import('../modules/business-types/restaurant/kitchen/printWorker.js');
   const result = await printOnce(client, {
     // No real transport here: a job that silently claimed success would mark
     // every ticket accepted and lose it. The deployed worker injects a real one.
@@ -91,7 +91,7 @@ async function printDrain(client: pg.ClientBase): Promise<JobOutcome> {
 
 async function auditPartitions(client: pg.ClientBase): Promise<JobOutcome> {
   const { ensureAuditPartitions, missingPartitionMonths, defaultPartitionCounts } =
-    await import('../core/database/partitions.js');
+    await import('../database/partitions.js');
   const monthsAhead = Number(process.env['AUDIT_PARTITION_MONTHS_AHEAD'] ?? '3');
   await ensureAuditPartitions(client, monthsAhead);
 
@@ -140,7 +140,7 @@ async function claimPurge(client: pg.ClientBase): Promise<JobOutcome> {
  * behind fails the run rather than reporting the count it happened to delete.
  */
 async function authAttemptPurge(client: pg.ClientBase): Promise<JobOutcome> {
-  const { purgeAuthAttempts, AUTH_ATTEMPT_RETENTION_DAYS } = await import('../modules/auth/authAttempt.js');
+  const { purgeAuthAttempts, AUTH_ATTEMPT_RETENTION_DAYS } = await import('../modules/authentication/authAttempt.js');
   const purged = await purgeAuthAttempts(client, AUTH_ATTEMPT_RETENTION_DAYS);
   const left = await client.query<{ n: string }>(
     `SELECT count(*)::text AS n FROM platform.auth_attempt
@@ -163,7 +163,7 @@ async function authAttemptPurge(client: pg.ClientBase): Promise<JobOutcome> {
  */
 async function stockReconciliation(client: pg.ClientBase): Promise<JobOutcome> {
   const { runReconciliationJob } = await import('../modules/inventory/reconcile.js');
-  const { peekTenantContext } = await import('../core/database/tenantContext.js');
+  const { peekTenantContext } = await import('../database/tenantContext.js');
   void peekTenantContext;
 
   const result = await runReconciliationJob(client, (tenantId) => ({

@@ -1,31 +1,31 @@
 import type { FastifyReply, FastifyRequest } from 'fastify';
-import { acceptOwnerInvite, ownerPasswordProblem } from '../../modules/auth/ownerInvite.js';
+import { acceptOwnerInvite, ownerPasswordProblem } from '../../modules/authentication/ownerInvite.js';
 import { publicRestaurantBySlug, publicRestaurantLogo } from '../../modules/platform/directory.js';
 import { posAppManifest } from '../../modules/platform/posApp.js';
-import type { RouteDefinition } from '../../core/middleware/routeRegistry.js';
-import type { PublicOutcome, AttemptResolution } from '../../core/middleware/publicRoute.js';
-import { adoptTenantContext } from '../../core/database/unitOfWork.js';
-import { authenticatePin, readTillStaff, registerTillAtSignIn, resolveDevice } from '../../modules/auth/deviceAuth.js';
-import { authenticatePassword } from '../../modules/auth/passwordAuth.js';
+import type { RouteDefinition } from '../../middleware/routeRegistry.js';
+import type { PublicOutcome, AttemptResolution } from '../../middleware/publicRoute.js';
+import { adoptTenantContext } from '../../database/unitOfWork.js';
+import { authenticatePin, readTillStaff, registerTillAtSignIn, resolveDevice } from '../../modules/authentication/deviceAuth.js';
+import { authenticatePassword } from '../../modules/authentication/passwordAuth.js';
 import { landingFor } from '../../modules/users/me.js';
 import {
   PLATFORM_PASSWORD_MIN_LENGTH,
   authenticatePlatformUser,
   changePlatformPassword,
   platformUserStillActive,
-} from '../../modules/auth/platformAuth.js';
+} from '../../modules/authentication/platformAuth.js';
 import {
   AUTHENTICABLE_TENANT_STATUSES,
   resolveTenantForAuth,
   tenantStillAuthenticable,
-} from '../../modules/auth/preAuthTenant.js';
+} from '../../modules/authentication/preAuthTenant.js';
 import {
   deviceStillTrusted,
   issueSession,
   issuePlatformSession,
   readPlatformRefreshClaims,
   readRefreshClaims,
-} from '../../modules/auth/session.js';
+} from '../../modules/authentication/session.js';
 
 /**
  * The pre-auth surface, and nothing more.

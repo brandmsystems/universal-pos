@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   TillPeriodUnknownError, TillRangeInvalidError, chosenRange, periodRange, resolveTillRange,
-} from '../../src/modules/reporting/tillSummary.js';
+} from '../../src/modules/reports/tillSummary.js';
 
 describe('My takings periods: business dates ending today', () => {
   it('a day is today alone', () => {

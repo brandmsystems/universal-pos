@@ -8,14 +8,14 @@ import {
   MissingAuditPostureError, PublicRouteRefusedError,
   PUBLIC_PATH_PREFIXES, MUTATING_METHODS,
   type RouteDefinition,
-} from '../../src/core/middleware/routeRegistry.js';
+} from '../../src/middleware/routeRegistry.js';
 import {
   allRoutes, KEYS_WITHOUT_ROUTES, PLATFORM_KEYS_WITHOUT_ROUTES,
 } from '../../src/routes/index.js';
 import { posRoutes } from '../../src/routes/pos.js';
 import { PERMISSIONS, type PermissionKey } from '../../src/modules/authz/permissions.js';
 import { PLATFORM_PERMISSION_KEYS } from '../../src/modules/authz/platformPermissions.js';
-import { ERROR_CONTRACT, toErrorResponse } from '../../src/core/errors/errors.js';
+import { ERROR_CONTRACT, toErrorResponse } from '../../src/utils/errors/errors.js';
 
 /**
  * Raise DELIBERATELY as routes land. An exact count, not a floor: a floor of

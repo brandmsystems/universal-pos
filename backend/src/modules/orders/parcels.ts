@@ -1,4 +1,4 @@
-import type { TenantContext } from '../../core/database/tenantContext.js';
+import type { TenantContext } from '../../database/tenantContext.js';
 
 /**
  * The parcel counter: every parcel still open, whatever day it started, plus

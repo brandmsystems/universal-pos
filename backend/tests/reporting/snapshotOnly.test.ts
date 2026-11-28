@@ -32,7 +32,7 @@ import { existsSync, readFileSync, readdirSync } from 'node:fs';
 /** Raise deliberately with each module added. An exact count: a floor is vacuous. */
 const EXPECTED_REPORTING_MODULES = 5;
 
-const REPORTING_DIR = 'src/modules/reporting';
+const REPORTING_DIR = 'src/modules/reports';
 
 type TableRole =
   /** Written once, never dereferenced again. The figures a report is allowed to use. */
@@ -116,9 +116,9 @@ const ALLOWED_IMPORTS: ReadonlyArray<{ pattern: RegExp; why: string }> = [
   { pattern: /^node:/, why: 'standard library' },
   { pattern: /^pg$/, why: 'the driver type' },
   { pattern: /^\.\/[\w./-]+$/, why: 'sibling reporting modules' },
-  { pattern: /^\.\.\/\.\.\/core\/database\/tenantContext\.js$/, why: 'the tenant context type' },
-  { pattern: /^\.\.\/\.\.\/core\/database\/baseRepository\.js$/, why: 'the repository layer' },
-  { pattern: /^\.\.\/\.\.\/core\/database\/unitOfWork\.js$/, why: 'transaction scoping' },
+  { pattern: /^\.\.\/\.\.\/database\/tenantContext\.js$/, why: 'the tenant context type' },
+  { pattern: /^\.\.\/\.\.\/database\/baseRepository\.js$/, why: 'the repository layer' },
+  { pattern: /^\.\.\/\.\.\/database\/unitOfWork\.js$/, why: 'transaction scoping' },
   { pattern: /^\.\.\/authz\/permissions\.js$/, why: 'permission KEYS and risk classes, not prices' },
 ];
 
@@ -287,7 +287,7 @@ describe('the snapshot-only scanner catches what it claims to', () => {
 
   it('allows the imports a report legitimately needs', () => {
     const v = scanForNonSnapshotReads('fake.ts',
-      `import type { TenantContext } from '../../core/database/tenantContext.js';
+      `import type { TenantContext } from '../../database/tenantContext.js';
        import { PERMISSIONS } from '../authz/permissions.js';
        import { REPORTS } from './registry.js';
        import { randomUUID } from 'node:crypto';`);
@@ -333,7 +333,7 @@ describe('no reporting module recomputes from current configuration', () => {
     const modules = reportingModules();
     expect(
       modules.length,
-      `src/modules/reporting/ has ${modules.length} module(s) but EXPECTED_REPORTING_MODULES is ` +
+      `src/modules/reports/ has ${modules.length} module(s) but EXPECTED_REPORTING_MODULES is ` +
         `${EXPECTED_REPORTING_MODULES}. Raise the constant deliberately -- it exists so a ` +
         'report cannot be added without someone reading the snapshot-only rule.',
     ).toBe(EXPECTED_REPORTING_MODULES);

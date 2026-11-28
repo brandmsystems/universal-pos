@@ -82,7 +82,7 @@ export interface TenantReconciliation {
  * Every EXISTING tenant's system roles brought to `SYSTEM_ROLES`, through the
  * same `seedTenantSystemRoles` provisioning runs. Without it a new permission
  * key reaches only tenants created after the deploy that added it. Called on
- * every deploy (core/database/seed.ts) and by `pnpm reconcile:roles`; custom
+ * every deploy (database/seed.ts) and by `pnpm reconcile:roles`; custom
  * roles are never touched. One transaction per tenant: a failure on one must
  * not deny the rest, and it is reported, not swallowed.
  */

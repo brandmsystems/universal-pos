@@ -1,4 +1,4 @@
-import type { TenantContext } from '../../core/database/tenantContext.js';
+import type { TenantContext } from '../../database/tenantContext.js';
 import { LEASE_DURATION_MINUTES } from './window.js';
 import { OrderInBillingError, OrderNotReadyForBillingError } from '../orders/session.js';
 

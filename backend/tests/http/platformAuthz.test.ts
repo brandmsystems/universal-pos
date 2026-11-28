@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { assertCheckedSet } from '../helpers/db.js';
-import { platformRoleHolds } from '../../src/core/security/platformAuthz.js';
+import { platformRoleHolds } from '../../src/middleware/security/platformAuthz.js';
 import { PLATFORM_ROLES } from '../../src/modules/authz/platformRoles.js';
 import { PLATFORM_PERMISSION_KEYS } from '../../src/modules/authz/platformPermissions.js';
 import { allRoutes } from '../../src/routes/index.js';
-import { MUTATING_METHODS } from '../../src/core/middleware/routeRegistry.js';
+import { MUTATING_METHODS } from '../../src/middleware/routeRegistry.js';
 
 /**
  * The escalation this closes: `read_only` reaching POST /api/platform/impersonation.

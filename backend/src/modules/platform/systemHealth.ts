@@ -1,7 +1,7 @@
 import type pg from 'pg';
 import { outboxHealth, type OutboxHealth } from '../notifications/outboxWorker.js';
 import { ladderThresholds, statusForElapsedDays } from './ladder.js';
-import { missingPartitionMonths } from '../../core/database/partitions.js';
+import { missingPartitionMonths } from '../../database/partitions.js';
 
 /**
  * What `GET /system/health` can HONESTLY report.

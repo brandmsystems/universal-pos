@@ -1,8 +1,8 @@
-import type { TenantContext } from '../../core/database/tenantContext.js';
+import type { TenantContext } from '../../database/tenantContext.js';
 import {
   AdjustmentReasonKindRepository,
   AdjustmentReasonRepository,
-} from '../../core/database/repositories.js';
+} from '../../database/repositories.js';
 
 /**
  * The adjustment vocabulary, as a client may read it.

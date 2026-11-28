@@ -2,7 +2,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { readFile } from 'node:fs/promises';
 import pg from 'pg';
 import { ownerClient, assertCheckedSet } from '../helpers/db.js';
-import { loadMigrations, type Migration } from '../../src/core/database/migrate.js';
+import { loadMigrations, type Migration } from '../../src/database/migrate.js';
 
 /**
  * ###########################################################################

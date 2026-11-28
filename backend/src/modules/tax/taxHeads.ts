@@ -35,7 +35,7 @@
  * The tenant plane decides THEIRS when they bill a diner, against `app.bill`
  * and `app.branch`. Different supplier registrations, different recipients,
  * different tables, and different consequences for being wrong --
- * `src/modules/reporting/gstReturn.ts` already states the argument for keeping them
+ * `src/modules/reports/gstReturn.ts` already states the argument for keeping them
  * apart: a change made for one would silently alter the other's filed returns.
  *
  * The arithmetic of splitting a rate is nonetheless the same arithmetic, and

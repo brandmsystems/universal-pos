@@ -103,11 +103,13 @@ complete workflow today.
 ### Code layout (pnpm monorepo)
 
 ```
-backend/src/    app.ts, server.ts, config/, jobs/
-                core/      database/ errors/ middleware/ (registrars) security/ (guards)
-                modules/   auth authz billing inventory kitchen menu metering
-                           notifications offline orders payments platform privacy
-                           reporting restaurants tax users
+backend/src/    server/    app.ts, server.ts
+                config/ jobs/ database/ (repositories, migrate, seed, unit of work)
+                middleware/ (registrars) middleware/security/ (guards) utils/errors/
+                modules/   authentication authz billing inventory products
+                           metering notifications offline orders payments platform
+                           privacy reports businesses tax users
+                           business-types/restaurant/kitchen
                            (inventory keeps only deduct/reconcile, which the jobs call)
                 routes/    route tables + handlers/ (the thin route layer)
 backend/tests/  vitest, run from backend

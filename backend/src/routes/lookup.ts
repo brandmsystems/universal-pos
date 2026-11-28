@@ -1,5 +1,5 @@
 import type { FastifyRequest } from 'fastify';
-import type { RouteDefinition } from '../core/middleware/routeRegistry.js';
+import type { RouteDefinition } from '../middleware/routeRegistry.js';
 
 export type Handler = RouteDefinition['handler'];
 

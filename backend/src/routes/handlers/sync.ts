@@ -1,12 +1,12 @@
 import { BranchScopeRequiredError } from './staff.js';
-import type { RouteDefinition } from '../../core/middleware/routeRegistry.js';
-import type { TenantContext } from '../../core/database/tenantContext.js';
+import type { RouteDefinition } from '../../middleware/routeRegistry.js';
+import type { TenantContext } from '../../database/tenantContext.js';
 import {
   receiveBatch, openQuarantine, type OfflineOperation, type SyncBatch,
 } from '../../modules/offline/sync.js';
 import { openSession } from '../../modules/orders/session.js';
 import { addLine, editLine, removeLine } from '../../modules/orders/orderEntry.js';
-import { fireOrder } from '../../modules/kitchen/fire.js';
+import { fireOrder } from '../../modules/business-types/restaurant/kitchen/fire.js';
 import { claimOrReplay, recordClaimResult } from '../../modules/orders/idempotency.js';
 
 /**

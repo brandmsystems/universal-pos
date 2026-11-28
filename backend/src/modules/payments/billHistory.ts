@@ -1,5 +1,5 @@
-import type { TenantContext } from '../../core/database/tenantContext.js';
-import { chosenRange, periodRange } from '../reporting/tillSummary.js';
+import type { TenantContext } from '../../database/tenantContext.js';
+import { chosenRange, periodRange } from '../reports/tillSummary.js';
 import {
   dayBranch, dayStatuses, openDay, rangeFigures, type DayFigures, type DayStatus, type EditAuthority,
 } from './dayEnd.js';

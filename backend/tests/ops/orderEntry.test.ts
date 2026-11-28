@@ -2,8 +2,8 @@ import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { randomUUID } from 'node:crypto';
 import pg from 'pg';
 import { ownerClient } from '../helpers/db.js';
-import { withTenantTransaction } from '../../src/core/database/unitOfWork.js';
-import type { TenantContext } from '../../src/core/database/tenantContext.js';
+import { withTenantTransaction } from '../../src/database/unitOfWork.js';
+import type { TenantContext } from '../../src/database/tenantContext.js';
 import { provisionTenant } from '../../src/modules/platform/provisioning.js';
 import { seedPlatformAuthz, seedPermissionCatalogue } from '../../src/modules/authz/seed.js';
 import {
@@ -20,7 +20,7 @@ import {
 import { openSession, closeSession, TableOccupiedError } from '../../src/modules/orders/session.js';
 import {
   dayBit, resolveAvailability, resolveAvailabilityForBranch,
-} from '../../src/modules/menu/availability.js';
+} from '../../src/modules/products/availability.js';
 
 /**
  * The priced-document rule, run against the database rather than argued.

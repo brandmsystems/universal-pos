@@ -1,8 +1,8 @@
 import type { FastifyRequest } from 'fastify';
 import type pg from 'pg';
 import { assertSubscriptionInBook } from '../../modules/platform/salesScope.js';
-import type { RouteDefinition } from '../../core/middleware/routeRegistry.js';
-import { requireIdempotencyKey } from '../../core/middleware/posHeaders.js';
+import type { RouteDefinition } from '../../middleware/routeRegistry.js';
+import { requireIdempotencyKey } from '../../middleware/posHeaders.js';
 import { env } from '../../config/env.js';
 import {
   listPlans, listTenants, parseExpiryFilter, resolveTenantBySlug,
@@ -21,7 +21,7 @@ import {
   createTenantStaff, editTenantStaff, listTenantStaff, setTenantCredentials, setTenantStaffActive, setTenantStaffPin,
   type StaffActor,
 } from '../../modules/platform/tenantStaff.js';
-import { platformRoleHolds } from '../../core/security/platformAuthz.js';
+import { platformRoleHolds } from '../../middleware/security/platformAuthz.js';
 import {
   changeTenantCountry, previewCountryChange, readCountrySettings, setCountrySettings,
   type CountryChangeActor,

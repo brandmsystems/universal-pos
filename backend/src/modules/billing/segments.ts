@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import type pg from 'pg';
-import { allocateComboPrice } from '../menu/comboAllocation.js';
+import { allocateComboPrice } from '../products/comboAllocation.js';
 
 /**
  * Subscription segments.

@@ -1,16 +1,16 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import pg from 'pg';
-import { buildServer, UnservedRouteError } from '../../src/app.js';
+import { buildServer, UnservedRouteError } from '../../src/server/app.js';
 import {
   AttemptPostureRefusedError,
   isAttemptPosture,
   resetRegistry,
   type RouteDefinition,
-} from '../../src/core/middleware/routeRegistry.js';
+} from '../../src/middleware/routeRegistry.js';
 import {
   CredentialRouteNeedsAttemptPostureError,
   PublicRouteCannotBeAuditedError,
-} from '../../src/core/middleware/publicRoute.js';
+} from '../../src/middleware/publicRoute.js';
 import { allRoutes, ROUTES_WITHOUT_HANDLERS } from '../../src/routes/index.js';
 import { posHandlers } from '../../src/routes/handlers/pos.js';
 import { syncHandlers } from '../../src/routes/handlers/sync.js';

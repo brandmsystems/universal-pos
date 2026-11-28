@@ -1,5 +1,5 @@
 import type { FastifyRequest } from 'fastify';
-import type { RouteDefinition } from '../../core/middleware/routeRegistry.js';
+import type { RouteDefinition } from '../../middleware/routeRegistry.js';
 import { revealStaffContact } from '../../modules/privacy/piiAccess.js';
 
 /**

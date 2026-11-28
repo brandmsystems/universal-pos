@@ -1,6 +1,6 @@
-import type { RouteDefinition } from '../../core/middleware/routeRegistry.js';
+import type { RouteDefinition } from '../../middleware/routeRegistry.js';
 import { describePlan } from '../../modules/platform/entitlements.js';
-import { usageNow } from '../../modules/restaurants/planUsage.js';
+import { usageNow } from '../../modules/businesses/planUsage.js';
 
 /**
  * What the restaurant's plan includes, for the admin menu.

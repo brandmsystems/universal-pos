@@ -1,7 +1,7 @@
 import { randomBytes, randomUUID } from 'node:crypto';
 import type pg from 'pg';
 import { EXPIRING_WITHIN_DAYS } from '@universalpos/shared';
-import { hashPlatformPassword } from '../auth/platformAuth.js';
+import { hashPlatformPassword } from '../authentication/platformAuth.js';
 import {
   PLATFORM_ROLES, checkPlatformSubsetGrant, platformRole, type PlatformRoleKey,
 } from '../authz/platformRoles.js';

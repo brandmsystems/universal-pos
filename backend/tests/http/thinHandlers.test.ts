@@ -47,7 +47,7 @@ import { mergeHandlers } from '../../src/routes/lookup.js';
  * SCAN IS THEREFORE EVERYTHING *EXCEPT* THE DOMAIN.
  *
  * The layer now spans `app.ts`, `routes/` (tables and handlers),
- * `core/middleware/` (registrars) and `core/security/` (guards). Naming those
+ * `middleware/` (registrars) and `middleware/security/` (guards). Naming those
  * four would be a list sitting next to something that expands -- the exact
  * shape of defect (5) in CLAUDE.md, which was a gate naming one directory while
  * the SQL lived in the next. So the polarity is inverted: every file under
@@ -72,7 +72,7 @@ const SRC_DIR = 'src';
  * the process entry point. Everything else under src/ is route layer.
  */
 const DOMAIN_ROOTS: readonly string[] = [
-  'modules/', 'core/database/', 'config/', 'jobs/', 'server.ts',
+  'modules/', 'database/', 'config/', 'jobs/', 'server/server.ts',
 ];
 
 /**
@@ -89,7 +89,7 @@ const DOMAIN_ROOTS: readonly string[] = [
 const SQL_PERMITTED: readonly string[] = [
   // The control-plane registrar: opens the transaction with no tenant GUC and
   // writes platform.platform_audit_log in it.
-  'core/middleware/platformRoute.ts',
+  'middleware/platformRoute.ts',
   // The pre-auth registrar. Its transaction spans the credential verify and the
   // platform.auth_attempt row, so a lockout increment cannot survive a failure
   // to record why it happened. Registrar infrastructure, same class as
@@ -97,11 +97,11 @@ const SQL_PERMITTED: readonly string[] = [
   // recordAuthAttempt, not a snapshot: the rule this gate exists for is that a
   // route layer must not decide what a line costs, and nothing here reads a
   // price.
-  'core/middleware/publicRoute.ts',
+  'middleware/publicRoute.ts',
   // The print agent's registrar: BEGIN/COMMIT around the agent-token check
   // (which sets the tenant GUC) and the poll. Infrastructure of the same class
-  // as publicRoute.ts; every read and write is in modules/kitchen/printAgent.ts.
-  'core/middleware/agentRoute.ts',
+  // as publicRoute.ts; every read and write is in modules/business-types/restaurant/kitchen/printAgent.ts.
+  'middleware/agentRoute.ts',
 ];
 
 /** Any query call. The domain layer owns SQL; the route layer owns none of it. */
@@ -166,16 +166,16 @@ describe('the route layer is thin', () => {
       label: 'route-layer modules',
       checked: files,
       // A ratchet. It was 3 when the gate scanned handlers/ alone; the route
-      // layer is now app.ts, routes/, core/middleware, core/security and
-      // core/errors -- 27 modules.
+      // layer is now app.ts, routes/, middleware, middleware/security and
+      // utils/errors -- 27 modules.
       minimum: 25,
       mustInclude: [
-        'app.ts',
-        'core/middleware/routeRegistry.ts',
-        'core/middleware/platformRoute.ts',
-        'core/middleware/publicRoute.ts',
-        'core/security/planeGuards.ts',
-        'core/errors/errors.ts',
+        'server/app.ts',
+        'middleware/routeRegistry.ts',
+        'middleware/platformRoute.ts',
+        'middleware/publicRoute.ts',
+        'middleware/security/planeGuards.ts',
+        'utils/errors/errors.ts',
         'routes/index.ts',
         'routes/pos.ts',
         'routes/lookup.ts',
@@ -260,7 +260,7 @@ describe('the route layer is thin', () => {
   it('is not vacuous: route files are SCANNED, domain files are not', () => {
     const files = routeLayerFiles();
     expect(files.filter((f) => f.startsWith('routes/handlers/')).length).toBeGreaterThanOrEqual(10);
-    expect(files.filter((f) => f.startsWith('core/middleware/')).length).toBeGreaterThanOrEqual(6);
+    expect(files.filter((f) => f.startsWith('middleware/')).length).toBeGreaterThanOrEqual(6);
     expect(files.some((f) => f.startsWith('modules/')), 'domain modules must not be scanned').toBe(false);
   });
 
@@ -271,7 +271,7 @@ describe('the route layer is thin', () => {
     for (const path of ['http/handlers/pos.ts', 'core/newthing/x.ts', 'controllers/orders.ts', 'app2.ts']) {
       expect(isRouteLayer(path), path).toBe(true);
     }
-    for (const path of ['modules/orders/orderEntry.ts', 'core/database/unitOfWork.ts', 'jobs/runner.ts', 'server.ts']) {
+    for (const path of ['modules/orders/orderEntry.ts', 'database/unitOfWork.ts', 'jobs/runner.ts', 'server/server.ts']) {
       expect(isRouteLayer(path), path).toBe(false);
     }
   });

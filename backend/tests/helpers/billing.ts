@@ -1,4 +1,4 @@
-import type { TenantContext } from '../../src/core/database/tenantContext.js';
+import type { TenantContext } from '../../src/database/tenantContext.js';
 import { generateBill as generateBillInStage } from '../../src/modules/payments/billing.js';
 
 /**

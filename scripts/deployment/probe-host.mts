@@ -22,7 +22,7 @@
  * ###########################################################################
  */
 import pg from 'pg';
-import { assertDatabaseSafety } from '../../backend/src/core/database/startupChecks.js';
+import { assertDatabaseSafety } from '../../backend/src/database/startupChecks.js';
 
 const REQUIRED_MAJOR = 16;
 const EXPECTED_ROLES = [

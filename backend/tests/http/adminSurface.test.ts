@@ -3,17 +3,17 @@ import { randomUUID } from 'node:crypto';
 import Fastify, { type FastifyInstance } from 'fastify';
 import pg from 'pg';
 import { ownerClient } from '../helpers/db.js';
-import { signToken } from '../../src/modules/auth/jwt.js';
-import { planeGuard } from '../../src/core/security/planeGuards.js';
-import { registerTenantRoute, resetRegistry } from '../../src/core/middleware/routeRegistry.js';
-import { toErrorResponse } from '../../src/core/errors/errors.js';
+import { signToken } from '../../src/modules/authentication/jwt.js';
+import { planeGuard } from '../../src/middleware/security/planeGuards.js';
+import { registerTenantRoute, resetRegistry } from '../../src/middleware/routeRegistry.js';
+import { toErrorResponse } from '../../src/utils/errors/errors.js';
 import { adminRoutes } from '../../src/routes/index.js';
 import { adminHandlers } from '../../src/routes/handlers/admin.js';
 import { crmHandlers } from '../../src/routes/handlers/crm.js';
 import { handlerName, isUnserved } from '../../src/routes/lookup.js';
 import {
   ADMIN_RESOURCES, writableOnly, UnwritableFieldsError, type AdminResource,
-} from '../../src/modules/restaurants/adminResources.js';
+} from '../../src/modules/businesses/adminResources.js';
 import { provisionTenant } from '../../src/modules/platform/provisioning.js';
 import { seedPlatformAuthz, seedPermissionCatalogue } from '../../src/modules/authz/seed.js';
 import { planCache } from '../helpers/plans.js';

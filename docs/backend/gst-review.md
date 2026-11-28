@@ -23,7 +23,7 @@ that test and this file together.
 | Tax per line | `componentsForLine` | `lineTax` + `headsForLine` (`modules/tax/taxHeads.ts`, `registry.ts`) |
 | Round off | `roundOffMinor` | `nearestRupeeRoundOff` (rule `nearest_rupee`, 0082) |
 | Stored on | `platform.invoice` (+ lines, components) | `app.bill`, `app.bill_line` (heads as jsonb) |
-| Return | -- | `modules/reporting/gstReturn.ts` (GST-account bills only) |
+| Return | -- | `modules/reports/gstReturn.ts` (GST-account bills only) |
 
 The two flows share no code on purpose (a change for one must not alter the other's
 filed documents); `tests/ops/taxHeads.test.ts` asserts they split a rate identically.

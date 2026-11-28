@@ -2,20 +2,20 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { randomUUID } from 'node:crypto';
 import pg from 'pg';
 import { ownerClient, assertCheckedSet } from '../helpers/db.js';
-import { withTenantTransaction } from '../../src/core/database/unitOfWork.js';
-import { peekTenantContext, type TenantContext } from '../../src/core/database/tenantContext.js';
+import { withTenantTransaction } from '../../src/database/unitOfWork.js';
+import { peekTenantContext, type TenantContext } from '../../src/database/tenantContext.js';
 import {
   allocateComboPrice,
   allocationBalances,
   AllocationImpossibleError,
-} from '../../src/modules/menu/comboAllocation.js';
-import { resolveAvailability, withinPeriod } from '../../src/modules/menu/availability.js';
+} from '../../src/modules/products/comboAllocation.js';
+import { resolveAvailability, withinPeriod } from '../../src/modules/products/availability.js';
 import {
   assertListable,
   assertStationArchivable,
   StationStillRoutedError,
   UnroutableAtBranchError,
-} from '../../src/modules/menu/routing.js';
+} from '../../src/modules/products/routing.js';
 import { keysInExceptionSection, riskSubclassOf } from '../../src/modules/authz/permissions.js';
 import { provisionTenant } from '../../src/modules/platform/provisioning.js';
 import { seedPlatformAuthz, seedPermissionCatalogue } from '../../src/modules/authz/seed.js';

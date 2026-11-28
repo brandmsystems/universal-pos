@@ -6,12 +6,12 @@ import { fileURLToPath } from 'node:url';
 import pg from 'pg';
 import { ownerClient } from '../helpers/db.js';
 import { generateBill } from '../helpers/billing.js';
-import { withTenantTransaction } from '../../src/core/database/unitOfWork.js';
-import { peekTenantContext, type TenantContext } from '../../src/core/database/tenantContext.js';
-import { fireOrder } from '../../src/modules/kitchen/fire.js';
+import { withTenantTransaction } from '../../src/database/unitOfWork.js';
+import { peekTenantContext, type TenantContext } from '../../src/database/tenantContext.js';
+import { fireOrder } from '../../src/modules/business-types/restaurant/kitchen/fire.js';
 import {
   markTicketReady, StaleKdsViewError,
-} from '../../src/modules/kitchen/orderTickets.js';
+} from '../../src/modules/business-types/restaurant/kitchen/orderTickets.js';
 import {
   editLine, removeLine, LineAlreadyFiredError,
 } from '../../src/modules/orders/orderEntry.js';
@@ -22,7 +22,7 @@ import {
   LinesAlreadyBilledError,
 } from '../../src/modules/payments/billing.js';
 import { provisionTenant } from '../../src/modules/platform/provisioning.js';
-import { paymentMix, salesSummary } from '../../src/modules/reporting/salesReports.js';
+import { paymentMix, salesSummary } from '../../src/modules/reports/salesReports.js';
 import { seedPlatformAuthz, seedPermissionCatalogue } from '../../src/modules/authz/seed.js';
 
 let owner: pg.Client;

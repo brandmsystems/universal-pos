@@ -1,4 +1,4 @@
-import type { TenantContext } from '../../core/database/tenantContext.js';
+import type { TenantContext } from '../../database/tenantContext.js';
 import { resolveActor } from '../authz/authorityStore.js';
 import type { PermissionKey } from '../authz/permissions.js';
 import { SCREEN_KEYS } from './staffAccess.js';

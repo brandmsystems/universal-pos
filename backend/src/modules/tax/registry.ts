@@ -1,4 +1,4 @@
-import { allocateComboPrice } from '../menu/comboAllocation.js';
+import { allocateComboPrice } from '../products/comboAllocation.js';
 import {
   JURISDICTIONS, type JurisdictionDefinition, type SupplyInput,
   type SupplyPosition, type SupplyResolver, type TaxHeadDefinition,

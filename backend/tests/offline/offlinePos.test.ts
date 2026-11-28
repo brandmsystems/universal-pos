@@ -2,8 +2,8 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { randomUUID } from 'node:crypto';
 import pg from 'pg';
 import { ownerClient, assertCheckedSet } from '../helpers/db.js';
-import { withTenantTransaction } from '../../src/core/database/unitOfWork.js';
-import { peekTenantContext, type TenantContext } from '../../src/core/database/tenantContext.js';
+import { withTenantTransaction } from '../../src/database/unitOfWork.js';
+import { peekTenantContext, type TenantContext } from '../../src/database/tenantContext.js';
 import {
   claimLease, renewLease, releaseLease, forceReleaseLease, leaseState, requireLease,
   localKotReference, LeaseHeldError, LeaseNotHeldError,

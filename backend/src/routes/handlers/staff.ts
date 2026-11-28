@@ -1,4 +1,4 @@
-import type { RouteDefinition } from '../../core/middleware/routeRegistry.js';
+import type { RouteDefinition } from '../../middleware/routeRegistry.js';
 import { listStaff } from '../../modules/users/staffList.js';
 
 /**

@@ -1,4 +1,4 @@
-import type { TenantContext } from '../../core/database/tenantContext.js';
+import type { TenantContext } from '../../database/tenantContext.js';
 
 /**
  * Who can sign in and how, for the manager's access page -- read only. Built on

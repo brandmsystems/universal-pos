@@ -13,7 +13,7 @@ return its answer. A handler holds no SQL and no money arithmetic.
   or the path slug. A request body never names `branchId`, `sessionId`,
   `businessDate` or `...ByUserId`.
 - **Errors:** every named code is mapped in `ERROR_CONTRACT`
-  (`backend/src/core/errors/errors.ts`) with status, retryable and a client action.
+  (`backend/src/utils/errors/errors.ts`) with status, retryable and a client action.
 - **Idempotency:** every POS mutation carries an idempotency key.
 - **Collection:** `docs/api/postman/` (generate with `pnpm postman`).
 

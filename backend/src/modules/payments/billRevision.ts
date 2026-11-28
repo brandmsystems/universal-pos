@@ -1,9 +1,9 @@
 import { randomUUID } from 'node:crypto';
-import type { TenantContext } from '../../core/database/tenantContext.js';
+import type { TenantContext } from '../../database/tenantContext.js';
 import { addLine } from '../orders/orderEntry.js';
 import { voidLine } from '../orders/adjustments.js';
 import { currentBusinessDate } from '../orders/session.js';
-import { fireOrder } from '../kitchen/fire.js';
+import { fireOrder } from '../business-types/restaurant/kitchen/fire.js';
 import { generateBill, recordRefund, TENDER_METHODS, type GeneratedBill, type TenderMethod } from './billing.js';
 import { assertMayEditDay, type EditAuthority } from './dayEnd.js';
 

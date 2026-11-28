@@ -3,8 +3,8 @@ import { randomUUID } from 'node:crypto';
 import pg from 'pg';
 import { ownerClient } from '../helpers/db.js';
 import { applyOfflineOperation } from '../../src/routes/handlers/sync.js';
-import { withTenantTransaction } from '../../src/core/database/unitOfWork.js';
-import { peekTenantContext, type TenantContext } from '../../src/core/database/tenantContext.js';
+import { withTenantTransaction } from '../../src/database/unitOfWork.js';
+import { peekTenantContext, type TenantContext } from '../../src/database/tenantContext.js';
 import {
   claimOrReplay,
   digestOf,
@@ -16,7 +16,7 @@ import {
   NothingToFireError,
   SessionVersionConflictError,
   FIRE_LOCK_ORDER,
-} from '../../src/modules/kitchen/fire.js';
+} from '../../src/modules/business-types/restaurant/kitchen/fire.js';
 import { provisionTenant } from '../../src/modules/platform/provisioning.js';
 import { seedPlatformAuthz, seedPermissionCatalogue } from '../../src/modules/authz/seed.js';
 
@@ -669,7 +669,7 @@ describe('D. KOT fire', () => {
         'modules/orders/idempotency.ts',
         // The two dispatchers: HTTP and offline sync.
         'routes/handlers/sync.ts',
-        'core/middleware/routeRegistry.ts',
+        'middleware/routeRegistry.ts',
       ].sort());
     });
 

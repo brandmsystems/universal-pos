@@ -36,7 +36,7 @@ export function rangeProblem(from: string, to: string, today: string | null): st
   return null;
 }
 
-/** As `tillSummary` in backend/src/modules/reporting/tillSummary.ts answers it. */
+/** As `tillSummary` in backend/src/modules/reports/tillSummary.ts answers it. */
 export interface TakingsSummary {
   readonly period: TakingsRange;
   readonly fromDate: string;

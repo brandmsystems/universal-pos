@@ -6,11 +6,11 @@ import pg from 'pg';
 import { ENTITLEMENTS, getAdminMenu, type PlanKey } from '@universalpos/shared';
 import { applyDueChanges } from '../../src/modules/billing/scheduledChange.js';
 import { ownerClient } from '../helpers/db.js';
-import { buildServer } from '../../src/app.js';
+import { buildServer } from '../../src/server/app.js';
 import {
   PlanGateWithoutCacheError, planGates, registerTenantRoute, resetRegistry, type RouteDefinition,
-} from '../../src/core/middleware/routeRegistry.js';
-import { signToken, verifyToken } from '../../src/modules/auth/jwt.js';
+} from '../../src/middleware/routeRegistry.js';
+import { signToken, verifyToken } from '../../src/modules/authentication/jwt.js';
 import { allRoutes } from '../../src/routes/index.js';
 import { isUnserved, mergeHandlers } from '../../src/routes/lookup.js';
 import { posHandlers } from '../../src/routes/handlers/pos.js';

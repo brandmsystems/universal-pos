@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
-import { BaseRepository } from '../../core/database/baseRepository.js';
-import { AppUserRepository } from '../../core/database/repositories.js';
+import { BaseRepository } from '../../database/baseRepository.js';
+import { AppUserRepository } from '../../database/repositories.js';
 
 /**
  * Reading a contact detail, and the record of having read it.
@@ -21,7 +21,7 @@ import { AppUserRepository } from '../../core/database/repositories.js';
  * response back, so a revealed record cannot be unlogged, and a rolled-back
  * request cannot leave a phantom reveal.
  *
- * `src/modules/restaurants/adminResources.ts` drops `email` from the generic users projection for
+ * `src/modules/businesses/adminResources.ts` drops `email` from the generic users projection for
  * exactly this reason -- the generic CRUD handler cannot write here, so it does
  * not return the field. That must stay true; these two functions are the only
  * way the column leaves the server.
@@ -109,7 +109,7 @@ function staffContactOf(row: Record<string, unknown>): RevealedContact {
  * The same act for a member of STAFF, and a separate permission because it is a
  * separate decision.
  *
- * `src/modules/restaurants/adminResources.ts` drops `email` from the generic users projection
+ * `src/modules/businesses/adminResources.ts` drops `email` from the generic users projection
  * because reading staff PII is a logged event -- and until 0049 the only route
  * that could read it was the one named for customers. So this is not a new
  * capability; it is the capability that route was quietly providing, given its

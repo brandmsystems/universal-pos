@@ -1,4 +1,4 @@
-import type { RouteDefinition, RoutePlan } from '../core/middleware/routeRegistry.js';
+import type { RouteDefinition, RoutePlan } from '../middleware/routeRegistry.js';
 import { handlerLookup, pathId, type Handler } from './lookup.js';
 import type { PermissionKey } from '../modules/authz/permissions.js';
 import { posRoutes } from './pos.js';
@@ -65,7 +65,7 @@ export const adminRoutes = (handlers: Record<string, Handler> = {}): readonly Ro
     ...crud('users', { view: 'user.view' }, 'app_user'),
     ...crud('roles', { view: 'role.view', create: 'role.create', edit: 'role.edit', archive: 'role.delete' }, 'role'),
     ...crud('tax-classes', { view: 'tax.class.view', create: 'tax.class.create', edit: 'tax.class.edit', archive: 'tax.class.archive' }, 'tax_class'),
-    // Create and edit are purpose-built (modules/restaurants/setup.ts): the
+    // Create and edit are purpose-built (modules/businesses/setup.ts): the
     // create lists the item at its branch, refusing an unroutable kitchen.
     ...crud('menu/items', { view: 'menu.view', create: 'menu.item.create', edit: 'menu.item.edit', archive: 'menu.item.archive' }, 'menu_item'),
     { method: 'GET', url: '/admin/menu/items/:id', plane: 'tenant',

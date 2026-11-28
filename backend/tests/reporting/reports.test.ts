@@ -3,19 +3,19 @@ import { randomUUID } from 'node:crypto';
 import pg from 'pg';
 import { KEYS_WITHOUT_ROUTES } from '../../src/routes/index.js';
 import { ownerClient, assertCheckedSet } from '../helpers/db.js';
-import { withTenantTransaction } from '../../src/core/database/unitOfWork.js';
-import { ensureAuditPartitionFor } from '../../src/core/database/partitions.js';
-import { peekTenantContext, type TenantContext } from '../../src/core/database/tenantContext.js';
-import { exceptionReport, piiAccessLog } from '../../src/modules/reporting/exceptionReport.js';
+import { withTenantTransaction } from '../../src/database/unitOfWork.js';
+import { ensureAuditPartitionFor } from '../../src/database/partitions.js';
+import { peekTenantContext, type TenantContext } from '../../src/database/tenantContext.js';
+import { exceptionReport, piiAccessLog } from '../../src/modules/reports/exceptionReport.js';
 import {
   salesBy, salesSummary, paymentMix, previousWindow, salesSummaryCompared,
   type PaymentMixRow,
-} from '../../src/modules/reporting/salesReports.js';
+} from '../../src/modules/reports/salesReports.js';
 import {
   outwardSupplyReturn, reconcileReturnToBills,
   GstPeriodSpansRegistrationChangeError,
-} from '../../src/modules/reporting/gstReturn.js';
-import { REPORTS, reportsFor } from '../../src/modules/reporting/registry.js';
+} from '../../src/modules/reports/gstReturn.js';
+import { REPORTS, reportsFor } from '../../src/modules/reports/registry.js';
 import { PERMISSIONS, type PermissionKey } from '../../src/modules/authz/permissions.js';
 import { SYSTEM_ROLES } from '../../src/modules/authz/systemRoles.js';
 import { provisionTenant } from '../../src/modules/platform/provisioning.js';
@@ -854,7 +854,7 @@ describe('E. the GST return reconciles exactly to the bills', () => {
     const { readFileSync } = await import('node:fs');
     // Comments stripped first: the module explains WHY it shares nothing with the
     // control plane, and matching that prose would test the explanation.
-    const source = readFileSync('src/modules/reporting/gstReturn.ts', 'utf8')
+    const source = readFileSync('src/modules/reports/gstReturn.ts', 'utf8')
       .replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/[^\n]*/g, '');
     // Different supplier, different recipient, different tables, different
     // consequences. A shared "tax engine" means a change for one silently

@@ -1,9 +1,9 @@
 import { randomUUID } from 'node:crypto';
 import type pg from 'pg';
-import { adoptTenantContext } from '../../core/database/unitOfWork.js';
-import type { TenantContext } from '../../core/database/tenantContext.js';
-import { checkPinPolicy, replaceCredential } from '../auth/deviceAuth.js';
-import { planUsage } from '../restaurants/planUsage.js';
+import { adoptTenantContext } from '../../database/unitOfWork.js';
+import type { TenantContext } from '../../database/tenantContext.js';
+import { checkPinPolicy, replaceCredential } from '../authentication/deviceAuth.js';
+import { planUsage } from '../businesses/planUsage.js';
 import { assertIdentifierFree, STAFF_CODE } from '../users/identifiers.js';
 import { assertWithinLimit, loadLatestEntitlement } from './entitlements.js';
 

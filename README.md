@@ -154,7 +154,7 @@ screen's `LISTEN` connection. It went with the kitchen screen and is no longer r
 
 ```bash
 # the app
-pnpm dev:api                # tsx watch backend/src/server.ts
+pnpm dev:api                # tsx watch backend/src/server/server.ts
 pnpm dev:web                # vite dev server
 pnpm api                    # run once, no watch
 
@@ -229,7 +229,7 @@ database that may be shared, and a container that migrates on start races every
 other replica of itself:
 
 ```bash
-docker compose run --rm api node backend/dist/core/database/migrate.js up
+docker compose run --rm api node backend/dist/database/migrate.js up
 ```
 
 ### Production: Render

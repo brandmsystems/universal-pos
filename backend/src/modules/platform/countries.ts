@@ -1,6 +1,6 @@
 import type pg from 'pg';
-import { adoptTenantContext } from '../../core/database/unitOfWork.js';
-import type { TenantContext } from '../../core/database/tenantContext.js';
+import { adoptTenantContext } from '../../database/unitOfWork.js';
+import type { TenantContext } from '../../database/tenantContext.js';
 import { JURISDICTIONS, type JurisdictionDefinition } from '../tax/jurisdictions.js';
 import { jurisdiction } from '../tax/registry.js';
 import { defaultTaxClassesFor } from '../tax/taxClasses.js';

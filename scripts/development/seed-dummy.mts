@@ -19,8 +19,8 @@ import pg from 'pg';
 import { provisionTenant } from '../../backend/src/modules/platform/provisioning.js';
 import { ensureStandardPlans } from '../../backend/src/modules/platform/planCatalogue.js';
 import { seedPermissionCatalogue, seedPlatformAuthz } from '../../backend/src/modules/authz/seed.js';
-import { hashPlatformPassword } from '../../backend/src/modules/auth/platformAuth.js';
-import { checkPinPolicy, hashSecret } from '../../backend/src/modules/auth/deviceAuth.js';
+import { hashPlatformPassword } from '../../backend/src/modules/authentication/platformAuth.js';
+import { checkPinPolicy, hashSecret } from '../../backend/src/modules/authentication/deviceAuth.js';
 import { env } from '../../backend/src/config/env.js';
 
 type PlanKey = 'basic' | 'pro';

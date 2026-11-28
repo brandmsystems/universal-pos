@@ -1,4 +1,4 @@
-import type { TenantContext } from '../../core/database/tenantContext.js';
+import type { TenantContext } from '../../database/tenantContext.js';
 import { UnknownBillingBranchError } from '../payments/billing.js';
 import { TAX_ACCOUNTS, type TaxAccount } from './jurisdictions.js';
 import { TaxAccountNotOfferedError } from './registry.js';

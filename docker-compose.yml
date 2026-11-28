@@ -1,5 +1,6 @@
 services:
   postgres:
+    restart: unless-stopped
     image: postgres:16-alpine
     environment:
       POSTGRES_PASSWORD: postgres
@@ -42,6 +43,7 @@ services:
   # is exercised too.
   # ##########################################################################
   pgbouncer:
+    restart: unless-stopped
     image: edoburu/pgbouncer:v1.23.1-p2
     depends_on:
       postgres:
@@ -91,6 +93,7 @@ services:
   # exists for -- and running it that way locally means the warm-up is exercised
   # on every `docker compose down && up`, not only in an incident.
   redis:
+    restart: unless-stopped
     image: redis:7-alpine
     command: ["redis-server", "--save", "", "--appendonly", "no"]
     ports:
@@ -109,6 +112,7 @@ services:
   #
   #   docker compose --profile scheduler up -d scheduler
   scheduler:
+    restart: unless-stopped
     profiles: ["scheduler"]
     build:
       context: .
@@ -141,12 +145,13 @@ services:
   # It does NOT migrate on boot. Migrations are a deliberate act against a
   # database that may be shared, and a container that migrates on start races
   # every other replica of itself:
-  #   docker compose run --rm api node backend/dist/core/database/migrate.js up
+  #   docker compose run --rm api node backend/dist/database/migrate.js up
   #
   # (dist/db/migrate.js, not dist/src/... -- tsconfig.build.json sets rootDir to
   # src so the emit is flat and the test suite does not ship in the image.)
   # ##########################################################################
   api:
+    restart: unless-stopped
     build:
       context: .
       dockerfile: deploy/api.Dockerfile
@@ -181,6 +186,7 @@ services:
   # The POS client: static files behind nginx, with /api/ proxied to the API on
   # the same origin so the build carries no environment-specific host.
   web:
+    restart: unless-stopped
     build:
       context: .
       dockerfile: deploy/web.Dockerfile

@@ -1,4 +1,4 @@
-import type { TenantContext } from '../../core/database/tenantContext.js';
+import type { TenantContext } from '../../database/tenantContext.js';
 
 /**
  * How a person is named for sign-in, shared by the staff invite and the self

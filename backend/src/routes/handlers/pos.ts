@@ -1,12 +1,12 @@
 import { BranchScopeRequiredError } from './staff.js';
 import type { FastifyRequest } from 'fastify';
-import type { RouteDefinition } from '../../core/middleware/routeRegistry.js';
-import type { TenantContext } from '../../core/database/tenantContext.js';
-import { requireIdempotencyKey } from '../../core/middleware/posHeaders.js';
+import type { RouteDefinition } from '../../middleware/routeRegistry.js';
+import type { TenantContext } from '../../database/tenantContext.js';
+import { requireIdempotencyKey } from '../../middleware/posHeaders.js';
 import { listAdjustmentReasons } from '../../modules/orders/adjustmentReasons.js';
 import { readBoard } from '../../modules/orders/board.js';
-import { readMenuForBranch } from '../../modules/menu/read.js';
-import { readFloor } from '../../modules/restaurants/floor.js';
+import { readMenuForBranch } from '../../modules/products/read.js';
+import { readFloor } from '../../modules/businesses/floor.js';
 import {
   openSession, closeSession, moveSession, currentBusinessDate,
   joinTable, unjoinTable, setGuestCount, openParcel, openCounterDineIn, markParcelPickedUp,
@@ -18,9 +18,9 @@ import { listBillingQueue } from '../../modules/orders/billingQueue.js';
 import { hasFeature } from '../../modules/platform/entitlements.js';
 import { addLine, editLine, removeLine, setParcelCharge } from '../../modules/orders/orderEntry.js';
 import { quoteOrder } from '../../modules/payments/quote.js';
-import { tillSummary } from '../../modules/reporting/tillSummary.js';
+import { tillSummary } from '../../modules/reports/tillSummary.js';
 import { voidLine, compLine, discountLine } from '../../modules/orders/adjustments.js';
-import { fireOrder } from '../../modules/kitchen/fire.js';
+import { fireOrder } from '../../modules/business-types/restaurant/kitchen/fire.js';
 import {
   generateBill, takePayment, recordTender, voidTender, recordRefund,
 } from '../../modules/payments/billing.js';
@@ -33,8 +33,8 @@ import {
 import { activeBranchFor } from './admin.js';
 import { recordManualSettlement } from '../../modules/offline/manualSettlement.js';
 import { claimLease, renewLease, releaseLease, forceReleaseLease } from '../../modules/offline/lease.js';
-import { requestReprint } from '../../modules/kitchen/printWorker.js';
-import { orderTickets, markTicketReady } from '../../modules/kitchen/orderTickets.js';
+import { requestReprint } from '../../modules/business-types/restaurant/kitchen/printWorker.js';
+import { orderTickets, markTicketReady } from '../../modules/business-types/restaurant/kitchen/orderTickets.js';
 import { resolveActor } from '../../modules/authz/authorityStore.js';
 
 /**
@@ -167,7 +167,7 @@ export function posHandlers(): Record<string, Handler> {
 
     /**
      * The standalone menu read, for a tablet refreshing a cached menu without a
-     * session open. Same function the board calls -- see src/modules/menu/read.ts for
+     * session open. Same function the board calls -- see src/modules/products/read.ts for
      * why that matters more than the round trip it saves.
      *
      * The branch comes from the verified token, never from a query parameter: a

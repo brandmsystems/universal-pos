@@ -3,15 +3,15 @@ import { randomUUID } from 'node:crypto';
 import Fastify, { type FastifyInstance } from 'fastify';
 import pg from 'pg';
 import { ownerClient, assertCheckedSet } from '../helpers/db.js';
-import { signToken } from '../../src/modules/auth/jwt.js';
-import { planeGuard } from '../../src/core/security/planeGuards.js';
-import { registerTenantRoute, resetRegistry } from '../../src/core/middleware/routeRegistry.js';
-import { ERROR_CONTRACT, toErrorResponse } from '../../src/core/errors/errors.js';
+import { signToken } from '../../src/modules/authentication/jwt.js';
+import { planeGuard } from '../../src/middleware/security/planeGuards.js';
+import { registerTenantRoute, resetRegistry } from '../../src/middleware/routeRegistry.js';
+import { ERROR_CONTRACT, toErrorResponse } from '../../src/utils/errors/errors.js';
 import { adminRoutes } from '../../src/routes/index.js';
 import { reportHandlers } from '../../src/routes/handlers/reports.js';
 import { isUnserved } from '../../src/routes/lookup.js';
-import { ADMIN_RESOURCES } from '../../src/modules/restaurants/adminResources.js';
-import { ensureAuditPartitionFor } from '../../src/core/database/partitions.js';
+import { ADMIN_RESOURCES } from '../../src/modules/businesses/adminResources.js';
+import { ensureAuditPartitionFor } from '../../src/database/partitions.js';
 import { provisionTenant } from '../../src/modules/platform/provisioning.js';
 import { seedPlatformAuthz, seedPermissionCatalogue } from '../../src/modules/authz/seed.js';
 import { planCache } from '../helpers/plans.js';
@@ -46,7 +46,7 @@ const KEY = 'report-surface-signing-key';
  * ###########################################################################
  * THE ERROR CODES THIS SURFACE RAISES, AND WHY THEY ARE LISTED HERE.
  *
- * src/core/errors/errors.ts is owned by the integration and does not carry these
+ * src/utils/errors/errors.ts is owned by the integration and does not carry these
  * mappings yet, so `toErrorResponse` would answer 500 internal_error for every
  * one of them -- which would make these assertions test the fallback instead of
  * the refusal. The overlay below stands in until ERROR_CONTRACT gains the

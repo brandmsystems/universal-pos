@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import type pg from 'pg';
 import { appClient, assertCheckedSet, ownerClient } from '../helpers/db.js';
-import { missingPartitionMonths } from '../../src/core/database/partitions.js';
+import { missingPartitionMonths } from '../../src/database/partitions.js';
 
 /**
  * The regression surface for the RLS-does-not-propagate bug is partitions

@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import net from 'node:net';
-import { escPos, networkTransport, parseAddress } from '../../src/modules/kitchen/printTransport.js';
+import { escPos, networkTransport, parseAddress } from '../../src/modules/business-types/restaurant/kitchen/printTransport.js';
 
 /**
  * The network transport against a REAL socket, not a mock of one: a local TCP

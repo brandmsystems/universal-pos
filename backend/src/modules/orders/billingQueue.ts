@@ -1,4 +1,4 @@
-import type { TenantContext } from '../../core/database/tenantContext.js';
+import type { TenantContext } from '../../database/tenantContext.js';
 
 /**
  * The Billing screen's queue: every order KOT handed over that is still open,

@@ -1,4 +1,4 @@
-import type { TenantContext } from '../../core/database/tenantContext.js';
+import type { TenantContext } from '../../database/tenantContext.js';
 
 /**
  * Who works here, for the manager screens -- read only. Staff accounts are

@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import type pg from 'pg';
-import { signToken } from '../auth/jwt.js';
+import { signToken } from '../authentication/jwt.js';
 import { enqueue } from '../notifications/outbox.js';
 
 /**

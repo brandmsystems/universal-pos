@@ -1,6 +1,6 @@
 import { afterAll, describe, expect, it } from 'vitest';
 import pg from 'pg';
-import { assertDatabaseSafety, DatabaseSafetyError } from '../../src/core/database/startupChecks.js';
+import { assertDatabaseSafety, DatabaseSafetyError } from '../../src/database/startupChecks.js';
 
 /**
  * ###########################################################################

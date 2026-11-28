@@ -3,25 +3,25 @@ import { randomUUID } from 'node:crypto';
 import Fastify, { type FastifyInstance } from 'fastify';
 import pg from 'pg';
 import { appClient, ownerClient } from '../helpers/db.js';
-import { signToken } from '../../src/modules/auth/jwt.js';
-import { planeGuard } from '../../src/core/security/planeGuards.js';
-import { registerPlatformRoute } from '../../src/core/middleware/platformRoute.js';
-import { ERROR_CONTRACT, toErrorResponse } from '../../src/core/errors/errors.js';
+import { signToken } from '../../src/modules/authentication/jwt.js';
+import { planeGuard } from '../../src/middleware/security/planeGuards.js';
+import { registerPlatformRoute } from '../../src/middleware/platformRoute.js';
+import { ERROR_CONTRACT, toErrorResponse } from '../../src/utils/errors/errors.js';
 import { platformRoutes } from '../../src/routes/index.js';
 import { platformHandlers } from '../../src/routes/handlers/platform.js';
 import { isUnserved } from '../../src/routes/lookup.js';
 import { seedPermissionCatalogue, seedPlatformAuthz } from '../../src/modules/authz/seed.js';
-import { resolveTenantForAuth, tenantStillAuthenticable } from '../../src/modules/auth/preAuthTenant.js';
+import { resolveTenantForAuth, tenantStillAuthenticable } from '../../src/modules/authentication/preAuthTenant.js';
 import { recordAttempt } from '../../src/modules/billing/dunning.js';
 import { updatePlatformUser, PlatformGrantExceedsAuthorityError } from '../../src/modules/platform/staff.js';
 import { ensureStandardPlans, STANDARD_PLANS } from '../../src/modules/platform/planCatalogue.js';
 import {
   acceptOwnerInvite, ownerPasswordProblem, type AcceptOwnerInviteResult,
-} from '../../src/modules/auth/ownerInvite.js';
-import { authenticatePassword } from '../../src/modules/auth/passwordAuth.js';
-import { authenticatePlatformUser, changePlatformPassword } from '../../src/modules/auth/platformAuth.js';
+} from '../../src/modules/authentication/ownerInvite.js';
+import { authenticatePassword } from '../../src/modules/authentication/passwordAuth.js';
+import { authenticatePlatformUser, changePlatformPassword } from '../../src/modules/authentication/platformAuth.js';
 import { EXPIRING_WITHIN_DAYS } from '../../src/modules/platform/staff.js';
-import { adoptTenantContext } from '../../src/core/database/unitOfWork.js';
+import { adoptTenantContext } from '../../src/database/unitOfWork.js';
 import { ENTITLEMENTS, planTermsFor } from '@universalpos/shared';
 
 /**

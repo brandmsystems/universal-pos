@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
-import type { TenantContext } from '../../core/database/tenantContext.js';
-import { allocateComboPrice, allocationBalances } from '../menu/comboAllocation.js';
-import { resolveAvailability } from '../menu/availability.js';
+import type { TenantContext } from '../../database/tenantContext.js';
+import { allocateComboPrice, allocationBalances } from '../products/comboAllocation.js';
+import { resolveAvailability } from '../products/availability.js';
 import { assertTakesOrderChanges, SessionNotOpenError } from './session.js';
 
 /**

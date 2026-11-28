@@ -1,4 +1,4 @@
-import type { TenantContext } from '../../core/database/tenantContext.js';
+import type { TenantContext } from '../../database/tenantContext.js';
 import { splitHeads, type StoredTaxHead } from '../tax/taxHeads.js';
 
 /**

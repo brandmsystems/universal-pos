@@ -27,9 +27,9 @@ const SRC = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../sr
  * reason is required and why a test asserts the list is not silently growing.
  */
 const SQL_LAYER: Readonly<Record<string, string>> = {
-  'core/database/baseRepository.ts': 'builds the tenant predicate; the reason the rule can be kept',
-  'core/database/unitOfWork.ts': 'opens the transaction and sets the tenant GUC',
-  'core/database/migrate.ts': 'runs DDL as the owner role',
+  'database/baseRepository.ts': 'builds the tenant predicate; the reason the rule can be kept',
+  'database/unitOfWork.ts': 'opens the transaction and sets the tenant GUC',
+  'database/migrate.ts': 'runs DDL as the owner role',
   'modules/orders/board.ts':
     'the aggregate board read: one round trip resolving session, lines, lease and server time in a single instant. It lived in http/routes/pos.ts, which made the thin-handler gate pass by geography -- the handlers were SQL-free because this file was one directory over, inside the route layer and unscanned. The menu half moved to menu/read.ts once GET /pos/menu needed the same answer',
   'modules/tax/taxClassSeed.ts':
@@ -40,27 +40,27 @@ const SQL_LAYER: Readonly<Record<string, string>> = {
     'the staff code / email availability check spans app_user AND pending staff_invite rows in one UNION, which no single repository covers; every branch carries its tenant_id predicate',
   'modules/orders/parcels.ts':
     'the parcel counter read: every parcel of the business day with its status DERIVED in the same query from kitchen lines, the handover stamp and the session -- a status assembled from several repository reads would be several instants, and a parcel could read ready and unsent at once. Every statement carries its tenant_id predicate',
-  'modules/menu/read.ts':
+  'modules/products/read.ts':
     'the catalogue projection and the version stamp, carved out of ops/board.ts so the board and GET /pos/menu cannot answer differently. Two implementations of the price-and-availability read is how the board once dropped days_of_week and offered a weekday-only item on a Sunday',
-  'modules/auth/ownerInvite.ts':
+  'modules/authentication/ownerInvite.ts':
     'redeeming a Restaurant Manager setup link: one locked read of platform.tenant_owner_invite by token hash (no tenant exists yet, and platform carries no RLS), then writes to app.app_user and app.credential under the tenant the INVITE names via adoptTenantContext -- every app statement carries its tenant_id predicate and runs under RLS as the app role. A repository would need the tenant before the token has been read, which is the thing the token is for',
-  'modules/auth/platformAuth.ts':
+  'modules/authentication/platformAuth.ts':
     'verifies a control-plane password on a pre-auth connection with NO tenant GUC set. There is no TenantContext to route a repository through and there never will be: a platform user has no tenant, which is the whole point of the plane split. Reads platform.platform_user, which carries no RLS, and writes only its own lockout columns',
-  'modules/auth/authAttempt.ts':
+  'modules/authentication/authAttempt.ts':
     'writes platform.auth_attempt on a pre-auth connection. There is no tenant context to route a repository through -- that is the whole reason credential events are not in the tenant audit log',
-  'core/middleware/agentRoute.ts':
-    'the print agent registrar: BEGIN and COMMIT around the agent-token check and the poll, which must be one transaction because the token check is what SETS the tenant GUC the poll then runs under. No query of its own beyond the transaction; the reads and writes are in modules/kitchen/printAgent.ts',
-  'modules/kitchen/printAgent.ts':
+  'middleware/agentRoute.ts':
+    'the print agent registrar: BEGIN and COMMIT around the agent-token check and the poll, which must be one transaction because the token check is what SETS the tenant GUC the poll then runs under. No query of its own beyond the transaction; the reads and writes are in modules/business-types/restaurant/kitchen/printAgent.ts',
+  'modules/business-types/restaurant/kitchen/printAgent.ts':
     'the print agent, server side: resolves the agent token (platform.tenant by slug, then app.print_agent by hash, before any TenantContext can exist -- the token is what names the tenant), then claims and settles print jobs through the print worker functions. Every app statement it issues carries its tenant_id predicate',
-  'core/middleware/publicRoute.ts':
+  'middleware/publicRoute.ts':
     'the pre-auth registrar: opens the transaction that spans the credential verify and the attempt row, so a lockout increment cannot survive a failure to record why. Same exemption as http/platformRoute.ts and for the same reason -- the registrar owns a write no tenant repository can carry',
   'jobs/runner.ts':
     'takes the advisory lock on a direct connection and writes the run ledger as the owner, whatever the job posture',
   'jobs/registry.ts':
     'three checks are single queries against tenant tables with no repository shape: credential absence, unattributable actions, claim purge',
-  'core/database/partitions.ts': 'runs the partition job as the owner role',
-  'core/database/seed.ts': 'runs the global catalogue seed as the owner role',
-  'core/database/startupChecks.ts': 'probes the connection before any tenant exists',
+  'database/partitions.ts': 'runs the partition job as the owner role',
+  'database/seed.ts': 'runs the global catalogue seed as the owner role',
+  'database/startupChecks.ts': 'probes the connection before any tenant exists',
   'modules/platform/tenantStaff.ts':
     "the Sales person's staff PINs: resolves the restaurant on the control plane (only one they sold, unless they may reach any), then adopts that tenant and writes the user, PIN credential and memberships under RLS in one transaction, counting the users limit under its lock. Every app statement names tenant_id",
   'modules/platform/countries.ts':
@@ -94,17 +94,17 @@ const SQL_LAYER: Readonly<Record<string, string>> = {
     'the staff list folds memberships into each person, and pending invites beside them, in one read. Every statement names tenant_id',
   'modules/users/staffAccess.ts':
     'POS access: the list folds credentials, open reset links and memberships into each person in one read. Every statement names tenant_id',
-  'modules/restaurants/setup.ts':
+  'modules/businesses/setup.ts':
     'the manager setup writes that span several tables which must agree in one transaction: a kitchen is its station code, the branch station and the printer link; an add-on group is the group and its options; a food item is the item, its add-on attachments, its combo dishes and its branch listing. Progress is one read of eight counts. Every statement names tenant_id',
-  'modules/restaurants/requiredColumns.ts':
+  'modules/businesses/requiredColumns.ts':
     'reads information_schema for which writable columns are NOT NULL without a default, so admin forms mark required fields from the schema itself rather than a hand-kept copy. Catalogue metadata, no tenant rows',
-  'modules/restaurants/planUsage.ts':
+  'modules/businesses/planUsage.ts':
     'counts a plan limit under a transaction-scoped advisory lock, so two concurrent creates cannot both count below the limit. The lock and the count must share one connection and one transaction, which no repository call expresses; every statement names tenant_id',
   'modules/platform/directory.ts':
     "the control-plane read model behind GET /tenants and GET /plans: platform schema only, run with NO tenant GUC because the control plane has none. Each list is ONE query resolving a tenant with its live subscription and that subscription's plan version in a single instant -- three round trips would be three instants and the status column could contradict the plan column. It also holds the one slug-to-id resolution the control plane needs, which cannot be resolveTenantForAuth because that applies the LOGIN allowlist and impersonation is deliberately available at hard_lock",
   'modules/platform/systemHealth.ts':
     "the probes GET /system/health can honestly answer from inside a request transaction: BYPASSRLS, app-table ownership, UPDATE/DELETE on the two audit parents, and the ladder cache checked against its own delinquent_since. It cannot delegate to db/startupChecks.ts, whose first probe issues BEGIN/COMMIT and would commit the registrar's transaction half way through the request -- so the SQL is here and the one probe that cannot run is reported as not_probed rather than faked",
-  'core/middleware/platformRoute.ts':
+  'middleware/platformRoute.ts':
     'the control-plane registrar: opens the transaction WITHOUT a tenant GUC and writes platform.platform_audit_log in it, which is the one audit write that cannot go through a tenant repository',
   'modules/orders/orderEntry.ts':
     'the priced-document write: resolves catalogue price, modifier deltas, tax class and rate in the same transaction that snapshots them onto the line, and allocates combo components',
@@ -116,13 +116,13 @@ const SQL_LAYER: Readonly<Record<string, string>> = {
     'expands kot_line -> recipe_version_expansion and posts the ledger under a per-KOT dedupe key; the SAVEPOINT retry is not expressible through a repository',
   'modules/metering/usageRollup.ts':
     'the one job that crosses the plane boundary upward: reads app under a per-tenant GUC, writes platform aggregates',
-  'modules/reporting/exceptionReport.ts':
+  'modules/reports/exceptionReport.ts':
     'reads the audit log against the permission catalogue; the baseline comparison is a windowed aggregate',
-  'modules/reporting/salesReports.ts':
+  'modules/reports/salesReports.ts':
     'one projection over order_line by six dimensions; not expressible as single-table repository calls',
-  'modules/reporting/gstReturn.ts':
+  'modules/reports/gstReturn.ts':
     'buckets bill lines by snapshotted rate and component, and reconciles independently off the same tables',
-  'modules/reporting/tillSummary.ts':
+  'modules/reports/tillSummary.ts':
     'the till X-read: one person\'s tenders joined to their bills, printed lines and sessions in three aggregates over the same scoped set; every statement carries its tenant_id predicate',
   'modules/billing/renewal.ts':
     'moves a subscription period forward: platform.subscription and platform.plan_version only, one locked read and one UPDATE in the same statement pair so the period cannot move twice. Control plane, no tenant GUC, no schema app',
@@ -152,15 +152,15 @@ const SQL_LAYER: Readonly<Record<string, string>> = {
     'records an out-of-band tender against a bill, with the completeness rule enforced in the same statement',
   'modules/inventory/reconcile.ts':
     'compares the cached balance against a full re-fold of the ledger; reads only, and asserted to contain no write',
-  'modules/kitchen/printWorker.ts':
+  'modules/business-types/restaurant/kitchen/printWorker.ts':
     'the print drain: SKIP LOCKED claiming, fallback escalation and the ticket render, all outside the fire transaction',
-  'modules/restaurants/floor.ts':
+  'modules/businesses/floor.ts':
     'the floor read: one query resolving every table, its open session, its most recent lease and its line count in a single instant -- six queries would be six instants and the board would contradict itself',
-  'modules/restaurants/setupImport.ts':
+  'modules/businesses/setupImport.ts':
     'the Excel setup import: name lookups to match each row to what exists, and the savepoints that make the import all or nothing and the preview a rolled-back run of the same code. Writes go through the setup functions and the admin resources repositories; every statement names tenant_id',
   'modules/users/me.ts':
     'the header badge read: the caller own name, roles, branch and tablet, keyed only on the verified token subject; every statement names tenant_id',
-  'modules/kitchen/orderTickets.ts':
+  'modules/business-types/restaurant/kitchen/orderTickets.ts':
     'the KOT screen ticket list: each kitchen ticket of one order with its newest print job and printer in one read, so a status and its printer name cannot come from two instants; and Mark ready, which locks the ticket at its branch and moves its live lines in one statement. Every statement names tenant_id',
   'modules/payments/billing.ts': 'bill generation and tender reconciliation across order_line, bill and tender',
   'modules/payments/dayEnd.ts':
@@ -177,19 +177,19 @@ const SQL_LAYER: Readonly<Record<string, string>> = {
     'every open order of the restaurant, any day, with its amount, billed and paid figures in ONE statement -- the same shape and reason as billingQueue.ts. Every statement carries its tenant_id predicate',
   'modules/orders/idempotency.ts':
     'claims and replays the idempotency key; the SAVEPOINT dance is not expressible through a repository',
-  'modules/kitchen/fire.ts':
+  'modules/business-types/restaurant/kitchen/fire.ts':
     'the atomic fire transaction: sequence counters, routing resolution and cross-table inserts under a fixed lock order',
-  'modules/menu/availability.ts':
+  'modules/products/availability.ts':
     'resolves the three availability concerns in one branch-local query; not expressible as single-table repository calls',
-  'modules/menu/routing.ts':
+  'modules/products/routing.ts':
     'listing and archive guards span menu_item, kitchen_station and the branch override tables',
-  'modules/auth/preAuthTenant.ts':
+  'modules/authentication/preAuthTenant.ts':
     'the one pre-auth read of platform.tenant: resolves a slug to a tenant id before any GUC can be set, which is the whole reason it is a control-plane table with no RLS',
-  'modules/auth/passwordAuth.ts':
+  'modules/authentication/passwordAuth.ts':
     'password verification and the lockout write, the same posture as auth/deviceAuth.ts: it runs before a repository context is meaningful and every statement names tenant_id',
-  'modules/auth/session.ts':
+  'modules/authentication/session.ts':
     're-reads app.device.status on refresh, so revoking a terminal ends its session within the access-token lifetime rather than in twelve hours',
-  'modules/auth/deviceAuth.ts':
+  'modules/authentication/deviceAuth.ts':
     'device trust and PIN verification run before any repository context is meaningful; every statement names tenant_id',
   'modules/authz/authorityStore.ts':
     'read model joining membership -> role -> role_permission; not expressible as a single-table repository call',
@@ -275,7 +275,7 @@ function statementsIn(source: string): string[] {
 const RLS_SCOPED: Readonly<Record<string, string>> = {
   'modules/metering/usageRollup.ts':
     'counts a tenant own rows for billing, as the app role under a per-tenant GUC set at line 159. Its header states the reason it is not the owner: an owner-run rollup with a wrong predicate would bill one tenant for another usage, and RLS is what makes that impossible rather than merely unlikely',
-  'modules/kitchen/printWorker.ts':
+  'modules/business-types/restaurant/kitchen/printWorker.ts':
     'the drain loop claims across tenants with SKIP LOCKED and then sets the GUC per message, as the app role. A predicate would have to name the tenant it has just discovered, which is circular; RLS scopes the work once the GUC is set, and the per-tenant cap per cycle is what stops one tenant starving the others',
   'jobs/registry.ts':
     'three cross-tenant integrity checks that are deliberately not scoped to one tenant: credential absence, unattributable actions and the claim purge each ask a question about the whole install, which is what makes them able to notice a tenant nobody is watching',
@@ -289,9 +289,9 @@ describe('the raw-SQL gate', () => {
       checked: files,
       minimum: 25,
       mustInclude: [
-        'core/database/baseRepository.ts',
-        'core/database/unitOfWork.ts',
-        'core/database/repositories.ts',
+        'database/baseRepository.ts',
+        'database/unitOfWork.ts',
+        'database/repositories.ts',
         'modules/authz/grant.ts',
       ],
     });
@@ -327,7 +327,7 @@ describe('the raw-SQL gate', () => {
     const offenders: string[] = [];
 
     for (const file of Object.keys(SQL_LAYER)) {
-      if (file === 'core/database/baseRepository.ts') continue; // builds the predicate itself
+      if (file === 'database/baseRepository.ts') continue; // builds the predicate itself
       if (file in RLS_SCOPED) continue;
       const source = await readFile(path.join(SRC, file), 'utf8');
 
@@ -409,7 +409,7 @@ describe('the raw-SQL gate', () => {
   });
 
   it('keeps the repository layer free of hand-written predicates', async () => {
-    const source = await readFile(path.join(SRC, 'core/database/repositories.ts'), 'utf8');
+    const source = await readFile(path.join(SRC, 'database/repositories.ts'), 'utf8');
     expect(QUERY_CALL.test(source), 'repositories must not issue SQL of their own').toBe(false);
     expect(/WHERE/i.test(source), 'repositories must not hand-write predicates').toBe(false);
   });

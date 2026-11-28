@@ -9,7 +9,7 @@ import { enqueue } from '../notifications/outbox.js';
 import { openSegment } from '../billing/segments.js';
 import { seedAdjustmentReasons } from '../orders/adjustmentReasonSeed.js';
 import { seedTaxClasses } from '../tax/taxClassSeed.js';
-import { seedFloorTypes } from '../restaurants/setup.js';
+import { seedFloorTypes } from '../businesses/setup.js';
 import { jurisdiction } from '../tax/registry.js';
 import { offeredCountry } from './countries.js';
 import {

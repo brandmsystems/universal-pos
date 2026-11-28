@@ -1,14 +1,14 @@
 import { randomUUID } from 'node:crypto';
 import type { FastifyRequest } from 'fastify';
-import type { RouteDefinition } from '../../core/middleware/routeRegistry.js';
-import type { Value } from '../../core/database/baseRepository.js';
+import type { RouteDefinition } from '../../middleware/routeRegistry.js';
+import type { Value } from '../../database/baseRepository.js';
 import {
   ADMIN_RESOURCES, writableOnly,
   ResourceNotArchivableError, NothingToUpdateError,
   type AdminResource, type ServerFilledColumn,
-} from '../../modules/restaurants/adminResources.js';
-import { requiredFields } from '../../modules/restaurants/requiredColumns.js';
-import { BranchRepository } from '../../core/database/repositories.js';
+} from '../../modules/businesses/adminResources.js';
+import { requiredFields } from '../../modules/businesses/requiredColumns.js';
+import { BranchRepository } from '../../database/repositories.js';
 
 type Handler = RouteDefinition['handler'];
 

@@ -2,8 +2,8 @@ import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { randomUUID } from 'node:crypto';
 import pg from 'pg';
 import { ownerClient } from '../helpers/db.js';
-import { withTenantTransaction } from '../../src/core/database/unitOfWork.js';
-import { type TenantContext } from '../../src/core/database/tenantContext.js';
+import { withTenantTransaction } from '../../src/database/unitOfWork.js';
+import { type TenantContext } from '../../src/database/tenantContext.js';
 import { recordRefund, recordTender } from '../../src/modules/payments/billing.js';
 import { generateBill } from '../helpers/billing.js';
 import {
@@ -13,7 +13,7 @@ import { resolveIndianSupply } from '../../src/modules/tax/in.js';
 import { componentsForLine } from '../../src/modules/billing/placeOfSupply.js';
 import { outwardSupplyReturn, reconcileReturnToBills,
   GstPeriodHasUnstatedTreatmentError,
-  GstReturnNotApplicableError } from '../../src/modules/reporting/gstReturn.js';
+  GstReturnNotApplicableError } from '../../src/modules/reports/gstReturn.js';
 import { provisionTenant } from '../../src/modules/platform/provisioning.js';
 import { seedPlatformAuthz, seedPermissionCatalogue } from '../../src/modules/authz/seed.js';
 

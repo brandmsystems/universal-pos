@@ -3,17 +3,17 @@ import { randomUUID } from 'node:crypto';
 import Fastify, { type FastifyInstance } from 'fastify';
 import pg from 'pg';
 import { ownerClient } from '../helpers/db.js';
-import { signToken } from '../../src/modules/auth/jwt.js';
-import { planeGuard } from '../../src/core/security/planeGuards.js';
+import { signToken } from '../../src/modules/authentication/jwt.js';
+import { planeGuard } from '../../src/middleware/security/planeGuards.js';
 import {
   registerTenantRoute, resetRegistry, leasedOn, MUTATING_METHODS,
-} from '../../src/core/middleware/routeRegistry.js';
-import { requiresIdempotency, POS_POST_READS } from '../../src/core/middleware/posHeaders.js';
-import { toErrorResponse } from '../../src/core/errors/errors.js';
-import { requireIdempotencyKey, requireLeaseToken } from '../../src/core/middleware/posHeaders.js';
+} from '../../src/middleware/routeRegistry.js';
+import { requiresIdempotency, POS_POST_READS } from '../../src/middleware/posHeaders.js';
+import { toErrorResponse } from '../../src/utils/errors/errors.js';
+import { requireIdempotencyKey, requireLeaseToken } from '../../src/middleware/posHeaders.js';
 import { posRoutes } from '../../src/routes/pos.js';
-import { withTenantTransaction } from '../../src/core/database/unitOfWork.js';
-import { peekTenantContext, type TenantContext } from '../../src/core/database/tenantContext.js';
+import { withTenantTransaction } from '../../src/database/unitOfWork.js';
+import { peekTenantContext, type TenantContext } from '../../src/database/tenantContext.js';
 import { claimLease, renewLease, releaseLease, forceReleaseLease } from '../../src/modules/offline/lease.js';
 import { provisionTenant } from '../../src/modules/platform/provisioning.js';
 import { seedPlatformAuthz, seedPermissionCatalogue } from '../../src/modules/authz/seed.js';

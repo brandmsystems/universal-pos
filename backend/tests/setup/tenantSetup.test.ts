@@ -2,15 +2,15 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { randomUUID } from 'node:crypto';
 import pg from 'pg';
 import { ownerClient, assertCheckedSet } from '../helpers/db.js';
-import { withTenantTransaction } from '../../src/core/database/unitOfWork.js';
-import { peekTenantContext, type TenantContext } from '../../src/core/database/tenantContext.js';
+import { withTenantTransaction } from '../../src/database/unitOfWork.js';
+import { peekTenantContext, type TenantContext } from '../../src/database/tenantContext.js';
 import {
   authenticatePin,
   checkPinPolicy,
   hashSecret,
   lockoutSeconds,
   revokeDevice,
-} from '../../src/modules/auth/deviceAuth.js';
+} from '../../src/modules/authentication/deviceAuth.js';
 import { checkSubsetGrant, effectiveAuthority } from '../../src/modules/authz/grant.js';
 import { systemRole } from '../../src/modules/authz/systemRoles.js';
 import { provisionTenant } from '../../src/modules/platform/provisioning.js';

@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import type { TenantContext } from '../../core/database/tenantContext.js';
+import type { TenantContext } from '../../database/tenantContext.js';
 
 /**
  * Day end: the till submits a business day's bills, after which no till may

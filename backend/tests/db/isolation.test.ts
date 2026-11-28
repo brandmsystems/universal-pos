@@ -2,11 +2,11 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { randomUUID } from 'node:crypto';
 import pg from 'pg';
 import { ownerClient } from '../helpers/db.js';
-import { withTenantTransaction, InvalidTenantIdError } from '../../src/core/database/unitOfWork.js';
-import { MissingTenantContextError, peekTenantContext } from '../../src/core/database/tenantContext.js';
-import { TenantIdInPayloadError, UnscopedMutationError } from '../../src/core/database/baseRepository.js';
-import { BranchRepository, AppUserRepository } from '../../src/core/database/repositories.js';
-import { assertDatabaseSafety } from '../../src/core/database/startupChecks.js';
+import { withTenantTransaction, InvalidTenantIdError } from '../../src/database/unitOfWork.js';
+import { MissingTenantContextError, peekTenantContext } from '../../src/database/tenantContext.js';
+import { TenantIdInPayloadError, UnscopedMutationError } from '../../src/database/baseRepository.js';
+import { BranchRepository, AppUserRepository } from '../../src/database/repositories.js';
+import { assertDatabaseSafety } from '../../src/database/startupChecks.js';
 
 /**
  * Tenant isolation. The non-negotiable suite.

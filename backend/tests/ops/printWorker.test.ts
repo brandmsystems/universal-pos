@@ -3,12 +3,12 @@ import { randomUUID } from 'node:crypto';
 import { readFileSync, readdirSync } from 'node:fs';
 import net from 'node:net';
 import pg from 'pg';
-import { networkTransport } from '../../src/modules/kitchen/printTransport.js';
+import { networkTransport } from '../../src/modules/business-types/restaurant/kitchen/printTransport.js';
 import { ownerClient, assertCheckedSet } from '../helpers/db.js';
 import {
   printOnce, reclaimStale, verifyPrintDrain, requestReprint, renderTicket,
   branchPrintFailures, CLAIM_TIMEOUT_MS, type PrintTransport,
-} from '../../src/modules/kitchen/printWorker.js';
+} from '../../src/modules/business-types/restaurant/kitchen/printWorker.js';
 import { rollUpUsage } from '../../src/modules/metering/usageRollup.js';
 import { PERMISSIONS } from '../../src/modules/authz/permissions.js';
 import { provisionTenant } from '../../src/modules/platform/provisioning.js';
@@ -472,14 +472,14 @@ describe('C. the worker posture matches the outbox', () => {
       `SELECT current_user AS u, rolbypassrls AS bypass FROM pg_roles WHERE rolname=current_user`);
     expect(who.rows[0]).toEqual({ u: 'katkitchen_app', bypass: false });
 
-    const code = readFileSync('src/modules/kitchen/printWorker.ts', 'utf8');
+    const code = readFileSync('src/modules/business-types/restaurant/kitchen/printWorker.ts', 'utf8');
     expect(code).toMatch(/DATABASE_URL_APP/);
     expect(code).not.toMatch(/DATABASE_URL_OWNER/);
     expect(code).toMatch(/set_config\(\$1, \$2, true\)/);
   });
 
   it('does not widen the fire-transaction boundary', () => {
-    const fire = readFileSync('src/modules/kitchen/fire.ts', 'utf8')
+    const fire = readFileSync('src/modules/business-types/restaurant/kitchen/fire.ts', 'utf8')
       .replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/[^\n]*/g, '');
     // The ROW is created in the fire transaction; the ATTEMPT is not. A paper jam
     // must never be in the critical path of the till.

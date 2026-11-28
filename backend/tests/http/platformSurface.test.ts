@@ -3,12 +3,12 @@ import { randomUUID } from 'node:crypto';
 import Fastify, { type FastifyInstance } from 'fastify';
 import pg from 'pg';
 import { ownerClient } from '../helpers/db.js';
-import { signToken } from '../../src/modules/auth/jwt.js';
-import { planeGuard } from '../../src/core/security/planeGuards.js';
-import { impersonationGuard } from '../../src/core/security/impersonationGuard.js';
-import { registerPlatformRoute } from '../../src/core/middleware/platformRoute.js';
-import { registerTenantRoute, resetRegistry } from '../../src/core/middleware/routeRegistry.js';
-import { ERROR_CONTRACT, toErrorResponse } from '../../src/core/errors/errors.js';
+import { signToken } from '../../src/modules/authentication/jwt.js';
+import { planeGuard } from '../../src/middleware/security/planeGuards.js';
+import { impersonationGuard } from '../../src/middleware/security/impersonationGuard.js';
+import { registerPlatformRoute } from '../../src/middleware/platformRoute.js';
+import { registerTenantRoute, resetRegistry } from '../../src/middleware/routeRegistry.js';
+import { ERROR_CONTRACT, toErrorResponse } from '../../src/utils/errors/errors.js';
 import { platformRoutes } from '../../src/routes/index.js';
 import { platformHandlers } from '../../src/routes/handlers/platform.js';
 import { isUnserved } from '../../src/routes/lookup.js';
@@ -842,7 +842,7 @@ describe('a Super Admin can create platform staff, and nobody else can', () => {
     // who created this account.
     expect(row.rows[0]?.created_by).toBe(superAdminId);
 
-    const { authenticatePlatformUser } = await import('../../src/modules/auth/platformAuth.js');
+    const { authenticatePlatformUser } = await import('../../src/modules/authentication/platformAuth.js');
     const verified = await authenticatePlatformUser(
       db, { email, password: 'correct-horse-battery' });
     expect(verified.ok, JSON.stringify(verified)).toBe(true);

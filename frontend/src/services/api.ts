@@ -54,7 +54,7 @@ export class ApiError extends Error {
  * ###########################################################################
  * `detail` IS THE FIELD, AND IT USED TO BE THROWN AWAY.
  *
- * `toErrorResponse` in src/core/errors/errors.ts answers `{ error, retryable, detail }`
+ * `toErrorResponse` in src/utils/errors/errors.ts answers `{ error, retryable, detail }`
  * and has since the contract was written. This type read `message`, which the
  * server has never sent, so every refusal reached every screen carrying its
  * bare code as the message: `fields_not_writable`, `field_required`,

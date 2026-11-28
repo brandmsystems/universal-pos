@@ -2,7 +2,7 @@ import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import type pg from 'pg';
 import { publishAndAnnounce } from './entitlements.js';
 import { addressOf, checkedLogo, logoUrl, themeColorOf } from './branding.js';
-import { adoptTenantContext } from '../../core/database/unitOfWork.js';
+import { adoptTenantContext } from '../../database/unitOfWork.js';
 import { checkedBusinessType } from './provisioning.js';
 
 /**

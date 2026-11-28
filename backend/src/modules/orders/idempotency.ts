@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import type { TenantContext } from '../../core/database/tenantContext.js';
+import type { TenantContext } from '../../database/tenantContext.js';
 
 /**
  * Idempotency for order mutations.
