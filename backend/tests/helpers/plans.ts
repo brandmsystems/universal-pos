@@ -1,4 +1,4 @@
-import { ENTITLEMENTS, planTermsFor, type PlanKey } from '@universalpos/shared';
+import { ENTITLEMENTS, defaultModulesFor, planTermsFor, type PlanKey } from '@universalpos/shared';
 import type {
   EntitlementCache, EntitlementDocument,
 } from '../../src/modules/platform/entitlements.js';
@@ -12,6 +12,8 @@ export function planDocument(tenantId: string, plan: PlanKey, version = 1): Enti
     planVersion: 1,
     status: 'active',
     ...planTermsFor(ENTITLEMENTS[plan]),
+    // What provisioning publishes for a restaurant: its type's own modules, all on.
+    modules: Object.fromEntries(defaultModulesFor('restaurant').map((key) => [key, true])),
     publishedAt: new Date(0).toISOString(),
   };
 }

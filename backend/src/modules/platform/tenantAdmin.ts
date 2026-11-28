@@ -2,6 +2,8 @@ import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import type pg from 'pg';
 import { publishAndAnnounce } from './entitlements.js';
 import { addressOf, checkedLogo, logoUrl, themeColorOf } from './branding.js';
+import { checkedModules, setTenantModules } from './tenantModules.js';
+import { defaultModulesFor } from '@universalpos/shared';
 import { adoptTenantContext } from '../../database/unitOfWork.js';
 import { checkedBusinessType } from './provisioning.js';
 
@@ -121,6 +123,7 @@ export async function editTenant(
     themeColor?: unknown;
     themeColorSecondary?: unknown;
     businessType?: unknown;
+    modules?: unknown;
     provisionedByPlatformUserId?: string | undefined;
   },
 ): Promise<{
@@ -129,6 +132,7 @@ export async function editTenant(
   businessType: string;
 }> {
   await lockTenant(client, input.tenantId, input.provisionedByPlatformUserId);
+  let modulesNext: readonly string[] | null = null;
   const sets: string[] = [];
   const values: unknown[] = [input.tenantId];
   if (input.name !== undefined) {
@@ -178,10 +182,31 @@ export async function editTenant(
       if (Number(orders.rows[0]!.n) > 0) throw new BusinessTypeLockedError(Number(orders.rows[0]!.n));
       values.push(next);
       sets.push(`business_type = $${values.length}`);
+      // A new kind of business starts from that kind's own modules, unless this
+      // same request chooses them.
+      if (input.modules === undefined) modulesNext = [...defaultModulesFor(next)];
     }
   }
+  if (input.modules !== undefined) modulesNext = checkedModules(input.modules);
+  if (sets.length === 0 && modulesNext === null) {
+    throw new TenantEditInvalidError('nothing to change: send name, legalName, address, themeColor, themeColorSecondary, businessType or modules.');
+  }
+  if (modulesNext !== null && await setTenantModules(client, input.tenantId, modulesNext)) {
+    // The tenant plane reads modules from the entitlement document, so a change
+    // that is not republished has not happened yet.
+    await publishAndAnnounce(client, input.tenantId, 'modules changed');
+  }
   if (sets.length === 0) {
-    throw new TenantEditInvalidError('nothing to change: send name, legalName, address, themeColor, themeColorSecondary or businessType.');
+    const same = await client.query<{
+      name: string; legal_name: string | null; address: string | null; theme_color: string | null;
+      theme_color_secondary: string | null; business_type: string;
+    }>(`SELECT name, legal_name, address, theme_color, theme_color_secondary, business_type
+          FROM platform.tenant WHERE id = $1`, [input.tenantId]);
+    const r = same.rows[0]!;
+    return {
+      tenantId: input.tenantId, name: r.name, legalName: r.legal_name, address: r.address,
+      themeColor: r.theme_color, themeColorSecondary: r.theme_color_secondary, businessType: r.business_type,
+    };
   }
 
   const updated = await client.query<{

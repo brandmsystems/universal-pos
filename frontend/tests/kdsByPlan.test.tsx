@@ -52,6 +52,10 @@ describe('Create restaurant', () => {
   it('offers the three plans and never asks about a kitchen screen or branches', async () => {
     const api = { get: async () => ({ available: true, problem: null }) } as unknown as PlatformApi;
     await mount(<NewRestaurantModal api={api} open planOptions={PLANS} onClose={() => undefined} onCreated={() => undefined} />);
+    // The wizard shows the plan on its own step.
+    const stepButton = [...document.querySelectorAll('nav[aria-label="Steps"] button')]
+      .find((b) => /Plan and subscription/.test(b.textContent ?? '')) as HTMLButtonElement;
+    await act(async () => { stepButton.click(); });
     const plan = [...document.querySelectorAll('select')].find((s) =>
       [...s.options].some((o) => o.value === 'v-pro'))!;
     expect([...plan.options].map((o) => o.value).filter((v) => v !== '')).toEqual(['v-basic', 'v-standard', 'v-pro']);

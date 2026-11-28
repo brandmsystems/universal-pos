@@ -2,6 +2,7 @@ import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import { PlanRetiredError } from './planCatalogue.js';
 import { addressOf, themeColorOf } from './branding.js';
 import { publishAndAnnounce } from './entitlements.js';
+import { seedTenantModules } from './tenantModules.js';
 import { SlugInvalidError, SlugTakenError, slugProblem } from './slug.js';
 import type pg from 'pg';
 import { grantOwnerMemberships, seedTenantSystemRoles } from '../authz/seed.js';
@@ -66,6 +67,11 @@ export interface ProvisionRequest {
    * refused: it has no workflow to run yet.
    */
   readonly businessType?: string | undefined;
+  /**
+   * The modules to switch on, as the wizard's step shows them. Omitted means the type's own
+   * (registry) defaults. Must include the till (`pos`); unknown keys are refused.
+   */
+  readonly modules?: readonly string[] | undefined;
   readonly requestedByPlatformUserId: string | null;
   /** The Restaurant Manager's phone, as the salesperson was given it. Optional. */
   readonly ownerPhone?: string | null | undefined;
@@ -162,6 +168,7 @@ function digestOf(request: ProvisionRequest): Buffer {
     // Appended only when they differ from the default, so a retry of a request
     // made before these fields existed still produces the digest it stored.
     ...(request.businessType && request.businessType !== DEFAULT_BUSINESS_TYPE ? [`type:${request.businessType}`] : []),
+    ...(request.modules ? [`modules:${[...request.modules].sort().join(',')}`] : []),
     ...(request.ownerPhone ? [`phone:${request.ownerPhone}`] : []),
     ...(request.startMode === 'paid' ? ['start:paid'] : []),
     ...(request.legalName ? [`legal:${request.legalName}`] : []),
@@ -397,6 +404,7 @@ export async function provisionTenant(
   // plan-gated route reads it; a restaurant provisioned without one would be
   // refused stock, purchasing and every report until something else happened to
   // publish, which for a restaurant nobody touches is never.
+  await seedTenantModules(client, tenantId, request.businessType ?? 'restaurant', request.modules);
   await publishAndAnnounce(client, tenantId, 'provisioned');
 
   // ###########################################################################

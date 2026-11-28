@@ -34,8 +34,9 @@ export {
 export {
   ADMIN_SECTION_KEYS, BUSINESS_TYPES, BUSINESS_TYPE_KEYS, DEFAULT_BUSINESS_TYPE, businessTypeOf,
   isBusinessTypeKey, sectionTitle, selectableBusinessTypes,
+  BUSINESS_MODULE_KEYS, CORE_MODULE, defaultModulesFor, isBusinessModuleKey,
 } from './constants/businessTypes.js';
 export type {
-  AdminSectionKey, BusinessTerms, BusinessTheme, BusinessTypeDefinition, BusinessTypeKey,
+  ModuleGate, AdminSectionKey, BusinessTerms, BusinessTheme, BusinessTypeDefinition, BusinessTypeKey,
   BusinessTypeStatus, BusinessWorkflow,
 } from './constants/businessTypes.js';

@@ -725,6 +725,14 @@ export const ERROR_CONTRACT: Readonly<Record<string, Mapping>> = {
     status: 409, retryable: false,
     clientAction: 'the business has taken orders, so its type is fixed; a different kind of business is a new tenant',
   },
+  module_disabled: {
+    status: 402, retryable: false,
+    clientAction: 'this business has not switched that module on; the Super Admin enables it, retrying will not help',
+  },
+  tenant_modules_invalid: {
+    status: 400, retryable: false,
+    clientAction: 'send known module keys, always including pos',
+  },
   business_type_unavailable: {
     status: 400, retryable: false,
     clientAction: 'choose a business type the picker offers; planned types cannot be selected yet',

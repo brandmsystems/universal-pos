@@ -255,6 +255,7 @@ export function platformHandlers(
         themeColor?: string | null;
         themeColorSecondary?: string | null;
         businessType?: string;
+        modules?: string[];
         firstBranchName: string;
         planVersionId: string;
         taxJurisdiction?: string;
@@ -358,9 +359,10 @@ export function platformHandlers(
     editTenant: async (request, _reply, context) => {
       const input = body<{
         name?: unknown; legalName?: unknown; address?: unknown; themeColor?: unknown; themeColorSecondary?: unknown;
-        businessType?: unknown;
+        businessType?: unknown; modules?: unknown;
       }>(request);
       return editTenant(context.client, {
+        modules: input.modules,
         tenantId: param(request, 'id'),
         name: input.name,
         legalName: input.legalName,

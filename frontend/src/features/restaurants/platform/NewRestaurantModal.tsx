@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
-import { ADDRESS_MIN_LENGTH, businessTypeOf, normaliseThemeColor, selectableBusinessTypes, slugProblem, slugify } from '@universalpos/shared';
+import {
+  ADDRESS_MIN_LENGTH, BUSINESS_MODULE_KEYS, CORE_MODULE, businessTypeOf, defaultModulesFor, normaliseThemeColor,
+  selectableBusinessTypes, slugProblem, slugify,
+} from '@universalpos/shared';
 import type { ReactElement } from 'react';
 import type { PlatformApi } from '../../../services/platformApi.js';
 import { Button } from '@/components/ui/button.js';
@@ -73,7 +76,18 @@ export function NewRestaurantModal(props: {
   const [ownerPassword, setOwnerPassword] = useState('');
   const [startMode, setStartMode] = useState<'trial' | 'paid'>('trial');
   // Chosen, never assumed: no type is preselected, as no country is.
-  const [businessType, setBusinessType] = useState('');
+  const [businessType, setBusinessTypeRaw] = useState('');
+  // The wizard's modules step starts from the chosen type's own modules; changing the type resets them.
+  const [modules, setModules] = useState<readonly string[]>([]);
+  const [step, setStep] = useState(0);
+  const setBusinessType = (key: string): void => {
+    setBusinessTypeRaw(key);
+    setModules(key === '' ? [] : [...defaultModulesFor(key)]);
+  };
+  const toggleModule = (key: string): void => {
+    if (key === CORE_MODULE) return;
+    setModules((held) => (held.includes(key) ? held.filter((k) => k !== key) : [...held, key]));
+  };
   const [firstBranchName, setFirstBranchName] = useState('Main branch');
   const [currency, setCurrency] = useState('');
   const [timezone, setTimezone] = useState('');
@@ -166,6 +180,21 @@ export function NewRestaurantModal(props: {
     themeColorSecondary: themeColorSecondary.trim() !== '' && normaliseThemeColor(themeColorSecondary) === null ? 'A hex colour like #1b7f3a.' : null,
   };
   const valid = Object.values(errors).every((e) => e === null);
+  const stepErrors: ReadonlyArray<ReadonlyArray<string | null>> = [
+    [errors.name, errors.slug, errors.firstBranchName, errors.address, errors.ownerName, errors.ownerEmail,
+      errors.ownerUsername, errors.ownerPassword, errors.ownerPhone],
+    [errors.businessType],
+    [errors.country, errors.currency, errors.timezone],
+    [errors.plan],
+    [errors.themeColor, errors.themeColorSecondary],
+  ];
+  const stepOk = (index: number): boolean => stepErrors[index]!.every((e) => e === null);
+  const firstBadStep = stepErrors.findIndex((_, index) => !stepOk(index));
+  const last = STEPS.length - 1;
+  function next(): void {
+    setTouched(true);
+    if (stepOk(step)) setStep((current) => Math.min(last, current + 1));
+  }
   const show = (error: string | null): string | null => (touched ? error : null);
 
   function reset(): void {
@@ -174,7 +203,7 @@ export function NewRestaurantModal(props: {
     setOwnerUsername(''); setOwnerPassword('');
     setFirstBranchName('Main branch');
     if (countries !== null) chooseCountry(countries.defaultCountry);
-    setBusinessType(''); setPlanVersionId(''); setTouched(false); setRefusal(null); setResult(null);
+    setBusinessType(''); setStep(0); setPlanVersionId(''); setTouched(false); setRefusal(null); setResult(null);
     setAddress(''); setThemeColor(''); setLogo(null); setLogoError(null);
   }
 
@@ -195,6 +224,7 @@ export function NewRestaurantModal(props: {
         ...(ownerPhone.trim() === '' ? {} : { ownerPhone: ownerPhone.trim() }),
         startMode,
         firstBranchName: firstBranchName.trim(), planVersionId, taxJurisdiction, businessType,
+        modules: [...modules],
         address: address.trim(),
         ...(themeColor.trim() === '' ? {} : { themeColor: normaliseThemeColor(themeColor) }),
         ...(themeColorSecondary.trim() === '' ? {} : { themeColorSecondary: normaliseThemeColor(themeColorSecondary) }),
@@ -239,14 +269,18 @@ export function NewRestaurantModal(props: {
     <Modal open={props.open} onClose={close} busy={busy} wide
       title={result === null ? 'Create restaurant' : 'Restaurant created'}
       description={result === null
-        ? 'Creates the restaurant, its first branch, its staff roles and the Restaurant Manager with the username and password you set. It is linked to you as the salesperson.'
+        ? `Step ${step + 1} of ${STEPS.length}: ${STEPS[step]}. Creates the business, its first branch, its staff roles and the Manager with the username and password you set. It is linked to you as the salesperson.`
         : undefined}
       footer={result === null ? (
         <>
           <Button type="button" variant="ghost" onClick={close} disabled={busy}>Cancel</Button>
-          <Button type="button" onClick={() => { void submit(); }} disabled={busy || (touched && !valid)}>
-            {busy ? 'Creating…' : 'Create restaurant'}
-          </Button>
+          {step > 0 && <Button type="button" variant="ghost" onClick={() => setStep(step - 1)} disabled={busy}>Back</Button>}
+          {step < last
+            ? <Button type="button" onClick={next} disabled={busy}>Next</Button>
+            : <Button type="button" disabled={busy}
+                onClick={() => { if (valid) void submit(); else { setTouched(true); setStep(Math.max(0, firstBadStep)); } }}>
+                {busy ? 'Creating…' : 'Create restaurant'}
+              </Button>}
         </>
       ) : (
         <Button type="button" onClick={close}>Done</Button>
@@ -283,6 +317,20 @@ export function NewRestaurantModal(props: {
         <div className="flex flex-col gap-5">
           {refusal !== null && <Notice tone="error">{refusal}</Notice>}
 
+          <nav aria-label="Steps" className="flex flex-wrap gap-1.5">
+            {STEPS.map((title, index) => (
+              <button key={title} type="button" onClick={() => setStep(index)}
+                aria-current={index === step ? 'step' : undefined}
+                className={cn('rounded-full border px-3 py-1 text-xs transition-colors',
+                  index === step ? 'border-primary bg-primary/10 font-semibold text-foreground'
+                    : touched && !stepOk(index) ? 'border-destructive text-destructive'
+                    : 'border-border text-muted-foreground hover:bg-secondary')}>
+                {index + 1}. {title}
+              </button>
+            ))}
+          </nav>
+
+          {step === 0 && (
           <section className="flex flex-col gap-3">
             <span className="text-[11px] font-semibold uppercase tracking-wide text-subtle-foreground">Restaurant</span>
             <div className="grid gap-3.5 sm:grid-cols-2">
@@ -304,16 +352,11 @@ export function NewRestaurantModal(props: {
                   placeholder="12 MG Road, Bengaluru 560001"
                   hint={show(errors.address) ?? 'Where the restaurant is. Shown to the restaurant and on its records.'} />
               </div>
-              <SelectField label="Kind of business" value={businessType} onChange={setBusinessType} required
-                placeholder="Choose a kind of business" options={BUSINESS_TYPE_OPTIONS}
-                hint={show(errors.businessType) ?? (businessType === '' ? 'Sets the screens, words and look. Fixed once it has taken an order.' : businessTypeOf(businessType).description)} />
-              <SelectField label="Plan" value={planVersionId} onChange={setPlanVersionId} required
-                placeholder="Choose a plan"
-                options={props.planOptions.map((p) => ({ value: p.planVersionId, label: p.label }))}
-                hint={show(errors.plan) ?? undefined} />
             </div>
           </section>
+          )}
 
+          {step === 4 && (
           <section className="flex flex-col gap-3">
             <span className="text-[11px] font-semibold uppercase tracking-wide text-subtle-foreground">Look</span>
             <div className="grid gap-3.5 sm:grid-cols-2">
@@ -332,7 +375,9 @@ export function NewRestaurantModal(props: {
                 usage="Bands, card accents and the background glow" />
             </div>
           </section>
+          )}
 
+          {step === 0 && (
           <section className="flex flex-col gap-3">
             <span className="text-[11px] font-semibold uppercase tracking-wide text-subtle-foreground">Restaurant Manager</span>
             <div className="grid gap-3.5 sm:grid-cols-2">
@@ -349,9 +394,15 @@ export function NewRestaurantModal(props: {
                 placeholder="+91 98450 12345" error={show(errors.ownerPhone)} />
             </div>
           </section>
+          )}
 
+          {step === 3 && (
           <section className="flex flex-col gap-3">
-            <span className="text-[11px] font-semibold uppercase tracking-wide text-subtle-foreground">Subscription</span>
+            <span className="text-[11px] font-semibold uppercase tracking-wide text-subtle-foreground">Subscription plan</span>
+            <SelectField label="Plan" value={planVersionId} onChange={setPlanVersionId} required
+              placeholder="Choose a plan"
+              options={props.planOptions.map((p) => ({ value: p.planVersionId, label: p.label }))}
+              hint={show(errors.plan) ?? undefined} />
             <div className="grid gap-2 sm:grid-cols-2" role="radiogroup" aria-label="How the subscription starts">
               {([['trial', '14-day free trial', 'Billing starts when the trial ends.'],
                  ['paid', 'Paid from today', 'Billing starts today, for one billing period.']] as const)
@@ -369,7 +420,20 @@ export function NewRestaurantModal(props: {
             <SubscriptionPreview startMode={startMode}
               plan={props.planOptions.find((p) => p.planVersionId === planVersionId) ?? null} />
           </section>
+          )}
 
+          {step === 1 && (
+            <section className="flex flex-col gap-3">
+              <span className="text-[11px] font-semibold uppercase tracking-wide text-subtle-foreground">Kind of business and modules</span>
+              <SelectField label="Kind of business" value={businessType} onChange={setBusinessType} required
+                placeholder="Choose a kind of business" options={BUSINESS_TYPE_OPTIONS}
+                hint={show(errors.businessType) ?? (businessType === '' ? 'Sets the screens, words, look and starting modules. Fixed once it has taken an order.' : businessTypeOf(businessType).description)} />
+              {businessType !== '' && (
+                <ModulePicker type={businessType} chosen={modules} onToggle={toggleModule} />
+              )}
+            </section>
+          )}
+          {step === 2 && (
           <section className="flex flex-col gap-3">
             <span className="text-[11px] font-semibold uppercase tracking-wide text-subtle-foreground">Region</span>
             <div className="grid gap-3.5 sm:grid-cols-3">
@@ -385,6 +449,7 @@ export function NewRestaurantModal(props: {
                 mono required error={show(errors.timezone)} />
             </div>
           </section>
+          )}
         </div>
       )}
     </Modal>
@@ -419,6 +484,37 @@ function SubscriptionPreview(props: { startMode: 'trial' | 'paid'; plan: PlanOpt
         <span className="text-foreground">{props.plan === null ? '—' : props.plan.label.split(' — ')[1]}</span></div>
       <div className="flex flex-col"><span className="text-xs text-subtle-foreground">Status</span>
         <span className="text-foreground">{props.startMode === 'trial' ? 'Trial' : 'Active'}</span></div>
+    </div>
+  );
+}
+
+const STEPS = ['Business and owner', 'Kind of business and modules', 'Region and tax', 'Plan and subscription', 'Logo and branding'] as const;
+
+const moduleLabel = (key: string): string => key.replace(/_/g, ' ').replace(/^./, (c) => c.toUpperCase());
+
+/** The type's own modules, ticked; every other module offered unticked. The till is always on. */
+function ModulePicker(props: {
+  type: string; chosen: readonly string[]; onToggle: (key: string) => void;
+}): ReactElement {
+  const own = defaultModulesFor(props.type);
+  const others = BUSINESS_MODULE_KEYS.filter((key) => !own.includes(key));
+  const box = (key: string): ReactElement => (
+    <label key={key} className="flex items-center gap-2 text-sm text-foreground">
+      <input type="checkbox" checked={props.chosen.includes(key)} disabled={key === CORE_MODULE}
+        onChange={() => props.onToggle(key)} />
+      {moduleLabel(key)}{key === CORE_MODULE ? ' (always on)' : ''}
+    </label>
+  );
+  return (
+    <div className="flex flex-col gap-3">
+      <fieldset className="flex flex-col gap-2 rounded-lg border border-border px-3 py-2.5">
+        <legend className="px-1 text-xs text-subtle-foreground">Included with this kind of business</legend>
+        <div className="grid gap-2 sm:grid-cols-2">{own.map(box)}</div>
+      </fieldset>
+      <details className="rounded-lg border border-border px-3 py-2.5">
+        <summary className="cursor-pointer text-xs text-subtle-foreground">Other modules</summary>
+        <div className="mt-2 grid gap-2 sm:grid-cols-2">{others.map(box)}</div>
+      </details>
     </div>
   );
 }

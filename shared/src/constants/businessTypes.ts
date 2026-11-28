@@ -195,3 +195,25 @@ export function selectableBusinessTypes(): readonly BusinessTypeDefinition[] {
 export function sectionTitle(type: BusinessTypeDefinition, section: AdminSectionKey, fallback: string): string {
   return type.navLabels[section] ?? fallback;
 }
+
+/** The module every business has and no one may switch off: the till itself. */
+export const CORE_MODULE = 'pos';
+
+/** Every module any type is built from -- derived from the registry, never listed twice. */
+export const BUSINESS_MODULE_KEYS: readonly string[] = [
+  ...new Set(BUSINESS_TYPE_KEYS.flatMap((key) => BUSINESS_TYPES[key].modules)),
+];
+
+export function isBusinessModuleKey(value: unknown): value is string {
+  return typeof value === 'string' && BUSINESS_MODULE_KEYS.includes(value);
+}
+
+/** What a new tenant of this type starts with: the type's own modules, as the wizard pre-ticks them. */
+export function defaultModulesFor(type: string | null | undefined): readonly string[] {
+  return businessTypeOf(type).modules;
+}
+
+/** A route that belongs to a module: refused (402 `module_disabled`) unless the tenant has it on. */
+export interface ModuleGate {
+  readonly module: string;
+}

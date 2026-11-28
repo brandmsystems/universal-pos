@@ -81,6 +81,17 @@ complete workflow today.
   (stock is recipe-driven and deducts at KOT fire; a sale movement is its own slice),
   and a server-side barcode lookup -- the scan matches the branch menu already
   loaded, which suits a small shop, not a supermarket's catalogue.
+- **Tenant modules (0091).** What a business has switched on is `platform.tenant_module`
+  (control plane; the registry says what a module is and which a type starts with, and
+  is the only list of valid keys). Provisioning seeds it from the wizard's choice or the
+  type's own `modules`; `PATCH /tenants/:id` (`modules`) changes it, and a change that
+  alters anything republishes the entitlement document, which carries the enabled
+  `modules` beside the plan's features. A route declares `plan: { module: 'kot' }` (alone
+  or in a list with plan gates); the registrar refuses it `402 module_disabled` when
+  the document does not name the module -- **absence denies**, and `pos` (the till)
+  cannot be switched off. Today the KOT routes need `kot` and the tables routes
+  `tables`; further routes are gated as their modules gain screens. A module change by
+  Sales is scoped to the tenants they sold, as the rest of the edit is.
 - Adding a type: one registry entry; the tests that walk the registry (complete
   terms, real sections, unique theme id, a radius rule per radius, a CHECK equal to
   the keys) fail until the migration's CHECK and the stylesheet agree.

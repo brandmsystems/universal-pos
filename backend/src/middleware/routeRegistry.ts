@@ -20,9 +20,10 @@ import {
 } from '../modules/offline/leaseGuard.js';
 import {
   PLAN_NAMES, entitlementsFromTerms, lowestPlanIncluding, planIncludes, type PlanGate, type PlanFeature, type PlanLimit,
+  type ModuleGate,
 } from '@universalpos/shared';
 import {
-  PlanExcludesError, assertWithinLimit, resolveEntitlement,
+  PlanExcludesError, ModuleDisabledError, hasModule, assertWithinLimit, resolveEntitlement,
   type EntitlementCache, type EntitlementDocument,
 } from '../modules/platform/entitlements.js';
 import { planUsage } from '../modules/businesses/planUsage.js';
@@ -179,12 +180,15 @@ declare module 'fastify' {
  * tablet code needs the `staff_tablets` feature AND room under `devices`) -- or
  * `'document'`, only the document itself, for a route that reads the plan.
  */
-export type RoutePlan = PlanGate | readonly PlanGate[] | 'document';
+export type RoutePlan = RouteGate | readonly RouteGate[] | 'document';
+
+/** A plan gate, or `{ module }`: the tenant must have that module switched on. */
+export type RouteGate = PlanGate | ModuleGate;
 
 /** The gates a route declares, as a list: one gate, several, or none for `'document'`. */
-export function planGates(plan: RoutePlan): readonly PlanGate[] {
+export function planGates(plan: RoutePlan): readonly RouteGate[] {
   if (plan === 'document') return [];
-  return Array.isArray(plan) ? plan : [plan as PlanGate];
+  return Array.isArray(plan) ? plan : [plan as RouteGate];
 }
 
 /** `reports: 'basic'` is every plan: declared so the route is visibly gated, checked by nothing. */
@@ -662,6 +666,10 @@ export function registerTenantRoute(
           // says so, rather than reporting a limit nobody could ever be under.
           const gates = planGates(definition.plan);
           for (const gate of gates) {
+            if ('module' in gate) {
+              if (!hasModule(document, gate.module)) throw new ModuleDisabledError(gate.module);
+              continue;
+            }
             if ('limit' in gate) continue;
             if (!planIncludes(entitlementsFromTerms(document), gate)) {
               const on = lowestPlanIncluding(gate);
@@ -669,7 +677,7 @@ export function registerTenantRoute(
             }
           }
           for (const gate of gates) {
-            if ('limit' in gate) assertWithinLimit(document, gate.limit, (await planUsage(context, gate.limit)) + 1);
+            if ('limit' in gate && !('module' in gate)) assertWithinLimit(document, gate.limit, (await planUsage(context, gate.limit)) + 1);
           }
         }
 

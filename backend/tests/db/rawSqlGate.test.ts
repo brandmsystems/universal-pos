@@ -73,6 +73,8 @@ const SQL_LAYER: Readonly<Record<string, string>> = {
     'the control-plane staff directory behind GET /users and POST /users: platform schema only, no tenant GUC, and no RLS to apply -- the same posture as platform/directory.ts beside it. platform.platform_user and platform.platform_role carry no tenant_id at all, so there is no repository shape for either',
   'modules/platform/tenantAdmin.ts':
     'edit, deactivate and reactivate a restaurant: platform.tenant only, no tenant GUC, no RLS to apply -- the same posture as platform/directory.ts. Each write locks the tenant row FOR UPDATE and republishes the entitlement document in the same transaction, which is a unit a repository over app.* has no shape for',
+  'modules/platform/tenantModules.ts':
+    'which modules a tenant has on: platform.tenant_module only, written by the control plane (provisioning and the tenant edit) in their transaction, no tenant GUC, no schema app. The tenant plane reads the result through the entitlement document, never this table',
   'modules/platform/slug.ts':
     "the create form's live slug check: one existence read of platform.tenant by slug. Control plane, no tenant GUC, no schema app; the unique index tenant_slug_key remains the authority",
   'modules/platform/salesScope.ts':

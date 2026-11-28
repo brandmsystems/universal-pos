@@ -21,6 +21,8 @@ export interface EntitlementDocument {
   readonly status: 'active' | 'past_due' | 'soft_lock' | 'hard_lock' | 'suspended';
   readonly limits: Readonly<Record<string, number>>;
   readonly features: Readonly<Record<string, boolean>>;
+  /** The modules this tenant has switched on (`platform.tenant_module`); absent means off. */
+  readonly modules: Readonly<Record<string, boolean>>;
   readonly publishedAt: string;
 }
 
@@ -62,13 +64,18 @@ export async function publishEntitlement(
   );
   const row = source.rows[0];
   if (!row) throw new Error(`tenant ${tenantId} has no live subscription to publish`);
+  const moduleRows = await client.query<{ module_key: string }>(
+    `SELECT module_key FROM platform.tenant_module WHERE tenant_id = $1 AND enabled ORDER BY module_key`,
+    [tenantId],
+  );
+  const modules = Object.fromEntries(moduleRows.rows.map((r) => [r.module_key, true]));
 
   const status = mapTenantStatus(row.tenant_status);
 
   await client.query(
     `INSERT INTO platform.entitlement_document
-       (tenant_id, version, plan_key, plan_version, status, limits, features, reason)
-     VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7::jsonb, $8)`,
+       (tenant_id, version, plan_key, plan_version, status, limits, features, reason, modules)
+     VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7::jsonb, $8, $9::jsonb)`,
     [
       tenantId,
       next,
@@ -78,6 +85,7 @@ export async function publishEntitlement(
       JSON.stringify(row.limits),
       JSON.stringify(row.features),
       reason,
+      JSON.stringify(modules),
     ],
   );
 
@@ -89,6 +97,7 @@ export async function publishEntitlement(
     status,
     limits: row.limits,
     features: row.features,
+    modules,
     publishedAt: new Date().toISOString(),
   };
 }
@@ -219,6 +228,20 @@ export function hasFeature(document: EntitlementDocument, feature: string): bool
   return document.features[feature] === true;
 }
 
+export function hasModule(document: EntitlementDocument, module: string): boolean {
+  return document.modules?.[module] === true;
+}
+
+/** A route of a module this business has not switched on. Absence denies. */
+export class ModuleDisabledError extends Error {
+  readonly statusCode = 402;
+  readonly code = 'module_disabled';
+  constructor(readonly module: string) {
+    super(`the ${module} module is not enabled for this business`);
+    this.name = 'ModuleDisabledError';
+  }
+}
+
 /** A route the restaurant's plan does not include. Same 402 as a limit breach. */
 export class PlanExcludesError extends Error {
   readonly statusCode = 402;
@@ -246,9 +269,10 @@ export async function loadLatestEntitlement(
 ): Promise<EntitlementDocument | null> {
   const result = await client.query<{
     version: string; plan_key: string; plan_version: number; status: EntitlementDocument['status'];
-    limits: Record<string, number>; features: Record<string, boolean>; published_at: string;
+    limits: Record<string, number>; features: Record<string, boolean>;
+    modules: Record<string, boolean>; published_at: string;
   }>(
-    `SELECT version::text, plan_key, plan_version, status, limits, features, published_at::text
+    `SELECT version::text, plan_key, plan_version, status, limits, features, modules, published_at::text
        FROM platform.entitlement_document
       WHERE tenant_id = $1
       ORDER BY version DESC
@@ -265,6 +289,7 @@ export async function loadLatestEntitlement(
     status: row.status,
     limits: row.limits,
     features: row.features,
+    modules: row.modules,
     publishedAt: row.published_at,
   };
 }

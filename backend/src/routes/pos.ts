@@ -84,7 +84,7 @@ export function posRoutes(handlers: Record<string, Handler> = {}): readonly Rout
       method: 'POST', url: '/pos/session', plane: 'tenant', lease: 'exempt',
       // Seating a party at tables needs the plan's tables (Basic has none:
       // its dine-in is numbered at the counter, POST /pos/dine-in).
-      plan: { feature: 'tables' },
+      plan: [{ feature: 'tables' }, { module: 'tables' }],
       permission: { plane: 'tenant', key: 'table.session.open' },
       audit: { action: 'table.session.opened', target: 'table_session' },
       handler: h('openSession'),
@@ -104,7 +104,7 @@ export function posRoutes(handlers: Record<string, Handler> = {}): readonly Rout
       // rather than anything table-keyed, which is the same reason the lease is
       // keyed on the session and not the table.
       method: 'PATCH', url: '/pos/session/:id/table', plane: 'tenant', lease: leasedOn.session,
-      plan: { feature: 'tables' },
+      plan: [{ feature: 'tables' }, { module: 'tables' }],
       permission: { plane: 'tenant', key: 'table.session.transfer' },
       audit: { action: 'table.session.moved', target: 'table_session' },
       handler: h('moveSession'),
@@ -114,7 +114,7 @@ export function posRoutes(handlers: Record<string, Handler> = {}): readonly Rout
       // still one order and one bill. Same key as a move -- both change which
       // tables a party holds, and neither touches money.
       method: 'POST', url: '/pos/session/:id/tables', plane: 'tenant', lease: leasedOn.session,
-      plan: { feature: 'tables' },
+      plan: [{ feature: 'tables' }, { module: 'tables' }],
       permission: { plane: 'tenant', key: 'table.session.transfer' },
       audit: { action: 'table.session.joined', target: 'table_session' },
       handler: h('joinTable'),
@@ -249,7 +249,7 @@ export function posRoutes(handlers: Record<string, Handler> = {}): readonly Rout
       method: 'POST', url: '/pos/order/:id/fire', plane: 'tenant', lease: leasedOn.order,
       permission: { plane: 'tenant', key: 'kot.fire' },
       // Sending to the kitchen is the KOT flow; Basic bills without it.
-      plan: { feature: 'kot' },
+      plan: [{ feature: 'kot' }, { module: 'kot' }],
       audit: { action: 'order.confirmed', target: 'sales_order' },
       handler: h('fire'),
     },
@@ -376,14 +376,14 @@ export function posRoutes(handlers: Record<string, Handler> = {}): readonly Rout
       // and whether the paper went. Read-only over the print jobs fire wrote.
       method: 'GET', url: '/pos/order/:id/tickets', plane: 'tenant',
       permission: { plane: 'tenant', key: 'kot.view' },
-      plan: { feature: 'kot' },
+      plan: [{ feature: 'kot' }, { module: 'kot' }],
       audit: 'none',
       handler: h('orderTickets'),
     },
     {
       method: 'POST', url: '/pos/kot/:id/reprint', plane: 'tenant', lease: 'exempt',
       permission: { plane: 'tenant', key: 'kot.reprint' },
-      plan: { feature: 'kot' },
+      plan: [{ feature: 'kot' }, { module: 'kot' }],
       audit: { action: 'kot.reprinted', target: 'print_job' },
       handler: h('reprint'),
     },
@@ -393,7 +393,7 @@ export function posRoutes(handlers: Record<string, Handler> = {}): readonly Rout
       // order, and food can be ready after the order is handed to Billing.
       method: 'POST', url: '/pos/kot/:id/ready', plane: 'tenant', lease: 'exempt',
       permission: { plane: 'tenant', key: 'kot.ready' },
-      plan: { feature: 'kot' },
+      plan: [{ feature: 'kot' }, { module: 'kot' }],
       audit: { action: 'kot.marked_ready', target: 'kot', targetId: pathId },
       handler: h('markTicketReady'),
     },
